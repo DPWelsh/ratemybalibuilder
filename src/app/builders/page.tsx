@@ -141,7 +141,7 @@ export default function BuildersPage() {
   const defaultColDef = useMemo<ColDef>(() => ({
     sortable: true,
     resizable: true,
-    cellStyle: { display: 'flex', alignItems: 'center' },
+    cellStyle: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   }), []);
 
   // Handle row click
