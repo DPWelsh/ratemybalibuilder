@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { TrustStats } from '@/components/TrustStats';
+import { PRICING, formatPrice } from '@/lib/pricing';
 import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon } from 'lucide-react';
 
 export default function Home() {
@@ -14,10 +15,6 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[var(--color-prompt)]/5 via-transparent to-transparent" />
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <Badge variant="secondary" className="mb-4 sm:mb-6">
-            Trusted by 500+ expats in Bali
-          </Badge>
-
           <h1 className="text-3xl tracking-tight sm:text-5xl lg:text-7xl">
             Vet your builder
             <br />
@@ -65,7 +62,7 @@ export default function Home() {
                   </Button>
                 </form>
                 <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
-                  $10 per search. Only charged if we find a match.
+                  {formatPrice(PRICING.search)} per search. Only charged if we find a match.
                 </p>
               </CardContent>
             </Card>
@@ -85,6 +82,11 @@ export default function Home() {
               <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-energy)] sm:h-3 sm:w-3" />
               <span className="text-muted-foreground">Blacklisted</span>
             </div>
+          </div>
+
+          {/* Trust Stats */}
+          <div className="mt-10 sm:mt-16">
+            <TrustStats />
           </div>
         </div>
       </section>
@@ -110,7 +112,7 @@ export default function Home() {
                   Enter the builder&apos;s name and phone number. We&apos;ll check
                   our database instantly.
                 </p>
-                <p className="mt-3 font-medium sm:mt-4">$10</p>
+                <p className="mt-3 font-medium sm:mt-4">{formatPrice(PRICING.search)}</p>
               </CardContent>
             </Card>
 
@@ -124,7 +126,7 @@ export default function Home() {
                   Found a match? Unlock full details including reviews,
                   photos, and red flags.
                 </p>
-                <p className="mt-3 font-medium sm:mt-4">$20</p>
+                <p className="mt-3 font-medium sm:mt-4">{formatPrice(PRICING.unlock)}</p>
               </CardContent>
             </Card>
 
@@ -151,7 +153,7 @@ export default function Home() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl">Built something in Bali?</h2>
           <p className="mt-4 text-sm text-muted-foreground sm:mt-6 sm:text-lg">
             Help other expats by sharing your experience. Submit a review and
-            earn $20 in credits toward your next search.
+            earn {formatPrice(PRICING.reviewCredit)} in credits toward your next search.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
             <Button asChild size="lg" className="w-full sm:w-auto">
@@ -171,21 +173,24 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t bg-card px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row sm:gap-6">
-          <div className="text-sm text-muted-foreground">
-            RateMyBaliBuilder
+        <div className="mx-auto max-w-5xl">
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:gap-6">
+            <div className="text-sm text-muted-foreground">
+              RateMyBaliBuilder
+            </div>
+            <TrustStats variant="compact" />
+            <nav className="flex gap-6 text-sm text-muted-foreground sm:gap-8">
+              <Link href="/about" className="transition-colors hover:text-foreground">
+                About
+              </Link>
+              <Link href="/contact" className="transition-colors hover:text-foreground">
+                Contact
+              </Link>
+              <Link href="/privacy" className="transition-colors hover:text-foreground">
+                Privacy
+              </Link>
+            </nav>
           </div>
-          <nav className="flex gap-6 text-sm text-muted-foreground sm:gap-8">
-            <Link href="/about" className="transition-colors hover:text-foreground">
-              About
-            </Link>
-            <Link href="/contact" className="transition-colors hover:text-foreground">
-              Contact
-            </Link>
-            <Link href="/privacy" className="transition-colors hover:text-foreground">
-              Privacy
-            </Link>
-          </nav>
         </div>
       </footer>
     </div>

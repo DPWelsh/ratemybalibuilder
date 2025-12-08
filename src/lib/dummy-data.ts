@@ -3,6 +3,15 @@
 
 export type BuilderStatus = 'recommended' | 'unknown' | 'blacklisted';
 
+export type Location =
+  | 'Canggu'
+  | 'Seminyak'
+  | 'Ubud'
+  | 'Uluwatu'
+  | 'Sanur'
+  | 'Denpasar'
+  | 'Tabanan';
+
 export type TradeType =
   | 'General Contractor'
   | 'Pool Builder'
@@ -26,6 +35,7 @@ export interface Builder {
   companyName?: string;
   instagram?: string;
   status: BuilderStatus;
+  location: Location;
   tradeType: TradeType;
   projectTypes: ProjectType[];
   createdAt: string;
@@ -53,6 +63,7 @@ export const builders: Builder[] = [
     companyName: 'Wayan & Sons Building',
     instagram: 'wayanbuilds',
     status: 'recommended',
+    location: 'Canggu',
     tradeType: 'General Contractor',
     projectTypes: ['Villas', 'Renovations', 'Pools'],
     createdAt: '2023-06-15',
@@ -64,6 +75,7 @@ export const builders: Builder[] = [
     companyName: 'PT Bali Dream Construction',
     instagram: 'balidreamvillas',
     status: 'recommended',
+    location: 'Ubud',
     tradeType: 'General Contractor',
     projectTypes: ['Villas', 'Commercial'],
     createdAt: '2022-11-20',
@@ -75,6 +87,7 @@ export const builders: Builder[] = [
     companyName: undefined,
     instagram: 'komangreno',
     status: 'recommended',
+    location: 'Seminyak',
     tradeType: 'Renovation Specialist',
     projectTypes: ['Renovations', 'Interior Fit-out'],
     createdAt: '2024-01-10',
@@ -88,6 +101,7 @@ export const builders: Builder[] = [
     companyName: undefined,
     instagram: undefined,
     status: 'unknown',
+    location: 'Denpasar',
     tradeType: 'General Contractor',
     projectTypes: ['Villas', 'Renovations'],
     createdAt: '2024-08-05',
@@ -99,6 +113,7 @@ export const builders: Builder[] = [
     companyName: 'CV Canggu Build',
     instagram: 'cangguconstruction',
     status: 'unknown',
+    location: 'Canggu',
     tradeType: 'General Contractor',
     projectTypes: ['Villas', 'Pools', 'Commercial'],
     createdAt: '2024-06-22',
@@ -110,6 +125,7 @@ export const builders: Builder[] = [
     companyName: undefined,
     instagram: undefined,
     status: 'unknown',
+    location: 'Uluwatu',
     tradeType: 'Landscaper',
     projectTypes: ['Landscaping', 'Pools'],
     createdAt: '2024-09-01',
@@ -123,6 +139,7 @@ export const builders: Builder[] = [
     companyName: 'PT Fast Build Indo',
     instagram: 'balifastbuild',
     status: 'blacklisted',
+    location: 'Sanur',
     tradeType: 'General Contractor',
     projectTypes: ['Villas', 'Renovations', 'Commercial'],
     createdAt: '2023-03-10',
@@ -134,6 +151,7 @@ export const builders: Builder[] = [
     companyName: undefined,
     instagram: undefined,
     status: 'blacklisted',
+    location: 'Tabanan',
     tradeType: 'Pool Builder',
     projectTypes: ['Pools', 'Renovations'],
     createdAt: '2023-09-25',
@@ -427,4 +445,48 @@ export function maskPhone(phone: string): string {
   }
   // Fallback for different formats
   return phone.slice(0, 8) + ' •••• ••••';
+}
+
+// ============================================
+// FILTER OPTIONS
+// ============================================
+
+export const locations: Location[] = [
+  'Canggu',
+  'Seminyak',
+  'Ubud',
+  'Uluwatu',
+  'Sanur',
+  'Denpasar',
+  'Tabanan',
+];
+
+export const tradeTypes: TradeType[] = [
+  'General Contractor',
+  'Pool Builder',
+  'Architect',
+  'Interior Designer',
+  'Landscaper',
+  'Renovation Specialist',
+];
+
+export const projectTypes: ProjectType[] = [
+  'Villas',
+  'Renovations',
+  'Pools',
+  'Commercial',
+  'Landscaping',
+  'Interior Fit-out',
+];
+
+// ============================================
+// STATS HELPERS
+// ============================================
+
+export function getTotalBuilders(): number {
+  return builders.length;
+}
+
+export function getTotalReviews(): number {
+  return reviews.length;
 }

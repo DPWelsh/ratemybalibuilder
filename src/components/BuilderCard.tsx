@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { LockIcon, ArrowRightIcon } from 'lucide-react';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 interface BuilderCardProps {
   builder: BuilderSearchResult;
@@ -33,7 +34,7 @@ export function BuilderCard({ builder, hasFullAccess = false }: BuilderCardProps
             <Button asChild className="h-11 w-full sm:h-auto">
               <Link href={`/builder/${builder.id}?unlock=true`}>
                 <LockIcon className="mr-2 h-4 w-4" />
-                Unlock Full Details ($20)
+                Unlock Full Details ({formatPrice(PRICING.unlock)})
               </Link>
             </Button>
             <p className="mt-2 text-center text-xs text-muted-foreground sm:mt-3 sm:text-sm">

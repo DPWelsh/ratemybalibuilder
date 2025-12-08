@@ -14,8 +14,13 @@ import {
   ArrowRightIcon,
   HistoryIcon,
   Loader2Icon,
+  HeartIcon,
+  XIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import { getBuilderById, Builder } from '@/lib/dummy-data';
+import { getSavedBuilders } from '@/components/SaveBuilderButton';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -23,7 +28,17 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchName, setSearchName] = useState('');
   const [searchPhone, setSearchPhone] = useState('');
+  const [savedBuilders, setSavedBuilders] = useState<Builder[]>([]);
   const router = useRouter();
+
+  // Load saved builders from localStorage
+  useEffect(() => {
+    const savedIds = getSavedBuilders();
+    const builders = savedIds
+      .map((id) => getBuilderById(id))
+      .filter((b): b is Builder => b !== undefined);
+    setSavedBuilders(builders);
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -64,6 +79,14 @@ export default function DashboardPage() {
     router.push(`/search?${params.toString()}`);
   };
 
+  const handleRemoveSavedBuilder = (builderId: string) => {
+    // Remove from localStorage
+    const saved = getSavedBuilders().filter((id) => id !== builderId);
+    localStorage.setItem('savedBuilders', JSON.stringify(saved));
+    // Update state
+    setSavedBuilders((prev) => prev.filter((b) => b.id !== builderId));
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-[calc(100vh-57px)] items-center justify-center sm:min-h-[calc(100vh-73px)]">
@@ -99,7 +122,7 @@ export default function DashboardPage() {
               </Button>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              $10 per search, $20 to unlock full details. Earn $20 for each approved review.
+              {formatPrice(PRICING.search)} per search, {formatPrice(PRICING.unlock)} to unlock full details. Earn {formatPrice(PRICING.reviewCredit)} for each approved review.
             </p>
           </CardContent>
         </Card>
@@ -161,7 +184,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium text-foreground">Submit a Review</h3>
-                  <p className="text-sm text-muted-foreground">Earn $20 credits</p>
+                  <p className="text-sm text-muted-foreground">Earn {formatPrice(PRICING.reviewCredit)} credits</p>
                 </div>
               </div>
               <Button asChild variant="outline" className="mt-4 w-full">
@@ -191,6 +214,47 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* My Saved Builders */}
+        {savedBuilders.length > 0 && (
+          <Card className="mt-6 border-0 shadow-md sm:mt-8">
+            <CardContent className="p-4 sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <HeartIcon className="h-5 w-5 text-[var(--color-energy)]" />
+                <h2 className="font-medium text-foreground">
+                  My Saved Builders ({savedBuilders.length})
+                </h2>
+              </div>
+              <div className="space-y-3">
+                {savedBuilders.map((builder) => (
+                  <div
+                    key={builder.id}
+                    className="flex items-center justify-between rounded-lg bg-secondary/50 p-3"
+                  >
+                    <div>
+                      <p className="font-medium text-foreground">{builder.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {builder.location} · {builder.tradeType}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button asChild variant="ghost" size="sm">
+                        <Link href={`/builder/${builder.id}`}>View</Link>
+                      </Button>
+                      <button
+                        onClick={() => handleRemoveSavedBuilder(builder.id)}
+                        className="text-muted-foreground hover:text-foreground"
+                        title="Remove from saved"
+                      >
+                        <XIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

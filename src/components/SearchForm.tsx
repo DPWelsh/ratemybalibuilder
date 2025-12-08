@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRightIcon, Loader2Icon } from 'lucide-react';
+import { PRICING, formatPrice } from '@/lib/pricing';
 
 export function SearchForm() {
   const [name, setName] = useState('');
@@ -68,7 +69,7 @@ export function SearchForm() {
               </>
             ) : (
               <>
-                Search builder ($10)
+                Search builder ({formatPrice(PRICING.search)})
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
               </>
             )}

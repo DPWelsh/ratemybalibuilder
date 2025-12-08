@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
@@ -9,8 +9,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { StarRating } from '@/components/StarRating';
+import { FilterBar } from '@/components/FilterBar';
 
-import { builders, getReviewsForBuilder, getAverageRating, BuilderStatus, TradeType, ProjectType } from '@/lib/dummy-data';
+import { builders, getReviewsForBuilder, getAverageRating, BuilderStatus, TradeType, ProjectType, Location } from '@/lib/dummy-data';
+import { PRICING, formatPrice } from '@/lib/pricing';
 import { UsersIcon } from 'lucide-react';
 
 // Register AG Grid modules
@@ -21,6 +23,7 @@ interface BuilderRow {
   name: string;
   companyName: string;
   status: BuilderStatus;
+  location: Location;
   tradeType: TradeType;
   projectTypes: ProjectType[];
   avgRating: number;
@@ -69,19 +72,38 @@ function ProjectTypesCellRenderer(params: ICellRendererParams<BuilderRow>) {
 export default function BuildersPage() {
   const router = useRouter();
 
-  // Prepare row data
+  // Filter state
+  const [selectedLocation, setSelectedLocation] = useState<Location | 'all'>('all');
+  const [selectedTradeType, setSelectedTradeType] = useState<TradeType | 'all'>('all');
+  const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | 'all'>('all');
+
+  const clearFilters = () => {
+    setSelectedLocation('all');
+    setSelectedTradeType('all');
+    setSelectedProjectType('all');
+  };
+
+  // Prepare and filter row data
   const rowData = useMemo<BuilderRow[]>(() => {
-    return builders.map((builder) => ({
-      id: builder.id,
-      name: builder.name,
-      companyName: builder.companyName || '-',
-      status: builder.status,
-      tradeType: builder.tradeType,
-      projectTypes: builder.projectTypes,
-      avgRating: getAverageRating(builder.id),
-      reviewCount: getReviewsForBuilder(builder.id).length,
-    }));
-  }, []);
+    return builders
+      .filter((builder) => {
+        const locationMatch = selectedLocation === 'all' || builder.location === selectedLocation;
+        const tradeMatch = selectedTradeType === 'all' || builder.tradeType === selectedTradeType;
+        const projectMatch = selectedProjectType === 'all' || builder.projectTypes.includes(selectedProjectType);
+        return locationMatch && tradeMatch && projectMatch;
+      })
+      .map((builder) => ({
+        id: builder.id,
+        name: builder.name,
+        companyName: builder.companyName || '-',
+        status: builder.status,
+        location: builder.location,
+        tradeType: builder.tradeType,
+        projectTypes: builder.projectTypes,
+        avgRating: getAverageRating(builder.id),
+        reviewCount: getReviewsForBuilder(builder.id).length,
+      }));
+  }, [selectedLocation, selectedTradeType, selectedProjectType]);
 
   // Column definitions
   const columnDefs = useMemo<ColDef<BuilderRow>[]>(() => [
@@ -98,6 +120,13 @@ export default function BuildersPage() {
       flex: 1.5,
       minWidth: 120,
       hide: true, // Hidden on mobile by default
+    },
+    {
+      field: 'location',
+      headerName: 'Location',
+      width: 120,
+      sortable: true,
+      filter: true,
     },
     {
       field: 'tradeType',
@@ -141,7 +170,7 @@ export default function BuildersPage() {
   const defaultColDef = useMemo<ColDef>(() => ({
     sortable: true,
     resizable: true,
-    cellStyle: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    cellStyle: { display: 'flex', alignItems: 'center' },
   }), []);
 
   // Handle row click
@@ -190,6 +219,17 @@ export default function BuildersPage() {
           </Card>
         </div>
 
+        {/* Filters */}
+        <FilterBar
+          selectedLocation={selectedLocation}
+          selectedTradeType={selectedTradeType}
+          selectedProjectType={selectedProjectType}
+          onLocationChange={setSelectedLocation}
+          onTradeTypeChange={setSelectedTradeType}
+          onProjectTypeChange={setSelectedProjectType}
+          onClear={clearFilters}
+        />
+
         {/* AG Grid */}
         <div
           className="rounded-lg overflow-hidden shadow-md"
@@ -235,7 +275,7 @@ export default function BuildersPage() {
             <UsersIcon className="mx-auto h-8 w-8 text-muted-foreground" />
             <h3 className="mt-3 font-medium text-foreground">Know a builder not listed?</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Submit a review and earn $20 in credits
+              Submit a review and earn {formatPrice(PRICING.reviewCredit)} in credits
             </p>
             <Button asChild className="mt-4">
               <Link href="/submit-review">Submit a Review</Link>

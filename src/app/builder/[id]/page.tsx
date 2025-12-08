@@ -8,12 +8,15 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { MaskedPhone } from '@/components/MaskedPhone';
 import { StarRating } from '@/components/StarRating';
 import { ReviewCard } from '@/components/ReviewCard';
+import { ReviewPrompt } from '@/components/ReviewPrompt';
+import { SaveBuilderButton } from '@/components/SaveBuilderButton';
 import {
   getBuilderById,
   getReviewsForBuilder,
   getAverageRating,
   getRedFlagsForBuilder,
 } from '@/lib/dummy-data';
+import { PRICING, formatPrice } from '@/lib/pricing';
 import {
   LockIcon,
   MessageCircleIcon,
@@ -72,7 +75,7 @@ export default function BuilderPage() {
         <div className="fixed left-4 right-4 top-20 z-50 mx-auto max-w-md sm:left-auto sm:right-6 sm:top-24">
           <div className="flex items-center gap-3 rounded-lg bg-foreground px-4 py-3 text-background shadow-lg">
             <CheckCircleIcon className="h-5 w-5 flex-shrink-0 text-[var(--status-recommended)]" />
-            <p className="text-sm">Demo mode - this would normally cost $20</p>
+            <p className="text-sm">Demo mode - this would normally cost {formatPrice(PRICING.unlock)}</p>
           </div>
         </div>
       )}
@@ -98,7 +101,14 @@ export default function BuilderPage() {
                   )}
                   <p className="mt-1 text-sm text-muted-foreground">{builder.tradeType}</p>
                 </div>
-                <StatusBadge status={builder.status} size="lg" />
+                <div className="flex items-center gap-3">
+                  <SaveBuilderButton
+                    builderId={builder.id}
+                    builderName={builder.name}
+                    variant="icon"
+                  />
+                  <StatusBadge status={builder.status} size="lg" />
+                </div>
               </div>
 
               {/* Specialties */}
@@ -151,6 +161,17 @@ export default function BuilderPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Review Prompt - Only when unlocked */}
+          {isUnlocked && (
+            <div className="mt-4 sm:mt-6">
+              <ReviewPrompt
+                builderName={builder.name}
+                builderId={builder.id}
+                variant="banner"
+              />
+            </div>
+          )}
 
           {/* Red Flags Section - Only for blacklisted */}
           {builder.status === 'blacklisted' && redFlags.length > 0 && isUnlocked && (
@@ -226,7 +247,7 @@ export default function BuilderPage() {
             <Button asChild size="lg" className="h-12 w-full">
               <Link href={`/builder/${builderId}?unlocked=1`}>
                 <LockIcon className="mr-2 h-4 w-4" />
-                Unlock Full Details - $20
+                Unlock Full Details - {formatPrice(PRICING.unlock)}
               </Link>
             </Button>
             <p className="mt-2 text-center text-xs text-muted-foreground">

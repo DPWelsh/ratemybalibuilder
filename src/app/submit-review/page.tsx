@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { StarRatingInput } from '@/components/StarRating';
+import { PRICING, formatPrice } from '@/lib/pricing';
 import { CheckCircleIcon, ImagePlusIcon, XIcon, ArrowLeftIcon, Loader2Icon } from 'lucide-react';
 
 export default function SubmitReviewPage() {
@@ -54,7 +55,7 @@ export default function SubmitReviewPage() {
             Thank you for helping the community. Your review will be checked and published within 24 hours.
           </p>
           <div className="mt-6 rounded-lg bg-[var(--color-prompt)]/10 p-4">
-            <p className="text-sm font-medium text-foreground">$20 credits earned</p>
+            <p className="text-sm font-medium text-foreground">{formatPrice(PRICING.reviewCredit)} credits earned</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Credits will be added to your account once the review is approved.
             </p>
@@ -87,7 +88,7 @@ export default function SubmitReviewPage() {
 
         <h1 className="text-2xl text-foreground sm:text-3xl">Submit a Review</h1>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-          Share your experience and earn $20 in credits when approved.
+          Share your experience and earn {formatPrice(PRICING.reviewCredit)} in credits when approved.
         </p>
 
         <Card className="mt-6 border-0 shadow-lg sm:mt-8">
@@ -212,7 +213,7 @@ export default function SubmitReviewPage() {
               </Button>
 
               <p className="text-center text-xs text-muted-foreground">
-                Reviews are checked before publishing. You&apos;ll earn $20 in credits once approved.
+                Reviews are checked before publishing. You&apos;ll earn {formatPrice(PRICING.reviewCredit)} in credits once approved.
               </p>
             </form>
           </CardContent>
