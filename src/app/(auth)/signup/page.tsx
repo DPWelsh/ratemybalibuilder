@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Loader2Icon, CheckIcon } from 'lucide-react';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -47,97 +51,108 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-4">
+      <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-6">
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">
-            ✓
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
+            <CheckIcon className="h-8 w-8 text-[var(--status-recommended)]" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Check your email</h1>
-          <p className="mt-4 text-gray-600">
-            We&apos;ve sent a confirmation link to <strong>{email}</strong>.
+          <h1 className="text-2xl text-foreground">Check your email</h1>
+          <p className="mt-4 text-muted-foreground">
+            We&apos;ve sent a confirmation link to <strong className="text-foreground">{email}</strong>.
             Click the link to activate your account.
           </p>
-          <Link
-            href="/login"
-            className="mt-8 inline-block rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
-          >
-            Back to Sign In
-          </Link>
+          <Button asChild size="lg" className="mt-8">
+            <Link href="/login">
+              Back to Sign In
+            </Link>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-4">
+    <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-6">
       <div className="w-full max-w-md">
-        <h1 className="text-center text-3xl font-bold text-gray-900">
+        <h1 className="text-center text-3xl text-foreground">
           Create your account
         </h1>
-        <p className="mt-2 text-center text-gray-600">
+        <p className="mt-3 text-center text-muted-foreground">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-[var(--color-prompt)] transition-colors hover:text-[var(--color-prompt)]/80">
             Sign in
           </Link>
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          {error && (
-            <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600">
-              {error}
-            </div>
-          )}
+        <Card className="mt-8 border-0 shadow-lg">
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">
+                  Email
+                </label>
+                <Input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-12"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </label>
+                <Input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="h-12"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-medium">
+                  Confirm Password
+                </label>
+                <Input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="h-12"
+                />
+              </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {isLoading ? 'Creating account...' : 'Create account'}
-          </button>
-        </form>
+              <Button
+                type="submit"
+                size="lg"
+                className="h-12 w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  'Create account'
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

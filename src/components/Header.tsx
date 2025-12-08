@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { CreditBalance } from './CreditBalance';
+import { Button } from '@/components/ui/button';
 import type { User } from '@supabase/supabase-js';
 
 export function Header() {
@@ -48,9 +49,9 @@ export function Header() {
   };
 
   return (
-    <header className="border-b border-gray-200 bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <Link href="/" className="text-xl font-bold text-gray-900">
+    <header className="border-b border-border bg-card">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <Link href="/" className="font-display text-xl tracking-tight text-foreground">
           RateMyBaliBuilder
         </Link>
 
@@ -62,19 +63,19 @@ export function Header() {
                   <CreditBalance balance={creditBalance} />
                   <Link
                     href="/submit-review"
-                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Submit Review
                   </Link>
                   <Link
                     href="/account"
-                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Account
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Sign Out
                   </button>
@@ -83,16 +84,15 @@ export function Header() {
                 <>
                   <Link
                     href="/login"
-                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Sign In
                   </Link>
-                  <Link
-                    href="/signup"
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                  >
-                    Sign Up
-                  </Link>
+                  <Button asChild size="sm">
+                    <Link href="/signup">
+                      Sign Up
+                    </Link>
+                  </Button>
                 </>
               )}
             </>

@@ -1,24 +1,25 @@
 'use client';
 
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface CreditBalanceProps {
   balance: number;
   showBuyLink?: boolean;
+  className?: string;
 }
 
-export function CreditBalance({ balance, showBuyLink = true }: CreditBalanceProps) {
+export function CreditBalance({ balance, showBuyLink = true, className }: CreditBalanceProps) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2">
-        <span className="text-lg">💰</span>
-        <span className="font-semibold text-gray-900">${balance}</span>
-        <span className="text-sm text-gray-500">credits</span>
+    <div className={cn('flex items-center gap-3', className)}>
+      <div className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5">
+        <span className="text-sm font-medium text-foreground">${balance}</span>
+        <span className="text-xs text-muted-foreground">credits</span>
       </div>
       {showBuyLink && (
         <Link
           href="/buy-credits"
-          className="text-sm font-medium text-blue-600 hover:text-blue-800"
+          className="text-sm text-[var(--color-prompt)] transition-colors hover:text-[var(--color-prompt)]/80"
         >
           Buy more
         </Link>

@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRightIcon, Loader2Icon } from 'lucide-react';
 
 export function SearchForm() {
   const [name, setName] = useState('');
@@ -14,7 +18,6 @@ export function SearchForm() {
     if (!name && !phone) return;
 
     setIsLoading(true);
-    // Navigate to search results with query params
     const params = new URLSearchParams();
     if (name) params.set('name', name);
     if (phone) params.set('phone', phone);
@@ -22,46 +25,59 @@ export function SearchForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Builder Name
-        </label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., Pak Wayan, Bali Dream Villas"
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-          Phone / WhatsApp Number
-        </label>
-        <input
-          type="tel"
-          id="phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="e.g., +62 812 3456 7890"
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={(!name && !phone) || isLoading}
-        className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {isLoading ? 'Searching...' : 'Search Builder ($10)'}
-      </button>
-
-      <p className="text-center text-sm text-gray-500">
-        You&apos;ll only be charged if we find a matching builder
-      </p>
-    </form>
+    <Card className="border-0 shadow-lg">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label htmlFor="name" className="text-sm font-medium">
+                Builder name
+              </label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Pak Wayan"
+                className="h-12"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="phone" className="text-sm font-medium">
+                Phone / WhatsApp
+              </label>
+              <Input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+62 812 XXX XXXX"
+                className="h-12"
+              />
+            </div>
+          </div>
+          <Button
+            type="submit"
+            size="lg"
+            className="h-12 w-full"
+            disabled={(!name && !phone) || isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                Searching...
+              </>
+            ) : (
+              <>
+                Search builder ($10)
+                <ArrowRightIcon className="ml-2 h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </form>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Only charged if we find a match
+        </p>
+      </CardContent>
+    </Card>
   );
 }
