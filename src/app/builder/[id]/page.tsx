@@ -96,8 +96,21 @@ export default function BuilderPage() {
                   {builder.companyName && (
                     <p className="mt-1 text-sm text-muted-foreground">{builder.companyName}</p>
                   )}
+                  <p className="mt-1 text-sm text-muted-foreground">{builder.tradeType}</p>
                 </div>
                 <StatusBadge status={builder.status} size="lg" />
+              </div>
+
+              {/* Specialties */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {builder.projectTypes.map((type) => (
+                  <span
+                    key={type}
+                    className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground"
+                  >
+                    {type}
+                  </span>
+                ))}
               </div>
 
               {/* Contact Info */}

@@ -4,15 +4,13 @@ import { useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef, ICellRendererParams, RowClickedEvent, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { ColDef, ICellRendererParams, RowClickedEvent, ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { StarRating } from '@/components/StarRating';
 
-import { builders, getReviewsForBuilder, getAverageRating, BuilderStatus } from '@/lib/dummy-data';
+import { builders, getReviewsForBuilder, getAverageRating, BuilderStatus, TradeType, ProjectType } from '@/lib/dummy-data';
 import { UsersIcon } from 'lucide-react';
 
 // Register AG Grid modules
@@ -23,6 +21,8 @@ interface BuilderRow {
   name: string;
   companyName: string;
   status: BuilderStatus;
+  tradeType: TradeType;
+  projectTypes: ProjectType[];
   avgRating: number;
   reviewCount: number;
 }
@@ -45,6 +45,27 @@ function RatingCellRenderer(params: ICellRendererParams<BuilderRow>) {
   );
 }
 
+// Custom cell renderer for project types (array of badges)
+function ProjectTypesCellRenderer(params: ICellRendererParams<BuilderRow>) {
+  const projectTypes = params.value as ProjectType[];
+  if (!projectTypes || projectTypes.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1">
+      {projectTypes.slice(0, 2).map((type) => (
+        <span
+          key={type}
+          className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground"
+        >
+          {type}
+        </span>
+      ))}
+      {projectTypes.length > 2 && (
+        <span className="text-xs text-muted-foreground">+{projectTypes.length - 2}</span>
+      )}
+    </div>
+  );
+}
+
 export default function BuildersPage() {
   const router = useRouter();
 
@@ -55,6 +76,8 @@ export default function BuildersPage() {
       name: builder.name,
       companyName: builder.companyName || '-',
       status: builder.status,
+      tradeType: builder.tradeType,
+      projectTypes: builder.projectTypes,
       avgRating: getAverageRating(builder.id),
       reviewCount: getReviewsForBuilder(builder.id).length,
     }));
@@ -75,6 +98,21 @@ export default function BuildersPage() {
       flex: 1.5,
       minWidth: 120,
       hide: true, // Hidden on mobile by default
+    },
+    {
+      field: 'tradeType',
+      headerName: 'Trade',
+      width: 160,
+      sortable: true,
+      filter: true,
+    },
+    {
+      field: 'projectTypes',
+      headerName: 'Specialties',
+      flex: 1.5,
+      minWidth: 160,
+      cellRenderer: ProjectTypesCellRenderer,
+      sortable: false,
     },
     {
       field: 'status',
@@ -103,6 +141,7 @@ export default function BuildersPage() {
   const defaultColDef = useMemo<ColDef>(() => ({
     sortable: true,
     resizable: true,
+    cellStyle: { display: 'flex', alignItems: 'center' },
   }), []);
 
   // Handle row click
@@ -153,28 +192,30 @@ export default function BuildersPage() {
 
         {/* AG Grid */}
         <div
-          className="ag-theme-alpine rounded-lg overflow-hidden shadow-md"
+          className="rounded-lg overflow-hidden shadow-md"
           style={{
             height: 'calc(100vh - 450px)',
             minHeight: '400px',
-            '--ag-background-color': 'var(--card)',
-            '--ag-header-background-color': 'var(--secondary)',
-            '--ag-odd-row-background-color': 'var(--background)',
-            '--ag-row-hover-color': 'var(--secondary)',
-            '--ag-border-color': 'var(--border)',
-            '--ag-header-foreground-color': 'var(--foreground)',
-            '--ag-foreground-color': 'var(--foreground)',
-            '--ag-font-family': 'Inter, system-ui, sans-serif',
-            '--ag-font-size': '14px',
-            '--ag-row-height': '52px',
-            '--ag-header-height': '48px',
-          } as React.CSSProperties}
+          }}
         >
           <AgGridReact<BuilderRow>
             rowData={rowData}
             columnDefs={columnDefs}
             defaultColDef={defaultColDef}
             onRowClicked={onRowClicked}
+            theme={themeQuartz.withParams({
+              backgroundColor: 'var(--card)',
+              headerBackgroundColor: 'var(--secondary)',
+              oddRowBackgroundColor: 'var(--background)',
+              rowHoverColor: 'var(--secondary)',
+              borderColor: 'var(--border)',
+              headerTextColor: 'var(--foreground)',
+              foregroundColor: 'var(--foreground)',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              fontSize: 14,
+              rowHeight: 52,
+              headerHeight: 48,
+            })}
             rowSelection="single"
             animateRows={true}
             pagination={false}

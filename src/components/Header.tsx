@@ -72,7 +72,6 @@ export function Header() {
             <>
               {user ? (
                 <>
-                  <CreditBalance balance={creditBalance} />
                   <Link
                     href="/dashboard"
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -91,6 +90,7 @@ export function Header() {
                   >
                     Sign Out
                   </button>
+                  <CreditBalance balance={creditBalance} />
                 </>
               ) : (
                 <>
