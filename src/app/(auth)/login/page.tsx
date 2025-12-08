@@ -40,16 +40,16 @@ function LoginForm() {
   };
 
   return (
-    <Card className="mt-8 border-0 shadow-lg">
-      <CardContent className="p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <Card className="mt-6 border-0 shadow-lg sm:mt-8">
+      <CardContent className="p-5 sm:p-8">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {error && (
-            <div className="rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive sm:p-4">
               {error}
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
               Email
             </label>
@@ -59,11 +59,11 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="h-12"
+              className="h-11 sm:h-12"
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
               Password
             </label>
@@ -73,14 +73,14 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="h-12"
+              className="h-11 sm:h-12"
             />
           </div>
 
           <Button
             type="submit"
             size="lg"
-            className="h-12 w-full"
+            className="h-11 w-full sm:h-12"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -100,19 +100,19 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-6">
+    <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-0">
       <div className="w-full max-w-md">
-        <h1 className="text-center text-3xl text-foreground">
+        <h1 className="text-center text-2xl text-foreground sm:text-3xl">
           Sign in to your account
         </h1>
-        <p className="mt-3 text-center text-muted-foreground">
+        <p className="mt-2 text-center text-sm text-muted-foreground sm:mt-3 sm:text-base">
           Or{' '}
           <Link href="/signup" className="text-[var(--color-prompt)] transition-colors hover:text-[var(--color-prompt)]/80">
             create a new account
           </Link>
         </p>
 
-        <Suspense fallback={<div className="mt-8 text-center text-muted-foreground">Loading...</div>}>
+        <Suspense fallback={<div className="mt-6 text-center text-muted-foreground sm:mt-8">Loading...</div>}>
           <LoginForm />
         </Suspense>
       </div>

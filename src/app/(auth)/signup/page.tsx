@@ -51,17 +51,17 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-6">
+      <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-0">
         <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
-            <CheckIcon className="h-8 w-8 text-[var(--status-recommended)]" />
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-recommended)]/10 sm:mb-6 sm:h-16 sm:w-16">
+            <CheckIcon className="h-7 w-7 text-[var(--status-recommended)] sm:h-8 sm:w-8" />
           </div>
-          <h1 className="text-2xl text-foreground">Check your email</h1>
-          <p className="mt-4 text-muted-foreground">
+          <h1 className="text-xl text-foreground sm:text-2xl">Check your email</h1>
+          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
             We&apos;ve sent a confirmation link to <strong className="text-foreground">{email}</strong>.
             Click the link to activate your account.
           </p>
-          <Button asChild size="lg" className="mt-8">
+          <Button asChild size="lg" className="mt-6 w-full sm:mt-8 sm:w-auto">
             <Link href="/login">
               Back to Sign In
             </Link>
@@ -72,28 +72,28 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-73px)] items-center justify-center px-6">
+    <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-0">
       <div className="w-full max-w-md">
-        <h1 className="text-center text-3xl text-foreground">
+        <h1 className="text-center text-2xl text-foreground sm:text-3xl">
           Create your account
         </h1>
-        <p className="mt-3 text-center text-muted-foreground">
+        <p className="mt-2 text-center text-sm text-muted-foreground sm:mt-3 sm:text-base">
           Already have an account?{' '}
           <Link href="/login" className="text-[var(--color-prompt)] transition-colors hover:text-[var(--color-prompt)]/80">
             Sign in
           </Link>
         </p>
 
-        <Card className="mt-8 border-0 shadow-lg">
-          <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+        <Card className="mt-6 border-0 shadow-lg sm:mt-8">
+          <CardContent className="p-5 sm:p-8">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {error && (
-                <div className="rounded-lg bg-destructive/10 p-4 text-sm text-destructive">
+                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive sm:p-4">
                   {error}
                 </div>
               )}
 
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <label htmlFor="email" className="text-sm font-medium">
                   Email
                 </label>
@@ -103,11 +103,11 @@ export default function SignUpPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-12"
+                  className="h-11 sm:h-12"
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <label htmlFor="password" className="text-sm font-medium">
                   Password
                 </label>
@@ -117,11 +117,11 @@ export default function SignUpPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-12"
+                  className="h-11 sm:h-12"
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <label htmlFor="confirmPassword" className="text-sm font-medium">
                   Confirm Password
                 </label>
@@ -131,14 +131,14 @@ export default function SignUpPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="h-12"
+                  className="h-11 sm:h-12"
                 />
               </div>
 
               <Button
                 type="submit"
                 size="lg"
-                className="h-12 w-full"
+                className="h-11 w-full sm:h-12"
                 disabled={isLoading}
               >
                 {isLoading ? (

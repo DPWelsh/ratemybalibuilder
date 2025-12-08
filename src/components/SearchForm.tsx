@@ -26,39 +26,39 @@ export function SearchForm() {
 
   return (
     <Card className="border-0 shadow-lg">
-      <CardContent className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
+      <CardContent className="p-4 sm:p-6">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label htmlFor="search-name" className="text-sm font-medium">
                 Builder name
               </label>
               <Input
-                id="name"
+                id="search-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Pak Wayan"
-                className="h-12"
+                className="h-11 sm:h-12"
               />
             </div>
-            <div className="space-y-2">
-              <label htmlFor="phone" className="text-sm font-medium">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label htmlFor="search-phone" className="text-sm font-medium">
                 Phone / WhatsApp
               </label>
               <Input
-                id="phone"
+                id="search-phone"
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+62 812 XXX XXXX"
-                className="h-12"
+                className="h-11 sm:h-12"
               />
             </div>
           </div>
           <Button
             type="submit"
             size="lg"
-            className="h-12 w-full"
+            className="h-11 w-full sm:h-12"
             disabled={(!name && !phone) || isLoading}
           >
             {isLoading ? (
@@ -74,7 +74,7 @@ export function SearchForm() {
             )}
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
           Only charged if we find a match
         </p>
       </CardContent>
