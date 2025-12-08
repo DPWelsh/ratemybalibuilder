@@ -1,0 +1,9 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Abstract B / Building Blocks -->
+    <rect x="0" y="10" width="15" height="40" rx="2" fill="#1e293b"/>
+    <rect x="18" y="10" width="15" height="18" rx="2" fill="#22c55e"/> <!-- Green block -->
+    <rect x="18" y="32" width="15" height="18" rx="2" fill="#eab308"/> <!-- Yellow block -->
+    
+    <!-- Text -->
+    <text x="45" y="38" font-family="Arial, sans-serif" font-weight="bold" font-size="20" fill="#1e293b">RateMyBaliBuilder</text>
+</svg>

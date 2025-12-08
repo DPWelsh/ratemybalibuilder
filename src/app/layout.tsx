@@ -5,6 +5,9 @@ import { Header } from "@/components/Header";
 export const metadata: Metadata = {
   title: "RateMyBaliBuilder",
   description: "Check if your Bali builder is blacklisted, unknown, or recommended before you sign that contract.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export const viewport: Viewport = {

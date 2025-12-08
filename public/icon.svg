@@ -1,0 +1,6 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Abstract B / Building Blocks Icon -->
+    <rect x="2" y="0" width="15" height="40" rx="2" fill="#1e293b"/>
+    <rect x="20" y="0" width="15" height="18" rx="2" fill="#22c55e"/> <!-- Green block -->
+    <rect x="20" y="22" width="15" height="18" rx="2" fill="#eab308"/> <!-- Yellow block -->
+</svg>
