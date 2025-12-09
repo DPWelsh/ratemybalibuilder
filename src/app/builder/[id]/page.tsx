@@ -20,6 +20,8 @@ import {
   ArrowLeftIcon,
   CheckCircleIcon,
   Loader2Icon,
+  GlobeIcon,
+  StarIcon,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -29,6 +31,8 @@ interface Builder {
   phone: string;
   company_name: string | null;
   instagram: string | null;
+  website: string | null;
+  google_reviews_url: string | null;
   status: 'recommended' | 'unknown' | 'blacklisted';
   location: string;
   trade_type: string;
@@ -300,6 +304,22 @@ export default function BuilderPage() {
                         <a href={instagramLink} target="_blank" rel="noopener noreferrer">
                           <InstagramIcon className="h-4 w-4" />
                           {builder.instagram}
+                        </a>
+                      </Button>
+                    )}
+                    {builder.website && (
+                      <Button asChild variant="outline" size="sm" className="gap-2">
+                        <a href={builder.website.startsWith('http') ? builder.website : `https://${builder.website}`} target="_blank" rel="noopener noreferrer">
+                          <GlobeIcon className="h-4 w-4" />
+                          Website
+                        </a>
+                      </Button>
+                    )}
+                    {builder.google_reviews_url && (
+                      <Button asChild variant="outline" size="sm" className="gap-2">
+                        <a href={builder.google_reviews_url} target="_blank" rel="noopener noreferrer">
+                          <StarIcon className="h-4 w-4" />
+                          Google Reviews
                         </a>
                       </Button>
                     )}

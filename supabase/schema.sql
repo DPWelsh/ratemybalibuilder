@@ -56,6 +56,8 @@ create table public.builders (
   status builder_status default 'unknown' not null,
   company_name text,
   instagram text,
+  website text,
+  google_reviews_url text,
   location builder_location default 'Other',
   trade_type trade_type default 'General Contractor',
   project_types project_type[] default '{}',

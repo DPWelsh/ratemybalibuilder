@@ -41,6 +41,36 @@ ON CONFLICT (id) DO UPDATE SET
   updated_at = NOW();
 
 -- ============================================
--- Summary: 15 builders (5 recommended, 5 unknown, 5 blacklisted)
+-- REAL BALI BUILDERS (scraped from websites)
+-- ============================================
+
+INSERT INTO public.builders (id, name, phone, aliases, status, company_name, instagram, location, trade_type, project_types, notes) VALUES
+-- Real builders from web research - December 2024
+('a1111111-1111-1111-1111-111111111111', 'Bali Construction', '+62 000-0000-0001', ARRAY['BC Bali'], 'unknown', 'Bali Construction', '@bali_construction', 'Uluwatu', 'General Contractor', ARRAY['Villas', 'Commercial', 'Renovations']::project_type[], 'Luxury villas, 15+ years experience. Projects: Uluwatu Surf Villas, The River House. Email: contact@baliconstruction.co.id'),
+('a2222222-2222-2222-2222-222222222222', 'Justin - 888 Design & Build', '+62 813-3836-7208', ARRAY['888 Design Build', '888DB', 'Justin'], 'unknown', '888 Design & Build', '@888designbuild', 'Uluwatu', 'General Contractor', ARRAY['Villas']::project_type[], 'Australian-owned. 10-year structural warranty. 20+ projects. Free design on 200+m2 builds. Email: justin@888designbuild.com'),
+('a3333333-3333-3333-3333-333333333333', 'Akura Villas', '+62 817-9727-273', ARRAY['Akura'], 'unknown', 'Akura Villas', '@akuravillas', 'Canggu', 'General Contractor', ARRAY['Villas']::project_type[], 'Villa development & investment. Projects in Canggu and Uluwatu. Sustainable focus.'),
+('a4444444-4444-4444-4444-444444444444', 'Kingswood Bali', '+62 000-0000-0002', ARRAY['Kingswood', 'Bali Villas By Kingswood'], 'unknown', 'Kingswood Bali', NULL, 'Other', 'General Contractor', ARRAY['Villas']::project_type[], 'Australian-owned and managed. Custom villa developments. Email: info@smvstyle.com'),
+('a5555555-5555-5555-5555-555555555555', 'Bogdan Gheonu - Yolla Group', '+62 822-6622-0431', ARRAY['Yolla', 'Yolla Villas', 'Bogdan'], 'unknown', 'PT Yolla Investment Group', NULL, 'Uluwatu', 'General Contractor', ARRAY['Villas']::project_type[], '100 villas built. 85% avg occupancy. Founded 2022. Projects in Bingin & Nyang Nyang. Email: sales@yollavillas.com'),
+('a6666666-6666-6666-6666-666666666666', 'Kadek Agus Saputra - Gahing Karya', '+62 852-0595-9776', ARRAY['Gahing Karya', 'Kadek Agus', 'GKJA'], 'unknown', 'Gahing Karya Jaya Abadi', NULL, 'Other', 'General Contractor', ARRAY['Villas', 'Commercial', 'Renovations']::project_type[], '50+ projects. Based in Nusa Penida. Projects: Deep Roots Villa, Syama Beach Resort. Email: gahingkaryajaya@gmail.com'),
+('a7777777-7777-7777-7777-777777777777', 'Bali Handyman Services', '+62 877-1901-5093', ARRAY['Bali Handyman', 'Best Bali Handyman'], 'unknown', 'Best Bali Handyman Services', NULL, 'Other', 'Renovation Specialist', ARRAY['Renovations']::project_type[], 'Home repairs, maintenance, villa renovations. WhatsApp contact preferred.')
+
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  phone = EXCLUDED.phone,
+  aliases = EXCLUDED.aliases,
+  status = EXCLUDED.status,
+  company_name = EXCLUDED.company_name,
+  instagram = EXCLUDED.instagram,
+  location = EXCLUDED.location,
+  trade_type = EXCLUDED.trade_type,
+  project_types = EXCLUDED.project_types,
+  notes = EXCLUDED.notes,
+  updated_at = NOW();
+
+-- ============================================
+-- Summary: 22 builders total
+-- - 5 recommended (demo data)
+-- - 12 unknown (5 demo + 7 real scraped)
+-- - 5 blacklisted (demo data)
 -- Reviews will be added by real users through the app
 -- ============================================
