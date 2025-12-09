@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { StarRating } from '@/components/StarRating';
 import { FilterBar } from '@/components/FilterBar';
-import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType, ProjectType } from '@/lib/supabase/builders';
+import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType } from '@/lib/supabase/builders';
 import { PRICING, formatPrice } from '@/lib/pricing';
 import { UsersIcon, Loader2Icon } from 'lucide-react';
 
@@ -20,11 +20,10 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 interface BuilderRow {
   id: string;
   name: string;
-  companyName: string;
+  phone: string;
   status: BuilderStatus;
   location: Location;
   tradeType: TradeType;
-  projectTypes: ProjectType[];
   avgRating: number;
   reviewCount: number;
 }
@@ -47,24 +46,16 @@ function RatingCellRenderer(params: ICellRendererParams<BuilderRow>) {
   );
 }
 
-// Custom cell renderer for project types (array of badges)
-function ProjectTypesCellRenderer(params: ICellRendererParams<BuilderRow>) {
-  const projectTypes = params.value as ProjectType[];
-  if (!projectTypes || projectTypes.length === 0) return null;
+// Custom cell renderer for blurred phone number
+function PhoneCellRenderer(params: ICellRendererParams<BuilderRow>) {
+  const phone = params.value as string;
+  if (!phone) return <span className="text-muted-foreground">-</span>;
+  // Show first few digits, blur the rest
+  const visible = phone.slice(0, 6);
   return (
-    <div className="flex flex-wrap gap-1">
-      {projectTypes.slice(0, 2).map((type) => (
-        <span
-          key={type}
-          className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground"
-        >
-          {type}
-        </span>
-      ))}
-      {projectTypes.length > 2 && (
-        <span className="text-xs text-muted-foreground">+{projectTypes.length - 2}</span>
-      )}
-    </div>
+    <span className="font-mono text-sm">
+      {visible}<span className="text-muted-foreground/50 blur-[3px] select-none">••••••</span>
+    </span>
   );
 }
 
@@ -79,7 +70,7 @@ export default function BuildersPage() {
   // Filter state
   const [selectedLocation, setSelectedLocation] = useState<Location | 'all'>('all');
   const [selectedTradeType, setSelectedTradeType] = useState<TradeType | 'all'>('all');
-  const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | 'all'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<BuilderStatus | 'all'>('all');
 
   // Fetch data on mount
   useEffect(() => {
@@ -99,7 +90,7 @@ export default function BuildersPage() {
   const clearFilters = () => {
     setSelectedLocation('all');
     setSelectedTradeType('all');
-    setSelectedProjectType('all');
+    setSelectedStatus('all');
   };
 
   // Prepare and filter row data
@@ -108,21 +99,20 @@ export default function BuildersPage() {
       .filter((builder) => {
         const locationMatch = selectedLocation === 'all' || builder.location === selectedLocation;
         const tradeMatch = selectedTradeType === 'all' || builder.trade_type === selectedTradeType;
-        const projectMatch = selectedProjectType === 'all' || builder.project_types?.includes(selectedProjectType);
-        return locationMatch && tradeMatch && projectMatch;
+        const statusMatch = selectedStatus === 'all' || builder.status === selectedStatus;
+        return locationMatch && tradeMatch && statusMatch;
       })
       .map((builder) => ({
         id: builder.id,
         name: builder.name,
-        companyName: builder.company_name || '-',
+        phone: builder.phone || '',
         status: builder.status,
         location: builder.location,
         tradeType: builder.trade_type,
-        projectTypes: builder.project_types || [],
         avgRating: builder.avg_rating,
         reviewCount: builder.review_count,
       }));
-  }, [builders, selectedLocation, selectedTradeType, selectedProjectType]);
+  }, [builders, selectedLocation, selectedTradeType, selectedStatus]);
 
   // Column definitions
   const columnDefs = useMemo<ColDef<BuilderRow>[]>(() => [
@@ -134,11 +124,11 @@ export default function BuildersPage() {
       cellClass: 'font-medium',
     },
     {
-      field: 'companyName',
-      headerName: 'Company',
-      flex: 1.5,
-      minWidth: 120,
-      hide: true, // Hidden on mobile by default
+      field: 'phone',
+      headerName: 'Phone',
+      width: 160,
+      cellRenderer: PhoneCellRenderer,
+      sortable: false,
     },
     {
       field: 'location',
@@ -151,14 +141,6 @@ export default function BuildersPage() {
       headerName: 'Trade',
       width: 160,
       sortable: true,
-    },
-    {
-      field: 'projectTypes',
-      headerName: 'Specialties',
-      flex: 1.5,
-      minWidth: 160,
-      cellRenderer: ProjectTypesCellRenderer,
-      sortable: false,
     },
     {
       field: 'status',
@@ -241,10 +223,10 @@ export default function BuildersPage() {
         <FilterBar
           selectedLocation={selectedLocation}
           selectedTradeType={selectedTradeType}
-          selectedProjectType={selectedProjectType}
+          selectedStatus={selectedStatus}
           onLocationChange={setSelectedLocation}
           onTradeTypeChange={setSelectedTradeType}
-          onProjectTypeChange={setSelectedProjectType}
+          onStatusChange={setSelectedStatus}
           onClear={clearFilters}
         />
 

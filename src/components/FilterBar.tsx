@@ -1,6 +1,6 @@
 'use client';
 
-import { MapPinIcon, WrenchIcon, HomeIcon, XIcon } from 'lucide-react';
+import { MapPinIcon, WrenchIcon, ShieldCheckIcon, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -12,35 +12,40 @@ import {
 import {
   locations,
   tradeTypes,
-  projectTypes,
   Location,
   TradeType,
-  ProjectType,
+  BuilderStatus,
 } from '@/lib/supabase/builders';
+
+const statusOptions: { value: BuilderStatus; label: string }[] = [
+  { value: 'recommended', label: 'Recommended' },
+  { value: 'unknown', label: 'Unknown' },
+  { value: 'blacklisted', label: 'Blacklisted' },
+];
 
 interface FilterBarProps {
   selectedLocation: Location | 'all';
   selectedTradeType: TradeType | 'all';
-  selectedProjectType: ProjectType | 'all';
+  selectedStatus: BuilderStatus | 'all';
   onLocationChange: (value: Location | 'all') => void;
   onTradeTypeChange: (value: TradeType | 'all') => void;
-  onProjectTypeChange: (value: ProjectType | 'all') => void;
+  onStatusChange: (value: BuilderStatus | 'all') => void;
   onClear: () => void;
 }
 
 export function FilterBar({
   selectedLocation,
   selectedTradeType,
-  selectedProjectType,
+  selectedStatus,
   onLocationChange,
   onTradeTypeChange,
-  onProjectTypeChange,
+  onStatusChange,
   onClear,
 }: FilterBarProps) {
   const hasActiveFilters =
     selectedLocation !== 'all' ||
     selectedTradeType !== 'all' ||
-    selectedProjectType !== 'all';
+    selectedStatus !== 'all';
 
   return (
     <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
@@ -82,20 +87,20 @@ export function FilterBar({
         </SelectContent>
       </Select>
 
-      {/* Project Type Filter */}
+      {/* Status Filter */}
       <Select
-        value={selectedProjectType}
-        onValueChange={(value) => onProjectTypeChange(value as ProjectType | 'all')}
+        value={selectedStatus}
+        onValueChange={(value) => onStatusChange(value as BuilderStatus | 'all')}
       >
         <SelectTrigger className="w-full sm:w-[160px]">
-          <HomeIcon className="h-4 w-4 text-muted-foreground" />
-          <SelectValue placeholder="All Projects" />
+          <ShieldCheckIcon className="h-4 w-4 text-muted-foreground" />
+          <SelectValue placeholder="All Status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Projects</SelectItem>
-          {projectTypes.map((project) => (
-            <SelectItem key={project} value={project}>
-              {project}
+          <SelectItem value="all">All Status</SelectItem>
+          {statusOptions.map((status) => (
+            <SelectItem key={status.value} value={status.value}>
+              {status.label}
             </SelectItem>
           ))}
         </SelectContent>
