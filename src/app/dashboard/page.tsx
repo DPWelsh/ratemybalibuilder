@@ -18,8 +18,6 @@ import {
   UnlockIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
-import { getBuilderById, Builder } from '@/lib/dummy-data';
-import { getSavedBuilders } from '@/components/SaveBuilderButton';
 import { PRICING, formatPrice } from '@/lib/pricing';
 import { StatusBadge } from '@/components/StatusBadge';
 import { BuilderStatus } from '@/lib/supabase/builders';
@@ -34,24 +32,24 @@ interface UnlockedBuilder {
   unlocked_at: string;
 }
 
+interface SavedBuilder {
+  id: string;
+  name: string;
+  company_name: string | null;
+  status: BuilderStatus;
+  location: string;
+  trade_type: string;
+  saved_at: string;
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [creditBalance, setCreditBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [searchPhone, setSearchPhone] = useState('');
-  const [savedBuilders, setSavedBuilders] = useState<Builder[]>([]);
+  const [savedBuilders, setSavedBuilders] = useState<SavedBuilder[]>([]);
   const [unlockedBuilders, setUnlockedBuilders] = useState<UnlockedBuilder[]>([]);
   const router = useRouter();
-
-  // Load saved builders from localStorage
-  useEffect(() => {
-    const savedIds = getSavedBuilders();
-    const builders = savedIds
-      .map((id) => getBuilderById(id))
-      .filter((b): b is Builder => b !== undefined);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSavedBuilders(builders);
-  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -104,6 +102,33 @@ export default function DashboardPage() {
         setUnlockedBuilders(unlocked);
       }
 
+      // Fetch saved builders
+      const { data: savedData } = await supabase
+        .from('saved_builders')
+        .select(`
+          created_at,
+          builders (
+            id,
+            name,
+            company_name,
+            status,
+            location,
+            trade_type
+          )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (savedData) {
+        const saved = savedData
+          .filter((s) => s.builders)
+          .map((s) => ({
+            ...(s.builders as unknown as Omit<SavedBuilder, 'saved_at'>),
+            saved_at: s.created_at,
+          }));
+        setSavedBuilders(saved);
+      }
+
       setIsLoading(false);
     }
 
@@ -119,10 +144,16 @@ export default function DashboardPage() {
     router.push(`/search?${params.toString()}`);
   };
 
-  const handleRemoveSavedBuilder = (builderId: string) => {
-    // Remove from localStorage
-    const saved = getSavedBuilders().filter((id) => id !== builderId);
-    localStorage.setItem('savedBuilders', JSON.stringify(saved));
+  const handleRemoveSavedBuilder = async (builderId: string) => {
+    if (!user) return;
+
+    const supabase = createClient();
+    await supabase
+      .from('saved_builders')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('builder_id', builderId);
+
     // Update state
     setSavedBuilders((prev) => prev.filter((b) => b.id !== builderId));
   };
@@ -295,13 +326,19 @@ export default function DashboardPage() {
                     key={builder.id}
                     className="flex items-center justify-between rounded-lg bg-secondary/50 p-3"
                   >
-                    <div>
-                      <p className="font-medium text-foreground">{builder.name}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-foreground truncate">{builder.name}</p>
+                        <StatusBadge status={builder.status} size="sm" />
+                      </div>
                       <p className="text-sm text-muted-foreground">
-                        {builder.location} · {builder.tradeType}
+                        {builder.location} · {builder.trade_type}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Saved {new Date(builder.saved_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 ml-2 shrink-0">
                       <Button asChild variant="ghost" size="sm">
                         <Link href={`/builder/${builder.id}`}>View</Link>
                       </Button>

@@ -166,6 +166,30 @@ create policy "Users can update own searches" on public.searches
   for update using (auth.uid() = user_id);
 
 -- ============================================
+-- SAVED BUILDERS (user favorites)
+-- ============================================
+create table public.saved_builders (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  builder_id uuid references public.builders on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, builder_id)
+);
+
+-- Enable RLS
+alter table public.saved_builders enable row level security;
+
+-- Saved builders policies
+create policy "Users can view own saved builders" on public.saved_builders
+  for select using (auth.uid() = user_id);
+
+create policy "Users can save builders" on public.saved_builders
+  for insert with check (auth.uid() = user_id);
+
+create policy "Users can unsave builders" on public.saved_builders
+  for delete using (auth.uid() = user_id);
+
+-- ============================================
 -- HELPER FUNCTIONS
 -- ============================================
 

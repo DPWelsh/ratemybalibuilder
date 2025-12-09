@@ -3,37 +3,14 @@
 import { HeartIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 interface SaveBuilderButtonProps {
   builderId: string;
   builderName: string;
   variant?: 'icon' | 'button';
   className?: string;
-}
-
-// Helper functions for localStorage
-function getSavedBuilders(): string[] {
-  if (typeof window === 'undefined') return [];
-  const saved = localStorage.getItem('savedBuilders');
-  return saved ? JSON.parse(saved) : [];
-}
-
-function saveBuilder(builderId: string): void {
-  const saved = getSavedBuilders();
-  if (!saved.includes(builderId)) {
-    saved.push(builderId);
-    localStorage.setItem('savedBuilders', JSON.stringify(saved));
-  }
-}
-
-function unsaveBuilder(builderId: string): void {
-  const saved = getSavedBuilders();
-  const filtered = saved.filter((id) => id !== builderId);
-  localStorage.setItem('savedBuilders', JSON.stringify(filtered));
-}
-
-function isBuilderSaved(builderId: string): boolean {
-  return getSavedBuilders().includes(builderId);
 }
 
 export function SaveBuilderButton({
@@ -43,36 +20,73 @@ export function SaveBuilderButton({
   className = '',
 }: SaveBuilderButtonProps) {
   const [isSaved, setIsSaved] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-    setIsSaved(isBuilderSaved(builderId));
+    async function checkSavedStatus() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      setUserId(user.id);
+
+      const { data } = await supabase
+        .from('saved_builders')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('builder_id', builderId)
+        .single();
+
+      setIsSaved(!!data);
+      setIsLoading(false);
+    }
+
+    checkSavedStatus();
   }, [builderId]);
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
+    if (!userId) {
+      router.push('/login?redirect=/builder/' + builderId);
+      return;
+    }
+
+    const supabase = createClient();
+
     if (isSaved) {
-      unsaveBuilder(builderId);
+      // Unsave
+      await supabase
+        .from('saved_builders')
+        .delete()
+        .eq('user_id', userId)
+        .eq('builder_id', builderId);
       setIsSaved(false);
     } else {
-      saveBuilder(builderId);
+      // Save
+      await supabase
+        .from('saved_builders')
+        .insert({ user_id: userId, builder_id: builderId });
       setIsSaved(true);
     }
   };
 
-  // Avoid hydration mismatch
-  if (!mounted) {
+  // Show loading state
+  if (isLoading) {
     if (variant === 'icon') {
       return (
-        <button className={`text-muted-foreground ${className}`}>
-          <HeartIcon className="h-5 w-5" />
+        <button className={`text-muted-foreground ${className}`} disabled>
+          <HeartIcon className="h-5 w-5 animate-pulse" />
         </button>
       );
     }
     return (
-      <Button variant="outline" size="sm" className={className}>
-        <HeartIcon className="mr-2 h-4 w-4" />
+      <Button variant="outline" size="sm" className={className} disabled>
+        <HeartIcon className="mr-2 h-4 w-4 animate-pulse" />
         Save
       </Button>
     );
@@ -106,6 +120,3 @@ export function SaveBuilderButton({
     </Button>
   );
 }
-
-// Export helper for dashboard
-export { getSavedBuilders };
