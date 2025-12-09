@@ -38,30 +38,17 @@ export default function Home() {
             <Card className="border-0 shadow-lg">
               <CardContent className="p-4 sm:p-6">
                 <form action="/search" method="GET" className="space-y-3 sm:space-y-4">
-                  <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium">
-                        Builder name
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        placeholder="e.g. Pak Wayan"
-                        className="h-11 sm:h-12"
-                      />
-                    </div>
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium">
-                        Phone / WhatsApp
-                      </label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        placeholder="+62 812 XXX XXXX"
-                        className="h-11 sm:h-12"
-                      />
-                    </div>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <label htmlFor="phone" className="text-sm font-medium">
+                      Phone / WhatsApp
+                    </label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="+62 812 XXX XXXX"
+                      className="h-11 sm:h-12"
+                    />
                   </div>
                   <Button type="submit" size="lg" className="h-11 w-full sm:h-12">
                     Search builder
@@ -69,7 +56,7 @@ export default function Home() {
                   </Button>
                 </form>
                 <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
-                  {formatPrice(PRICING.search)} per search. Only charged if we find a match.
+                  {formatPrice(PRICING.unlock)} to unlock findings. Only charged if found.
                 </p>
               </CardContent>
             </Card>

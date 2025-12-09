@@ -76,7 +76,7 @@ export function SearchForm() {
           </Button>
         </form>
         <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
-          Only charged if we find a match
+          {formatPrice(PRICING.unlock)} to unlock findings.
         </p>
       </CardContent>
     </Card>

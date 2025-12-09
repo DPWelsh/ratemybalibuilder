@@ -25,7 +25,6 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [creditBalance, setCreditBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchName, setSearchName] = useState('');
   const [searchPhone, setSearchPhone] = useState('');
   const [savedBuilders, setSavedBuilders] = useState<Builder[]>([]);
   const router = useRouter();
@@ -71,11 +70,10 @@ export default function DashboardPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchName && !searchPhone) return;
+    if (!searchPhone) return;
 
     const params = new URLSearchParams();
-    if (searchName) params.set('name', searchName);
-    if (searchPhone) params.set('phone', searchPhone);
+    params.set('phone', searchPhone);
     router.push(`/search?${params.toString()}`);
   };
 
@@ -135,37 +133,23 @@ export default function DashboardPage() {
               <h2 className="font-medium text-foreground">Search a Builder</h2>
             </div>
             <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
-              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-                <div className="space-y-1.5">
-                  <label htmlFor="name" className="text-sm font-medium">
-                    Builder name
-                  </label>
-                  <Input
-                    id="name"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    placeholder="e.g. Pak Wayan"
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label htmlFor="phone" className="text-sm font-medium">
-                    Phone / WhatsApp
-                  </label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={searchPhone}
-                    onChange={(e) => setSearchPhone(e.target.value)}
-                    placeholder="+62 812 XXX XXXX"
-                    className="h-11"
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <label htmlFor="phone" className="text-sm font-medium">
+                  Phone / WhatsApp
+                </label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={searchPhone}
+                  onChange={(e) => setSearchPhone(e.target.value)}
+                  placeholder="+62 812 XXX XXXX"
+                  className="h-11"
+                />
               </div>
               <Button
                 type="submit"
                 className="h-11 w-full sm:w-auto"
-                disabled={!searchName && !searchPhone}
+                disabled={!searchPhone}
               >
                 Search Builder
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
