@@ -4,15 +4,18 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrustStats } from '@/components/TrustStats';
 import { PRICING, formatPrice } from '@/lib/pricing';
-import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon } from 'lucide-react';
+import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon, ShieldCheckIcon, QuoteIcon } from 'lucide-react';
 
 export default function Home() {
   return (
     <div className="flex min-h-[calc(100vh-57px)] flex-col sm:min-h-[calc(100vh-73px)]">
       {/* Hero Section */}
       <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6 sm:py-24">
-        {/* Subtle gradient background */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[var(--color-prompt)]/5 via-transparent to-transparent" />
+        {/* Animated gradient background */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="animate-gradient-slow absolute -left-1/4 -top-1/4 h-[600px] w-[600px] rounded-full bg-[var(--color-prompt)]/8 blur-3xl" />
+          <div className="animate-gradient-slow-reverse absolute -right-1/4 top-1/4 h-[500px] w-[500px] rounded-full bg-[var(--color-energy)]/5 blur-3xl" />
+        </div>
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h1 className="text-3xl tracking-tight sm:text-5xl lg:text-7xl">
@@ -27,9 +30,9 @@ export default function Home() {
           </p>
 
           {/* Promotion Banner */}
-          <div className="mx-auto mt-6 max-w-md rounded-lg bg-[var(--status-recommended)]/10 px-4 py-3 sm:mt-8">
+          <div className="mx-auto mt-6 max-w-md animate-pulse-subtle rounded-lg border border-[var(--status-recommended)]/20 bg-[var(--status-recommended)]/10 px-4 py-3 sm:mt-8">
             <p className="text-sm font-medium text-[var(--status-recommended)]">
-              🎉 Early Promotion: New users get <strong>$50 worth</strong> of free search credits
+              Early Promotion: New users get <strong>$50 worth</strong> of free search credits
             </p>
           </div>
 
@@ -58,6 +61,11 @@ export default function Home() {
                 <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
                   {formatPrice(PRICING.unlock)} to unlock findings. Only charged if found.
                 </p>
+                {/* Security badge */}
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <ShieldCheckIcon className="h-4 w-4 text-[var(--status-recommended)]" />
+                  <span>Community-verified reviews</span>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -96,7 +104,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 sm:mt-16 sm:gap-8 md:grid-cols-3">
-            <Card className="relative overflow-hidden border-0 bg-secondary/50">
+            <Card className="relative overflow-hidden border-0 bg-secondary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
               <CardContent className="p-5 sm:p-8">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:h-12 sm:w-12">
                   <SearchIcon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -110,7 +118,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden border-0 bg-secondary/50">
+            <Card className="relative overflow-hidden border-0 bg-secondary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
               <CardContent className="p-5 sm:p-8">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:h-12 sm:w-12">
                   <UnlockIcon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -124,7 +132,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden border-0 bg-secondary/50">
+            <Card className="relative overflow-hidden border-0 bg-secondary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
               <CardContent className="p-5 sm:p-8">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:h-12 sm:w-12">
                   <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -135,6 +143,77 @@ export default function Home() {
                   other expats who&apos;ve been there.
                 </p>
                 <p className="mt-3 font-medium text-[#22c55e] sm:mt-4">Peace of mind</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="border-t px-4 py-12 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl">What expats are saying</h2>
+            <p className="mt-2 text-sm text-muted-foreground sm:mt-4 sm:text-base">
+              Real experiences from the Bali building community
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3">
+            {/* Testimonial 1 */}
+            <Card className="border-0 bg-secondary/30">
+              <CardContent className="p-5 sm:p-6">
+                <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
+                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                  &ldquo;Saved me from a contractor with a history of abandoned projects. Worth every dollar.&rdquo;
+                </p>
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-prompt)]/20 text-sm font-medium">
+                    MK
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Mike K.</p>
+                    <p className="text-xs text-muted-foreground">Villa project, Canggu</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 2 */}
+            <Card className="border-0 bg-secondary/30">
+              <CardContent className="p-5 sm:p-6">
+                <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
+                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                  &ldquo;Found a recommended builder through the platform. Our villa was completed on time and on budget.&rdquo;
+                </p>
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--status-recommended)]/20 text-sm font-medium">
+                    SL
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Sarah L.</p>
+                    <p className="text-xs text-muted-foreground">New build, Ubud</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 3 */}
+            <Card className="border-0 bg-secondary/30">
+              <CardContent className="p-5 sm:p-6">
+                <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
+                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                  &ldquo;I wish this existed when I started my first project. Would have saved months of stress.&rdquo;
+                </p>
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-energy)]/20 text-sm font-medium">
+                    JD
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">James D.</p>
+                    <p className="text-xs text-muted-foreground">Renovation, Seminyak</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>

@@ -71,45 +71,46 @@ export function Header() {
           >
             Browse Builders
           </Link>
-          {!isLoading && (
+          {isLoading ? (
+            <div className="flex items-center gap-6">
+              <div className="skeleton h-4 w-16 rounded" />
+              <div className="skeleton h-8 w-20 rounded" />
+            </div>
+          ) : user ? (
             <>
-              {user ? (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/submit-review"
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Submit Review
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Sign Out
-                  </button>
-                  <CreditBalance balance={creditBalance} />
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Sign In
-                  </Link>
-                  <Button asChild size="sm">
-                    <Link href="/signup">
-                      Sign Up
-                    </Link>
-                  </Button>
-                </>
-              )}
+              <Link
+                href="/dashboard"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/submit-review"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Submit Review
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Sign Out
+              </button>
+              <CreditBalance balance={creditBalance} />
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Sign In
+              </Link>
+              <Button asChild size="sm">
+                <Link href="/signup">
+                  Sign Up
+                </Link>
+              </Button>
             </>
           )}
         </nav>
@@ -131,65 +132,67 @@ export function Header() {
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <nav className="border-t border-border bg-card px-4 py-4 md:hidden">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
             <Link
               href="/builders"
               onClick={closeMobileMenu}
-              className="py-2 text-muted-foreground"
+              className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
             >
               Browse Builders
             </Link>
-            {!isLoading && (
+            {isLoading ? (
+              <div className="px-3 py-3">
+                <div className="skeleton h-4 w-32 rounded" />
+              </div>
+            ) : user ? (
               <>
-                {user ? (
-                  <>
-                    <CreditBalance balance={creditBalance} showBuyLink={false} className="py-2" />
-                    <Link
-                      href="/buy-credits"
-                      onClick={closeMobileMenu}
-                      className="py-2 text-sm text-[var(--color-prompt)]"
-                    >
-                      Buy credits
-                    </Link>
-                    <div className="my-2 h-px bg-border" />
-                    <Link
-                      href="/dashboard"
-                      onClick={closeMobileMenu}
-                      className="py-2 text-muted-foreground"
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href="/submit-review"
-                      onClick={closeMobileMenu}
-                      className="py-2 text-muted-foreground"
-                    >
-                      Submit Review
-                    </Link>
-                    <button
-                      onClick={handleSignOut}
-                      className="py-2 text-left text-muted-foreground"
-                    >
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div className="my-2 h-px bg-border" />
-                    <Link
-                      href="/login"
-                      onClick={closeMobileMenu}
-                      className="py-2 text-muted-foreground"
-                    >
-                      Sign In
-                    </Link>
-                    <Button asChild className="mt-2">
-                      <Link href="/signup" onClick={closeMobileMenu}>
-                        Sign Up
-                      </Link>
-                    </Button>
-                  </>
-                )}
+                <div className="px-3 py-2">
+                  <CreditBalance balance={creditBalance} showBuyLink={false} />
+                </div>
+                <Link
+                  href="/buy-credits"
+                  onClick={closeMobileMenu}
+                  className="rounded-lg px-3 py-3 text-sm text-[var(--color-prompt)] transition-colors hover:bg-secondary"
+                >
+                  Buy credits
+                </Link>
+                <div className="my-2 h-px bg-border" />
+                <Link
+                  href="/dashboard"
+                  onClick={closeMobileMenu}
+                  className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/submit-review"
+                  onClick={closeMobileMenu}
+                  className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
+                >
+                  Submit Review
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="rounded-lg px-3 py-3 text-left text-muted-foreground transition-colors hover:bg-secondary"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="my-2 h-px bg-border" />
+                <Link
+                  href="/login"
+                  onClick={closeMobileMenu}
+                  className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
+                >
+                  Sign In
+                </Link>
+                <Button asChild className="mt-2">
+                  <Link href="/signup" onClick={closeMobileMenu}>
+                    Sign Up
+                  </Link>
+                </Button>
               </>
             )}
           </div>

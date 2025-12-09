@@ -9,8 +9,15 @@ interface TrustStatsProps {
   className?: string;
 }
 
+function StatSkeleton() {
+  return (
+    <div className="h-7 w-12 skeleton rounded" />
+  );
+}
+
 export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps) {
-  const [stats, setStats] = useState({ builders: 0, reviews: 0, searches: 0 });
+  const [stats, setStats] = useState<{ builders: number; reviews: number; searches: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStats() {
@@ -37,21 +44,32 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
         reviews: reviewCount || 0,
         searches: searchCount || 0,
       });
+      setIsLoading(false);
     }
 
     fetchStats();
   }, []);
 
-  const totalBuilders = stats.builders;
-  const totalReviews = stats.reviews;
-  const expatsProtected = stats.searches || 0;
+  const totalBuilders = stats?.builders ?? 0;
+  const totalReviews = stats?.reviews ?? 0;
+  const expatsProtected = stats?.searches ?? 0;
 
   if (variant === 'compact') {
     return (
       <div className={`flex items-center gap-4 text-sm text-muted-foreground ${className}`}>
-        <span>{totalBuilders} builders vetted</span>
-        <span className="text-border">|</span>
-        <span>{totalReviews} reviews</span>
+        {isLoading ? (
+          <>
+            <span className="skeleton h-4 w-24 rounded" />
+            <span className="text-border">|</span>
+            <span className="skeleton h-4 w-16 rounded" />
+          </>
+        ) : (
+          <>
+            <span>{totalBuilders} builders vetted</span>
+            <span className="text-border">|</span>
+            <span>{totalReviews} reviews</span>
+          </>
+        )}
       </div>
     );
   }
@@ -63,7 +81,9 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
           <HardHatIcon className="h-6 w-6 text-foreground" />
         </div>
         <div>
-          <p className="text-2xl font-medium text-foreground">{totalBuilders}</p>
+          {isLoading ? <StatSkeleton /> : (
+            <p className="text-2xl font-medium text-foreground">{totalBuilders}</p>
+          )}
           <p className="text-sm text-muted-foreground">Builders Vetted</p>
         </div>
       </div>
@@ -73,7 +93,9 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
           <StarIcon className="h-6 w-6 text-foreground" />
         </div>
         <div>
-          <p className="text-2xl font-medium text-foreground">{totalReviews}</p>
+          {isLoading ? <StatSkeleton /> : (
+            <p className="text-2xl font-medium text-foreground">{totalReviews}</p>
+          )}
           <p className="text-sm text-muted-foreground">Reviews Submitted</p>
         </div>
       </div>
@@ -83,7 +105,9 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
           <ShieldCheckIcon className="h-6 w-6 text-foreground" />
         </div>
         <div>
-          <p className="text-2xl font-medium text-foreground">{expatsProtected}+</p>
+          {isLoading ? <StatSkeleton /> : (
+            <p className="text-2xl font-medium text-foreground">{expatsProtected}+</p>
+          )}
           <p className="text-sm text-muted-foreground">Expats Protected</p>
         </div>
       </div>
