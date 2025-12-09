@@ -15,11 +15,24 @@ import {
   Loader2Icon,
   HeartIcon,
   XIcon,
+  UnlockIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { getBuilderById, Builder } from '@/lib/dummy-data';
 import { getSavedBuilders } from '@/components/SaveBuilderButton';
 import { PRICING, formatPrice } from '@/lib/pricing';
+import { StatusBadge } from '@/components/StatusBadge';
+import { BuilderStatus } from '@/lib/supabase/builders';
+
+interface UnlockedBuilder {
+  id: string;
+  name: string;
+  company_name: string | null;
+  status: BuilderStatus;
+  location: string;
+  trade_type: string;
+  unlocked_at: string;
+}
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -27,6 +40,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchPhone, setSearchPhone] = useState('');
   const [savedBuilders, setSavedBuilders] = useState<Builder[]>([]);
+  const [unlockedBuilders, setUnlockedBuilders] = useState<UnlockedBuilder[]>([]);
   const router = useRouter();
 
   // Load saved builders from localStorage
@@ -60,6 +74,34 @@ export default function DashboardPage() {
 
       if (profile) {
         setCreditBalance(profile.credit_balance);
+      }
+
+      // Fetch unlocked builders
+      const { data: searches } = await supabase
+        .from('searches')
+        .select(`
+          created_at,
+          builders (
+            id,
+            name,
+            company_name,
+            status,
+            location,
+            trade_type
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('level', 'full')
+        .order('created_at', { ascending: false });
+
+      if (searches) {
+        const unlocked = searches
+          .filter((s) => s.builders)
+          .map((s) => ({
+            ...(s.builders as unknown as Omit<UnlockedBuilder, 'unlocked_at'>),
+            unlocked_at: s.created_at,
+          }));
+        setUnlockedBuilders(unlocked);
       }
 
       setIsLoading(false);
@@ -198,6 +240,44 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Unlocked Builders */}
+        {unlockedBuilders.length > 0 && (
+          <Card className="mt-6 border-0 shadow-md sm:mt-8">
+            <CardContent className="p-4 sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <UnlockIcon className="h-5 w-5 text-[var(--status-recommended)]" />
+                <h2 className="font-medium text-foreground">
+                  Unlocked Builders ({unlockedBuilders.length})
+                </h2>
+              </div>
+              <div className="space-y-3">
+                {unlockedBuilders.map((builder) => (
+                  <div
+                    key={builder.id}
+                    className="flex items-center justify-between rounded-lg bg-secondary/50 p-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-foreground truncate">{builder.name}</p>
+                        <StatusBadge status={builder.status} size="sm" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {builder.location} · {builder.trade_type}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Unlocked {new Date(builder.unlocked_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Button asChild variant="ghost" size="sm" className="ml-2 shrink-0">
+                      <Link href={`/builder/${builder.id}`}>View</Link>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* My Saved Builders */}
         {savedBuilders.length > 0 && (
