@@ -1,7 +1,8 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { HardHatIcon, StarIcon, ShieldCheckIcon } from 'lucide-react';
-import { getTotalBuilders, getTotalReviews } from '@/lib/dummy-data';
+import { createClient } from '@/lib/supabase/client';
 
 interface TrustStatsProps {
   variant?: 'hero' | 'compact';
@@ -9,9 +10,41 @@ interface TrustStatsProps {
 }
 
 export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps) {
-  const totalBuilders = getTotalBuilders();
-  const totalReviews = getTotalReviews();
-  const expatsProtected = 520; // Seed number - later track from unlocks
+  const [stats, setStats] = useState({ builders: 0, reviews: 0, searches: 0 });
+
+  useEffect(() => {
+    async function fetchStats() {
+      const supabase = createClient();
+
+      // Get builder count
+      const { count: builderCount } = await supabase
+        .from('builders')
+        .select('*', { count: 'exact', head: true });
+
+      // Get approved reviews count
+      const { count: reviewCount } = await supabase
+        .from('reviews')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'approved');
+
+      // Get total searches/unlocks count
+      const { count: searchCount } = await supabase
+        .from('searches')
+        .select('*', { count: 'exact', head: true });
+
+      setStats({
+        builders: builderCount || 0,
+        reviews: reviewCount || 0,
+        searches: searchCount || 0,
+      });
+    }
+
+    fetchStats();
+  }, []);
+
+  const totalBuilders = stats.builders;
+  const totalReviews = stats.reviews;
+  const expatsProtected = stats.searches || 0;
 
   if (variant === 'compact') {
     return (
