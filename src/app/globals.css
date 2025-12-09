@@ -201,11 +201,11 @@ h1, h2, h3 {
 }
 
 .animate-gradient-slow {
-  animation: gradient-slow 15s ease-in-out infinite;
+  animation: gradient-slow 8s ease-in-out infinite;
 }
 
 .animate-gradient-slow-reverse {
-  animation: gradient-slow-reverse 18s ease-in-out infinite;
+  animation: gradient-slow-reverse 10s ease-in-out infinite;
 }
 
 /* Skeleton loading */

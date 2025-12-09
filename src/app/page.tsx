@@ -11,10 +11,22 @@ export default function Home() {
     <div className="flex min-h-[calc(100vh-57px)] flex-col sm:min-h-[calc(100vh-73px)]">
       {/* Hero Section */}
       <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6 sm:py-24">
-        {/* Animated gradient background */}
+        {/* Animated gradient background - organic flowing shapes */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="animate-gradient-slow absolute -left-1/4 -top-1/4 h-[600px] w-[600px] rounded-full bg-[var(--color-prompt)]/8 blur-3xl" />
-          <div className="animate-gradient-slow-reverse absolute -right-1/4 top-1/4 h-[500px] w-[500px] rounded-full bg-[var(--color-energy)]/5 blur-3xl" />
+          <div
+            className="absolute -left-20 -top-20 h-[70%] w-[60%] animate-gradient-slow blur-[80px]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(123, 162, 224, 0.5) 0%, rgba(123, 162, 224, 0.25) 60%, transparent 100%)',
+              borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%'
+            }}
+          />
+          <div
+            className="absolute -bottom-10 -right-20 h-[60%] w-[70%] animate-gradient-slow-reverse blur-[80px]"
+            style={{
+              background: 'linear-gradient(315deg, rgba(125, 49, 45, 0.35) 0%, rgba(125, 49, 45, 0.2) 50%, transparent 100%)',
+              borderRadius: '40% 60% 70% 30% / 40% 70% 30% 60%'
+            }}
+          />
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
@@ -161,7 +173,7 @@ export default function Home() {
 
           <div className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3">
             {/* Testimonial 1 */}
-            <Card className="border-0 bg-secondary/30">
+            <Card className="border-0 bg-secondary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
               <CardContent className="p-5 sm:p-6">
                 <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
                 <p className="mt-3 text-sm text-muted-foreground sm:text-base">
@@ -180,7 +192,7 @@ export default function Home() {
             </Card>
 
             {/* Testimonial 2 */}
-            <Card className="border-0 bg-secondary/30">
+            <Card className="border-0 bg-secondary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
               <CardContent className="p-5 sm:p-6">
                 <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
                 <p className="mt-3 text-sm text-muted-foreground sm:text-base">
@@ -199,7 +211,7 @@ export default function Home() {
             </Card>
 
             {/* Testimonial 3 */}
-            <Card className="border-0 bg-secondary/30">
+            <Card className="border-0 bg-secondary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
               <CardContent className="p-5 sm:p-6">
                 <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
                 <p className="mt-3 text-sm text-muted-foreground sm:text-base">

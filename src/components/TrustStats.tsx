@@ -56,17 +56,17 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
 
   if (variant === 'compact') {
     return (
-      <div className={`flex items-center gap-4 text-sm text-muted-foreground ${className}`}>
+      <div className={`flex flex-wrap items-center justify-center gap-4 text-sm ${className}`}>
         {isLoading ? (
           <>
-            <span className="skeleton h-4 w-24 rounded" />
-            <span className="text-border">|</span>
-            <span className="skeleton h-4 w-16 rounded" />
+            <span className="h-4 w-24 rounded bg-current/20 animate-pulse" />
+            <span className="opacity-30">|</span>
+            <span className="h-4 w-16 rounded bg-current/20 animate-pulse" />
           </>
         ) : (
           <>
             <span>{totalBuilders} builders vetted</span>
-            <span className="text-border">|</span>
+            <span className="opacity-30">|</span>
             <span>{totalReviews} reviews</span>
           </>
         )}
