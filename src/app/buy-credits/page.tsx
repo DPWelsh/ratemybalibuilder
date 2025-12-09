@@ -21,12 +21,29 @@ export default function BuyCreditsPage() {
     if (!selectedPack) return;
 
     setIsProcessing(true);
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // In real implementation, this would redirect to Stripe Checkout
-    alert('Demo mode: This would redirect to Stripe Checkout');
-    setIsProcessing(false);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packId: selectedPack }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout. Please try again.');
+      setIsProcessing(false);
+    }
   };
 
   return (

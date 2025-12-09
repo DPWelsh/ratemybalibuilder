@@ -16,7 +16,7 @@ import {
   Location,
   TradeType,
   ProjectType,
-} from '@/lib/dummy-data';
+} from '@/lib/supabase/builders';
 
 interface FilterBarProps {
   selectedLocation: Location | 'all';

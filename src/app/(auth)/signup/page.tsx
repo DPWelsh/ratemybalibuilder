@@ -74,6 +74,16 @@ export default function SignUpPage() {
   return (
     <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-0">
       <div className="w-full max-w-md">
+        {/* Promotion Banner */}
+        <div className="mb-6 rounded-lg bg-[var(--status-recommended)]/10 p-4 text-center">
+          <p className="text-sm font-medium text-[var(--status-recommended)]">
+            🎉 Early Promotion
+          </p>
+          <p className="mt-1 text-sm text-foreground">
+            New users get <strong>$50 worth</strong> of free search credits
+          </p>
+        </div>
+
         <h1 className="text-center text-2xl text-foreground sm:text-3xl">
           Create your account
         </h1>

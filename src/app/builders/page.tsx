@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
@@ -10,10 +10,9 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { StarRating } from '@/components/StarRating';
 import { FilterBar } from '@/components/FilterBar';
-
-import { builders, getReviewsForBuilder, getAverageRating, BuilderStatus, TradeType, ProjectType, Location } from '@/lib/dummy-data';
+import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType, ProjectType } from '@/lib/supabase/builders';
 import { PRICING, formatPrice } from '@/lib/pricing';
-import { UsersIcon } from 'lucide-react';
+import { UsersIcon, Loader2Icon } from 'lucide-react';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -72,10 +71,30 @@ function ProjectTypesCellRenderer(params: ICellRendererParams<BuilderRow>) {
 export default function BuildersPage() {
   const router = useRouter();
 
+  // Data state
+  const [builders, setBuilders] = useState<BuilderWithStats[]>([]);
+  const [stats, setStats] = useState({ total: 0, recommended: 0, blacklisted: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+
   // Filter state
   const [selectedLocation, setSelectedLocation] = useState<Location | 'all'>('all');
   const [selectedTradeType, setSelectedTradeType] = useState<TradeType | 'all'>('all');
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | 'all'>('all');
+
+  // Fetch data on mount
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      const [buildersData, statsData] = await Promise.all([
+        getBuilders(),
+        getBuilderStats(),
+      ]);
+      setBuilders(buildersData);
+      setStats(statsData);
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
 
   const clearFilters = () => {
     setSelectedLocation('all');
@@ -88,22 +107,22 @@ export default function BuildersPage() {
     return builders
       .filter((builder) => {
         const locationMatch = selectedLocation === 'all' || builder.location === selectedLocation;
-        const tradeMatch = selectedTradeType === 'all' || builder.tradeType === selectedTradeType;
-        const projectMatch = selectedProjectType === 'all' || builder.projectTypes.includes(selectedProjectType);
+        const tradeMatch = selectedTradeType === 'all' || builder.trade_type === selectedTradeType;
+        const projectMatch = selectedProjectType === 'all' || builder.project_types?.includes(selectedProjectType);
         return locationMatch && tradeMatch && projectMatch;
       })
       .map((builder) => ({
         id: builder.id,
         name: builder.name,
-        companyName: builder.companyName || '-',
+        companyName: builder.company_name || '-',
         status: builder.status,
         location: builder.location,
-        tradeType: builder.tradeType,
-        projectTypes: builder.projectTypes,
-        avgRating: getAverageRating(builder.id),
-        reviewCount: getReviewsForBuilder(builder.id).length,
+        tradeType: builder.trade_type,
+        projectTypes: builder.project_types || [],
+        avgRating: builder.avg_rating,
+        reviewCount: builder.review_count,
       }));
-  }, [selectedLocation, selectedTradeType, selectedProjectType]);
+  }, [builders, selectedLocation, selectedTradeType, selectedProjectType]);
 
   // Column definitions
   const columnDefs = useMemo<ColDef<BuilderRow>[]>(() => [
@@ -180,11 +199,13 @@ export default function BuildersPage() {
     }
   }, [router]);
 
-  const stats = {
-    total: builders.length,
-    recommended: builders.filter((b) => b.status === 'recommended').length,
-    blacklisted: builders.filter((b) => b.status === 'blacklisted').length,
-  };
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[calc(100vh-57px)] items-center justify-center">
+        <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-57px)] px-4 py-6 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-8">

@@ -44,6 +44,9 @@ create trigger on_auth_user_created
 -- BUILDERS
 -- ============================================
 create type builder_status as enum ('blacklisted', 'unknown', 'recommended');
+create type builder_location as enum ('Canggu', 'Seminyak', 'Ubud', 'Uluwatu', 'Sanur', 'Denpasar', 'Tabanan', 'Other');
+create type trade_type as enum ('General Contractor', 'Pool Builder', 'Architect', 'Interior Designer', 'Landscaper', 'Renovation Specialist');
+create type project_type as enum ('Villas', 'Renovations', 'Pools', 'Commercial', 'Landscaping', 'Interior Fit-out');
 
 create table public.builders (
   id uuid default uuid_generate_v4() primary key,
@@ -53,6 +56,9 @@ create table public.builders (
   status builder_status default 'unknown' not null,
   company_name text,
   instagram text,
+  location builder_location default 'Other',
+  trade_type trade_type default 'General Contractor',
+  project_types project_type[] default '{}',
   notes text, -- admin-only internal notes
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null

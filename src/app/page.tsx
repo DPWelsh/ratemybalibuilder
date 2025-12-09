@@ -26,6 +26,13 @@ export default function Home() {
             who&apos;s unknown, and who to avoid.
           </p>
 
+          {/* Promotion Banner */}
+          <div className="mx-auto mt-6 max-w-md rounded-lg bg-[var(--status-recommended)]/10 px-4 py-3 sm:mt-8">
+            <p className="text-sm font-medium text-[var(--status-recommended)]">
+              🎉 Early Promotion: New users get <strong>$50 worth</strong> of free search credits
+            </p>
+          </div>
+
           {/* Search Form */}
           <div className="mx-auto mt-8 max-w-xl sm:mt-12">
             <Card className="border-0 shadow-lg">

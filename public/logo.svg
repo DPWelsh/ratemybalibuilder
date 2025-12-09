@@ -5,5 +5,5 @@
     <rect x="18" y="32" width="15" height="18" rx="2" fill="#eab308"/> <!-- Yellow block -->
     
     <!-- Text -->
-    <text x="45" y="38" font-family="Arial, sans-serif" font-weight="bold" font-size="20" fill="#1e293b">RateMyBaliBuilder</text>
+    <text x="45" y="38" font-family="Raptor, Arial, sans-serif" font-weight="900" font-size="20" fill="#1e293b">RateMyBaliBuilder</text>
 </svg>

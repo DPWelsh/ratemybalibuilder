@@ -30,15 +30,38 @@ export default function SubmitReviewPage() {
     setPhotos(photos.filter((_, i) => i !== index));
   };
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          builderName,
+          builderPhone,
+          rating,
+          reviewText,
+          photos,
+        }),
+      });
 
-    setIsSubmitted(true);
-    setIsSubmitting(false);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit review');
+      }
+
+      setIsSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isValid = builderName.trim() && builderPhone.trim() && rating > 0 && reviewText.trim().length >= 50;
@@ -194,6 +217,13 @@ export default function SubmitReviewPage() {
                   Add up to 5 photos (before/after, issues found, etc.)
                 </p>
               </div>
+
+              {/* Error Display */}
+              {error && (
+                <div className="rounded-lg bg-[var(--status-blacklisted)]/10 p-3 text-sm text-[var(--status-blacklisted)]">
+                  {error}
+                </div>
+              )}
 
               {/* Submit */}
               <Button

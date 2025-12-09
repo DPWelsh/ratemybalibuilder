@@ -4,8 +4,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { StatusBadge } from '@/components/StatusBadge';
 import { MaskedPhone } from '@/components/MaskedPhone';
 import { StarRating } from '@/components/StarRating';
-import { searchBuilders, getReviewsForBuilder, getAverageRating } from '@/lib/dummy-data';
-import { ArrowRightIcon, SearchXIcon, PlusCircleIcon } from 'lucide-react';
+import { searchBuilders } from '@/lib/supabase/builders-server';
+import { createClient } from '@/lib/supabase/server';
+import { ArrowRightIcon, SearchXIcon, PlusCircleIcon, LockIcon } from 'lucide-react';
 
 interface SearchPageProps {
   searchParams: Promise<{ name?: string; phone?: string }>;
@@ -15,8 +16,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const { name, phone } = params;
 
-  // Perform search
-  const results = searchBuilders(name, phone);
+  // Check if user is authenticated
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAuthenticated = !!user;
+
+  // Perform search against Supabase
+  const results = await searchBuilders(name, phone);
 
   const hasQuery = name || phone;
 
@@ -40,46 +46,85 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {/* Results */}
         {results.length > 0 ? (
-          <div className="space-y-4">
-            {results.map((builder) => {
-              const reviewCount = getReviewsForBuilder(builder.id).length;
-              const avgRating = getAverageRating(builder.id);
-
-              return (
-                <Card key={builder.id} className="border-0 shadow-md">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div className="space-y-1">
-                        <h2 className="text-lg font-medium text-foreground sm:text-xl">
-                          {builder.name}
-                        </h2>
-                        <MaskedPhone phone={builder.phone} masked={true} />
-                      </div>
-                      <StatusBadge status={builder.status} size="md" />
+          <div className="relative">
+            {/* Blur overlay for non-authenticated users */}
+            {!isAuthenticated && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-background/80 backdrop-blur-sm">
+                <Card className="mx-4 border-0 shadow-xl">
+                  <CardContent className="p-6 text-center sm:p-8">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
+                      <LockIcon className="h-7 w-7 text-[var(--status-recommended)]" />
                     </div>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                      {avgRating > 0 && (
-                        <div className="flex items-center gap-1.5">
-                          <StarRating rating={avgRating} size="sm" />
-                          <span>{avgRating.toFixed(1)}</span>
-                        </div>
-                      )}
-                      <span>{reviewCount} review{reviewCount !== 1 ? 's' : ''}</span>
+                    <h2 className="text-lg font-medium text-foreground sm:text-xl">
+                      Sign up to see results
+                    </h2>
+                    <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                      Create a free account to view builder details and protect your investment.
+                    </p>
+                    <div className="mt-4 rounded-lg bg-[var(--status-recommended)]/10 p-3">
+                      <p className="text-sm font-medium text-[var(--status-recommended)]">
+                        🎉 Early Promotion
+                      </p>
+                      <p className="mt-1 text-sm text-foreground">
+                        Get <strong>$50 worth</strong> of free search credits
+                      </p>
                     </div>
-
-                    <div className="mt-4 sm:mt-6">
-                      <Button asChild className="h-11 w-full sm:h-auto sm:w-auto">
-                        <Link href={`/builder/${builder.id}`}>
-                          View Details
-                          <ArrowRightIcon className="ml-2 h-4 w-4" />
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                      <Button asChild size="lg">
+                        <Link href="/signup">
+                          Create Free Account
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" size="lg">
+                        <Link href="/login">
+                          Sign In
                         </Link>
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
-              );
-            })}
+              </div>
+            )}
+
+            {/* Results list - blurred when not authenticated */}
+            <div className={!isAuthenticated ? 'pointer-events-none blur-md' : ''}>
+              <div className="space-y-4">
+                {results.map((builder) => (
+                  <Card key={builder.id} className="border-0 shadow-md">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="space-y-1">
+                          <h2 className="text-lg font-medium text-foreground sm:text-xl">
+                            {builder.name}
+                          </h2>
+                          <MaskedPhone phone={builder.phone} masked={true} />
+                        </div>
+                        <StatusBadge status={builder.status} size="md" />
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                        {builder.avg_rating > 0 && (
+                          <div className="flex items-center gap-1.5">
+                            <StarRating rating={builder.avg_rating} size="sm" />
+                            <span>{builder.avg_rating.toFixed(1)}</span>
+                          </div>
+                        )}
+                        <span>{builder.review_count} review{builder.review_count !== 1 ? 's' : ''}</span>
+                      </div>
+
+                      <div className="mt-4 sm:mt-6">
+                        <Button asChild className="h-11 w-full sm:h-auto sm:w-auto">
+                          <Link href={`/builder/${builder.id}`}>
+                            View Details
+                            <ArrowRightIcon className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           // No Results

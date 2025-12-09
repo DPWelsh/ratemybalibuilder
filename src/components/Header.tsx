@@ -57,9 +57,9 @@ export function Header() {
   return (
     <header className="border-b border-border bg-card">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-        <Link href="/" className="flex items-center gap-2 font-display text-lg tracking-tight text-foreground sm:text-xl">
+        <Link href="/" className="flex items-center gap-2 text-foreground">
           <Image src="/icon.svg" alt="Logo" width={32} height={32} className="h-8 w-8" />
-          RateMyBaliBuilder
+          <span className="font-['Raptor'] text-lg sm:text-xl">RateMyBaliBuilder</span>
         </Link>
 
 
