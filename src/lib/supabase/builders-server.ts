@@ -2,10 +2,17 @@ import { createClient } from './server';
 
 export type BuilderStatus = 'recommended' | 'unknown' | 'blacklisted';
 
+export interface PhoneEntry {
+  number: string;
+  type: 'primary' | 'whatsapp' | 'office' | 'mobile';
+  label: string;
+}
+
 export interface BuilderSearchResult {
   id: string;
   name: string;
   phone: string;
+  phones?: PhoneEntry[];
   status: BuilderStatus;
   company_name: string | null;
   review_count: number;
@@ -15,48 +22,107 @@ export interface BuilderSearchResult {
 export async function searchBuilders(name?: string, phone?: string): Promise<BuilderSearchResult[]> {
   const supabase = await createClient();
 
-  let query = supabase
-    .from('builders')
-    .select(`
-      id,
-      name,
-      phone,
-      status,
-      company_name,
-      aliases,
-      reviews!left (
-        rating,
-        status
-      )
-    `);
+  // Clean phone number for search (remove spaces, dashes, parentheses)
+  const cleanPhone = phone?.replace(/[\s\-\(\)]/g, '') || '';
 
-  // Build search conditions
-  if (name && name.trim()) {
-    query = query.ilike('name', `%${name.trim()}%`);
-  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let builders: any[] = [];
 
-  if (phone && phone.trim()) {
-    // Clean phone number for search
-    const cleanPhone = phone.replace(/\s/g, '');
-    query = query.ilike('phone', `%${cleanPhone}%`);
-  }
+  if (cleanPhone) {
+    // Search by phone - check primary phone AND phones JSONB array
+    const { data, error } = await supabase
+      .from('builders')
+      .select(`
+        id,
+        name,
+        phone,
+        phones,
+        status,
+        company_name,
+        aliases,
+        reviews!left (
+          rating,
+          status
+        )
+      `)
+      .or(`phone.ilike.%${cleanPhone}%`);
 
-  const { data: builders, error } = await query.order('name');
+    if (error) {
+      console.error('Error searching builders:', error);
+      return [];
+    }
 
-  if (error) {
-    console.error('Error searching builders:', error);
-    return [];
-  }
+    builders = data || [];
 
-  // Also search by aliases if name provided
-  let aliasResults: typeof builders = [];
-  if (name && name.trim()) {
+    // Also search in phones JSONB array using text search
+    // This is a fallback since Supabase doesn't support JSONB array text search easily
+    const { data: allBuilders } = await supabase
+      .from('builders')
+      .select(`
+        id,
+        name,
+        phone,
+        phones,
+        status,
+        company_name,
+        aliases,
+        reviews!left (
+          rating,
+          status
+        )
+      `);
+
+    if (allBuilders) {
+      for (const b of allBuilders) {
+        // Check if already in results
+        if (builders.find(existing => existing.id === b.id)) continue;
+
+        // Check phones JSONB array
+        const phones = b.phones as PhoneEntry[] || [];
+        const matchesPhone = phones.some(p => {
+          const normalizedNumber = p.number.replace(/[\s\-\(\)]/g, '');
+          return normalizedNumber.includes(cleanPhone) || cleanPhone.includes(normalizedNumber.slice(-8));
+        });
+
+        if (matchesPhone) {
+          builders.push(b);
+        }
+      }
+    }
+  } else if (name && name.trim()) {
+    // Search by name
+    const { data, error } = await supabase
+      .from('builders')
+      .select(`
+        id,
+        name,
+        phone,
+        phones,
+        status,
+        company_name,
+        aliases,
+        reviews!left (
+          rating,
+          status
+        )
+      `)
+      .ilike('name', `%${name.trim()}%`);
+
+    if (error) {
+      console.error('Error searching builders:', error);
+      return [];
+    }
+
+    builders = data || [];
+
+    // Also search by aliases
     const { data: aliasMatches } = await supabase
       .from('builders')
       .select(`
         id,
         name,
         phone,
+        phones,
         status,
         company_name,
         aliases,
@@ -68,20 +134,16 @@ export async function searchBuilders(name?: string, phone?: string): Promise<Bui
       .contains('aliases', [name.trim()]);
 
     if (aliasMatches) {
-      aliasResults = aliasMatches;
-    }
-  }
-
-  // Merge and dedupe results
-  const allResults = [...(builders || [])];
-  for (const alias of aliasResults) {
-    if (!allResults.find(b => b.id === alias.id)) {
-      allResults.push(alias);
+      for (const alias of aliasMatches) {
+        if (!builders.find(b => b.id === alias.id)) {
+          builders.push(alias);
+        }
+      }
     }
   }
 
   // Calculate stats for each builder
-  return allResults.map((builder) => {
+  return builders.map((builder) => {
     const approvedReviews = (builder.reviews || []).filter(
       (r: { status: string }) => r.status === 'approved'
     );
@@ -94,6 +156,7 @@ export async function searchBuilders(name?: string, phone?: string): Promise<Bui
       id: builder.id,
       name: builder.name,
       phone: builder.phone,
+      phones: builder.phones as PhoneEntry[] || [],
       status: builder.status as BuilderStatus,
       company_name: builder.company_name,
       review_count: reviewCount,

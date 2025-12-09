@@ -23,6 +23,25 @@ interface Builder {
   created_at: string;
 }
 
+const TRADE_TYPES = [
+  'General Contractor',
+  'Architect',
+  'Interior Designer',
+  'Pool Builder',
+  'Landscaper',
+  'Renovation Specialist',
+  'Plumber',
+  'Electrician',
+  'Roofer',
+  'Painter',
+  'Tiler',
+  'Carpenter',
+  'Mason',
+  'HVAC',
+  'Welder',
+  'Glass & Glazing',
+] as const;
+
 export default function AdminBuildersPage() {
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,6 +86,23 @@ export default function AdminBuildersPage() {
     }
 
     setUpdatingId(null);
+  };
+
+  const updateTradeType = async (builderId: string, newTradeType: string) => {
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('builders')
+      .update({ trade_type: newTradeType })
+      .eq('id', builderId);
+
+    if (!error) {
+      setBuilders(builders.map(b =>
+        b.id === builderId ? { ...b, trade_type: newTradeType } : b
+      ));
+    } else {
+      alert('Failed to update trade type');
+    }
   };
 
   const filteredBuilders = builders.filter(builder =>
@@ -133,10 +169,20 @@ export default function AdminBuildersPage() {
                       {builder.company_name && (
                         <p className="mt-1 text-sm text-muted-foreground">{builder.company_name}</p>
                       )}
-                      <div className="mt-2 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                         <span>{builder.phone}</span>
                         <span>{builder.location}</span>
-                        <span>{builder.trade_type}</span>
+                        <select
+                          value={builder.trade_type}
+                          onChange={(e) => updateTradeType(builder.id, e.target.value)}
+                          className="rounded-md border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          {TRADE_TYPES.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
 
