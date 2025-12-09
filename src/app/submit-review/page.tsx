@@ -189,6 +189,7 @@ export default function SubmitReviewPage() {
                 <div className="flex flex-wrap gap-2">
                   {photos.map((photo, index) => (
                     <div key={index} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={photo}
                         alt={`Upload ${index + 1}`}

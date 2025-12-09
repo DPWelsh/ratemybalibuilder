@@ -158,6 +158,7 @@ export default function AdminReviewsPage() {
                   {review.photos && review.photos.length > 0 && (
                     <div className="mt-4 flex flex-wrap gap-2">
                       {review.photos.map((photo, index) => (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           key={index}
                           src={photo}

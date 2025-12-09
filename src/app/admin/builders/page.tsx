@@ -9,7 +9,6 @@ import { StatusBadge } from '@/components/StatusBadge';
 import {
   Loader2Icon,
   RefreshCwIcon,
-  PlusIcon,
   SearchIcon,
 } from 'lucide-react';
 
@@ -46,7 +45,8 @@ export default function AdminBuildersPage() {
   };
 
   useEffect(() => {
-    fetchBuilders();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchBuilders();
   }, []);
 
   const updateStatus = async (builderId: string, newStatus: 'recommended' | 'unknown' | 'blacklisted') => {

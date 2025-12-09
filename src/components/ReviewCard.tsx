@@ -56,6 +56,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
                   onClick={() => openLightbox(index)}
                   className="flex-shrink-0 overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo}
                     alt={`Review photo ${index + 1}`}
@@ -107,6 +108,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
             </>
           )}
 
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={review.photos[lightboxIndex]}
             alt={`Review photo ${lightboxIndex + 1}`}

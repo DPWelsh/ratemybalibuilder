@@ -56,6 +56,7 @@ export async function getBuilders(): Promise<BuilderWithStats[]> {
       : 0;
 
     // Remove the nested reviews from the return object
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { reviews, ...builderData } = builder;
 
     return {

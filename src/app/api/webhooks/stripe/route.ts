@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
 
     const userId = session.metadata?.userId;
     const credits = parseInt(session.metadata?.credits || '0', 10);
-    const packId = session.metadata?.packId;
 
     if (!userId || !credits) {
       console.error('Missing metadata in session:', session.id);

@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { CreditBalance } from '@/components/CreditBalance';
 import {
   SearchIcon,
   PlusCircleIcon,
@@ -37,6 +36,7 @@ export default function DashboardPage() {
     const builders = savedIds
       .map((id) => getBuilderById(id))
       .filter((b): b is Builder => b !== undefined);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSavedBuilders(builders);
   }, []);
 

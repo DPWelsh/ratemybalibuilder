@@ -178,28 +178,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-card px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mx-auto max-w-5xl">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:gap-6">
-            <div className="text-sm text-muted-foreground">
-              RateMyBaliBuilder
-            </div>
-            <TrustStats variant="compact" />
-            <nav className="flex gap-6 text-sm text-muted-foreground sm:gap-8">
-              <Link href="/about" className="transition-colors hover:text-foreground">
-                About
-              </Link>
-              <Link href="/contact" className="transition-colors hover:text-foreground">
-                Contact
-              </Link>
-              <Link href="/privacy" className="transition-colors hover:text-foreground">
-                Privacy
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
