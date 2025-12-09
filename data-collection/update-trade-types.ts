@@ -44,24 +44,24 @@ const BUILDER_WEBSITES: Record<string, string> = {
   'Karyanusa Asia': 'https://karyanusa.asia/',
 };
 
-// Trade type keywords - ordered by specificity
+// Trade type keywords - use specific phrases to avoid false positives
 const TRADE_KEYWORDS = {
-  'Plumber': ['plumber', 'plumbing', 'pipa', 'water pipe', 'sanitary', 'drain'],
-  'Electrician': ['electrician', 'electrical', 'listrik', 'wiring', 'elektrik'],
-  'Pool Builder': ['pool', 'swimming pool', 'kolam renang', 'pool contractor'],
-  'Architect': ['architect', 'arsitek', 'architectural'],
-  'Interior Designer': ['interior design', 'interior designer', 'furniture', 'furnishing', 'fit out'],
-  'Landscaper': ['landscape', 'landscaping', 'garden', 'taman', 'outdoor'],
-  'Renovation Specialist': ['renovation', 'renovasi', 'remodel', 'refurbish', 'restore'],
-  'Roofer': ['roof', 'roofing', 'atap'],
-  'Painter': ['painter', 'painting', 'cat', 'wall finish'],
-  'Tiler': ['tile', 'tiling', 'keramik', 'ceramic', 'marble'],
-  'Carpenter': ['carpenter', 'carpentry', 'woodwork', 'kayu', 'joinery'],
-  'Mason': ['mason', 'masonry', 'bricklayer', 'batu'],
-  'HVAC': ['hvac', 'air conditioning', 'ac', 'cooling', 'ventilation'],
-  'Welder': ['welder', 'welding', 'las', 'metal work', 'steel'],
-  'Glass & Glazing': ['glass', 'glazing', 'kaca', 'window'],
-  'General Contractor': ['contractor', 'kontraktor', 'construction', 'build', 'villa', 'rumah'],
+  'Pool Builder': ['swimming pool', 'pool builder', 'pool construction', 'kolam renang', 'pool specialist'],
+  'Architect': ['architect', 'arsitek', 'architectural design', 'architecture firm'],
+  'Interior Designer': ['interior design', 'interior designer', 'interior decoration', 'fit out'],
+  'Landscaper': ['landscape design', 'landscaping service', 'garden design', 'taman'],
+  'Renovation Specialist': ['renovation service', 'renovasi', 'home renovation', 'remodeling'],
+  'Plumber': ['plumber', 'plumbing service', 'plumbing contractor'],
+  'Electrician': ['electrician', 'electrical service', 'electrical contractor', 'listrik'],
+  'Roofer': ['roofing service', 'roof contractor', 'roofing specialist'],
+  'Painter': ['painting service', 'painter contractor', 'wall painting'],
+  'Tiler': ['tiling service', 'tile installation', 'ceramic installation'],
+  'Carpenter': ['carpentry service', 'carpenter', 'woodwork specialist'],
+  'Mason': ['masonry service', 'stone mason', 'bricklayer'],
+  'HVAC': ['hvac service', 'air conditioning installation', 'ac contractor'],
+  'Welder': ['welding service', 'metal fabrication', 'welder contractor'],
+  'Glass & Glazing': ['glass installation', 'glazing service', 'window installation'],
+  'General Contractor': ['general contractor', 'kontraktor', 'construction company', 'villa builder', 'building contractor'],
 };
 
 async function fetchPage(url: string): Promise<string> {
@@ -85,15 +85,30 @@ function detectTradeType(html: string, url: string, name: string): string {
   const lowerUrl = url.toLowerCase();
   const lowerName = name.toLowerCase();
 
-  // Check URL and name first for strong signals
-  if (lowerUrl.includes('pool') || lowerName.includes('pool')) return 'Pool Builder';
-  if (lowerUrl.includes('landscape') || lowerName.includes('landscape')) return 'Landscaper';
-  if (lowerUrl.includes('interior') || lowerName.includes('interior')) return 'Interior Designer';
-  if (lowerUrl.includes('architect') || lowerName.includes('architect')) return 'Architect';
-  if (lowerUrl.includes('plumb') || lowerName.includes('plumb')) return 'Plumber';
-  if (lowerUrl.includes('electri') || lowerName.includes('electri')) return 'Electrician';
+  // Check name first for strong signals (most reliable)
+  if (lowerName.includes('pool') || lowerName.includes('spa')) return 'Pool Builder';
+  if (lowerName.includes('landscape')) return 'Landscaper';
+  if (lowerName.includes('interior')) return 'Interior Designer';
+  if (lowerName.includes('architect')) return 'Architect';
+  if (lowerName.includes('plumb')) return 'Plumber';
+  if (lowerName.includes('electri')) return 'Electrician';
+  if (lowerName.includes('renov')) return 'Renovation Specialist';
+  if (lowerName.includes('roof')) return 'Roofer';
+  if (lowerName.includes('paint')) return 'Painter';
+  if (lowerName.includes('tile') || lowerName.includes('ceramic')) return 'Tiler';
+  if (lowerName.includes('carpenter') || lowerName.includes('wood')) return 'Carpenter';
+  if (lowerName.includes('mason') || lowerName.includes('stone')) return 'Mason';
+  if (lowerName.includes('hvac') || lowerName.includes('ac ')) return 'HVAC';
+  if (lowerName.includes('weld') || lowerName.includes('metal')) return 'Welder';
+  if (lowerName.includes('glass') || lowerName.includes('glaz')) return 'Glass & Glazing';
 
-  // Count keyword matches
+  // Check URL for signals
+  if (lowerUrl.includes('pool')) return 'Pool Builder';
+  if (lowerUrl.includes('landscape')) return 'Landscaper';
+  if (lowerUrl.includes('interior')) return 'Interior Designer';
+  if (lowerUrl.includes('architect')) return 'Architect';
+
+  // Count keyword matches in page content
   const scores: Record<string, number> = {};
   for (const [trade, keywords] of Object.entries(TRADE_KEYWORDS)) {
     scores[trade] = 0;
@@ -104,9 +119,14 @@ function detectTradeType(html: string, url: string, name: string): string {
     }
   }
 
-  // Return highest scoring trade type
-  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  if (sorted[0][1] > 5) return sorted[0][0];
+  // Return highest scoring trade type (require at least 3 matches, exclude General Contractor from auto-detect)
+  const sorted = Object.entries(scores)
+    .filter(([trade]) => trade !== 'General Contractor')
+    .sort((a, b) => b[1] - a[1]);
+
+  if (sorted[0] && sorted[0][1] >= 3) {
+    return sorted[0][0];
+  }
 
   return 'General Contractor'; // Default
 }

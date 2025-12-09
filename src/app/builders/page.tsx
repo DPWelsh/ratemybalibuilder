@@ -145,14 +145,12 @@ export default function BuildersPage() {
       headerName: 'Location',
       width: 120,
       sortable: true,
-      filter: true,
     },
     {
       field: 'tradeType',
       headerName: 'Trade',
       width: 160,
       sortable: true,
-      filter: true,
     },
     {
       field: 'projectTypes',
@@ -168,7 +166,6 @@ export default function BuildersPage() {
       width: 140,
       cellRenderer: StatusCellRenderer,
       sortable: true,
-      filter: true,
     },
     {
       field: 'avgRating',
