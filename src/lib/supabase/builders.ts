@@ -13,6 +13,8 @@ export interface Builder {
   status: BuilderStatus;
   company_name: string | null;
   instagram: string | null;
+  website: string | null;
+  google_reviews_url: string | null;
   location: Location;
   trade_type: TradeType;
   project_types: ProjectType[];

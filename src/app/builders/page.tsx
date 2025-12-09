@@ -12,7 +12,7 @@ import { StarRating } from '@/components/StarRating';
 import { FilterBar } from '@/components/FilterBar';
 import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType } from '@/lib/supabase/builders';
 import { PRICING, formatPrice } from '@/lib/pricing';
-import { UsersIcon, Loader2Icon } from 'lucide-react';
+import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon } from 'lucide-react';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -21,6 +21,8 @@ interface BuilderRow {
   id: string;
   name: string;
   phone: string;
+  website: string | null;
+  googleReviews: string | null;
   status: BuilderStatus;
   location: Location;
   tradeType: TradeType;
@@ -56,6 +58,30 @@ function PhoneCellRenderer(params: ICellRendererParams<BuilderRow>) {
     <span className="font-mono text-sm">
       {visible}<span className="text-muted-foreground/50 blur-[3px] select-none">••••••</span>
     </span>
+  );
+}
+
+// Custom cell renderer for blurred website
+function WebsiteCellRenderer(params: ICellRendererParams<BuilderRow>) {
+  const website = params.value as string | null;
+  if (!website) return <span className="text-muted-foreground">-</span>;
+  return (
+    <div className="flex items-center gap-1.5">
+      <GlobeIcon className="h-3.5 w-3.5 text-muted-foreground" />
+      <span className="text-sm text-muted-foreground/50 blur-[3px] select-none">website.com</span>
+    </div>
+  );
+}
+
+// Custom cell renderer for blurred Google reviews
+function GoogleReviewsCellRenderer(params: ICellRendererParams<BuilderRow>) {
+  const url = params.value as string | null;
+  if (!url) return <span className="text-muted-foreground">-</span>;
+  return (
+    <div className="flex items-center gap-1.5">
+      <StarIcon className="h-3.5 w-3.5 text-muted-foreground" />
+      <span className="text-sm text-muted-foreground/50 blur-[3px] select-none">Google Reviews</span>
+    </div>
   );
 }
 
@@ -106,6 +132,8 @@ export default function BuildersPage() {
         id: builder.id,
         name: builder.name,
         phone: builder.phone || '',
+        website: builder.website,
+        googleReviews: builder.google_reviews_url,
         status: builder.status,
         location: builder.location,
         tradeType: builder.trade_type,
@@ -128,6 +156,20 @@ export default function BuildersPage() {
       headerName: 'Phone',
       width: 160,
       cellRenderer: PhoneCellRenderer,
+      sortable: false,
+    },
+    {
+      field: 'website',
+      headerName: 'Website',
+      width: 130,
+      cellRenderer: WebsiteCellRenderer,
+      sortable: false,
+    },
+    {
+      field: 'googleReviews',
+      headerName: 'Google',
+      width: 130,
+      cellRenderer: GoogleReviewsCellRenderer,
       sortable: false,
     },
     {

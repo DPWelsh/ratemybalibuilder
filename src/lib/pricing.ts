@@ -3,9 +3,9 @@
 
 export const PRICING = {
   // User actions
-  search: 10,           // $10 per search
-  unlock: 20,           // $20 to unlock full details
-  reviewCredit: 20,     // +$20 credit for approved review
+  search: 0,            // Free to search
+  unlock: 2,            // $2 to unlock full details
+  reviewCredit: 5,      // +$5 credit for approved review
 
   // Credit packs
   creditPacks: [
