@@ -30,9 +30,9 @@ export default function Home() {
           </p>
 
           {/* Promotion Banner */}
-          <div className="mx-auto mt-6 max-w-md animate-pulse-subtle rounded-lg border border-[var(--status-recommended)]/20 bg-[var(--status-recommended)]/10 px-4 py-3 sm:mt-8">
-            <p className="text-sm font-medium text-[var(--status-recommended)]">
-              Early Promotion: New users get <strong>$50 worth</strong> of free search credits
+          <div className="mx-auto mt-6 max-w-md animate-pulse-subtle rounded-lg border border-[var(--color-prompt)]/30 bg-[var(--color-prompt)]/10 px-4 py-3 sm:mt-8">
+            <p className="text-sm font-medium text-[var(--color-core)]">
+              Early Promotion: New users get <strong className="text-[var(--color-energy)]">$50 worth</strong> of free search credits
             </p>
           </div>
 

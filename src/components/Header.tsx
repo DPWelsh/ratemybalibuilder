@@ -55,10 +55,10 @@ export function Header() {
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
-    <header className="border-b border-border bg-card">
+    <header className="border-b border-[var(--color-cloud)]/10 bg-[var(--color-core)]">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
-        <Link href="/" className="flex items-center gap-2 text-foreground">
-          <Image src="/icon.svg" alt="Logo" width={32} height={32} className="h-8 w-8" />
+        <Link href="/" className="flex items-center gap-2 text-[var(--color-cloud)]">
+          <Image src="/icon.svg" alt="Logo" width={32} height={32} className="h-8 w-8 brightness-0 invert" />
           <span className="font-['Raptor'] text-lg sm:text-xl">RateMyBaliBuilder</span>
         </Link>
 
@@ -67,32 +67,32 @@ export function Header() {
         <nav className="hidden items-center gap-6 md:flex">
           <Link
             href="/builders"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
           >
             Browse Builders
           </Link>
           {isLoading ? (
             <div className="flex items-center gap-6">
-              <div className="skeleton h-4 w-16 rounded" />
-              <div className="skeleton h-8 w-20 rounded" />
+              <div className="h-4 w-16 rounded bg-[var(--color-cloud)]/10 animate-pulse" />
+              <div className="h-8 w-20 rounded bg-[var(--color-cloud)]/10 animate-pulse" />
             </div>
           ) : user ? (
             <>
               <Link
                 href="/dashboard"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
               >
                 Dashboard
               </Link>
               <Link
                 href="/submit-review"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
               >
                 Submit Review
               </Link>
               <button
                 onClick={handleSignOut}
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
               >
                 Sign Out
               </button>
@@ -102,11 +102,11 @@ export function Header() {
             <>
               <Link
                 href="/login"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
               >
                 Sign In
               </Link>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="bg-[var(--color-prompt)] text-[var(--color-core)] hover:bg-[var(--color-prompt)]/90">
                 <Link href="/signup">
                   Sign Up
                 </Link>
@@ -118,7 +118,7 @@ export function Header() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-foreground md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-[var(--color-cloud)] md:hidden"
           aria-label="Toggle menu"
         >
           {mobileMenuOpen ? (
@@ -131,18 +131,18 @@ export function Header() {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <nav className="border-t border-border bg-card px-4 py-4 md:hidden">
+        <nav className="border-t border-[var(--color-cloud)]/10 bg-[var(--color-core)] px-4 py-4 md:hidden">
           <div className="flex flex-col gap-1">
             <Link
               href="/builders"
               onClick={closeMobileMenu}
-              className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
+              className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
             >
               Browse Builders
             </Link>
             {isLoading ? (
               <div className="px-3 py-3">
-                <div className="skeleton h-4 w-32 rounded" />
+                <div className="h-4 w-32 rounded bg-[var(--color-cloud)]/10 animate-pulse" />
               </div>
             ) : user ? (
               <>
@@ -152,43 +152,43 @@ export function Header() {
                 <Link
                   href="/buy-credits"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-sm text-[var(--color-prompt)] transition-colors hover:bg-secondary"
+                  className="rounded-lg px-3 py-3 text-sm text-[var(--color-prompt)] transition-colors hover:bg-[var(--color-cloud)]/10"
                 >
                   Buy credits
                 </Link>
-                <div className="my-2 h-px bg-border" />
+                <div className="my-2 h-px bg-[var(--color-cloud)]/10" />
                 <Link
                   href="/dashboard"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
+                  className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/submit-review"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
+                  className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
                 >
                   Submit Review
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="rounded-lg px-3 py-3 text-left text-muted-foreground transition-colors hover:bg-secondary"
+                  className="rounded-lg px-3 py-3 text-left text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
                 >
                   Sign Out
                 </button>
               </>
             ) : (
               <>
-                <div className="my-2 h-px bg-border" />
+                <div className="my-2 h-px bg-[var(--color-cloud)]/10" />
                 <Link
                   href="/login"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-muted-foreground transition-colors hover:bg-secondary"
+                  className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
                 >
                   Sign In
                 </Link>
-                <Button asChild className="mt-2">
+                <Button asChild className="mt-2 bg-[var(--color-prompt)] text-[var(--color-core)] hover:bg-[var(--color-prompt)]/90">
                   <Link href="/signup" onClick={closeMobileMenu}>
                     Sign Up
                   </Link>

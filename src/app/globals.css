@@ -132,6 +132,9 @@ h1, h2, h3 {
   * {
     @apply border-border;
   }
+  html {
+    background-color: var(--color-core);
+  }
   body {
     @apply bg-background text-foreground;
   }
