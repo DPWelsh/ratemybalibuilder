@@ -1,4 +1,4 @@
-import { createAdminClient, createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // Format phone number with dashes: +62 812-3456-7890
@@ -26,7 +26,7 @@ function formatPhone(phone: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, trade_type, location, company_name, status, review_text, rating } = body;
+    const { name, phone, trade_type, location, company_name, status, rating, review_text } = body;
 
     // Validation
     if (!name || name.trim().length < 2) {
@@ -39,6 +39,21 @@ export async function POST(request: Request) {
     if (!phone || !phone.startsWith('+62')) {
       return NextResponse.json(
         { error: 'Phone must be an Indonesian number starting with +62' },
+        { status: 400 }
+      );
+    }
+
+    // Validate review fields
+    if (!rating || rating < 1 || rating > 5) {
+      return NextResponse.json(
+        { error: 'Rating must be between 1 and 5' },
+        { status: 400 }
+      );
+    }
+
+    if (!review_text || review_text.trim().length < 20) {
+      return NextResponse.json(
+        { error: 'Review must be at least 20 characters' },
         { status: 400 }
       );
     }
@@ -63,7 +78,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the builder
+    // Create the builder (unpublished by default - needs admin approval)
     const { data: builder, error } = await supabase
       .from('builders')
       .insert({
@@ -73,6 +88,7 @@ export async function POST(request: Request) {
         location: location || 'Other',
         company_name: company_name?.trim() || null,
         status: status || 'unknown',
+        is_published: false, // Requires admin approval
       })
       .select()
       .single();
@@ -85,97 +101,25 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the review if provided
-    if (review_text && rating) {
-      const { error: reviewError } = await supabase
-        .from('reviews')
-        .insert({
-          builder_id: builder.id,
-          user_id: null, // Anonymous submission
-          rating: rating,
-          review_text: review_text.trim(),
-          status: 'pending', // Requires admin approval
-          photos: [],
-        });
+    // Create the review (pending approval)
+    const { error: reviewError } = await supabase
+      .from('reviews')
+      .insert({
+        builder_id: builder.id,
+        rating: rating,
+        review_text: review_text.trim(),
+        status: 'pending', // Reviews need admin approval
+      });
 
-      if (reviewError) {
-        console.error('Error creating review:', reviewError);
-        // Don't fail the whole request, builder was created successfully
-      }
+    if (reviewError) {
+      console.error('Error creating review:', reviewError);
+      // Builder was created but review failed - still return success
+      // The review can be submitted separately
     }
 
     return NextResponse.json({ success: true, builder });
   } catch (error) {
     console.error('Error in builders API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const builderId = searchParams.get('id');
-
-    if (!builderId) {
-      return NextResponse.json(
-        { error: 'Builder ID is required' },
-        { status: 400 }
-      );
-    }
-
-    // Check if user is admin
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile?.is_admin) {
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
-      );
-    }
-
-    // Use admin client to delete
-    const adminSupabase = createAdminClient();
-
-    // Delete associated reviews first
-    await adminSupabase
-      .from('reviews')
-      .delete()
-      .eq('builder_id', builderId);
-
-    // Delete the builder
-    const { error } = await adminSupabase
-      .from('builders')
-      .delete()
-      .eq('id', builderId);
-
-    if (error) {
-      console.error('Error deleting builder:', error);
-      return NextResponse.json(
-        { error: 'Failed to delete builder' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error in builders DELETE API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

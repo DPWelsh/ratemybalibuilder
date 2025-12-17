@@ -37,7 +37,7 @@ export interface BuilderWithStats extends Builder {
 export async function getBuilders(): Promise<BuilderWithStats[]> {
   const supabase = createClient();
 
-  // Get builders with review stats
+  // Get published builders with review stats
   const { data: builders, error } = await supabase
     .from('builders')
     .select(`
@@ -47,6 +47,7 @@ export async function getBuilders(): Promise<BuilderWithStats[]> {
         status
       )
     `)
+    .eq('is_published', true)
     .order('name');
 
   if (error) {
@@ -116,7 +117,8 @@ export async function getBuilderStats() {
 
   const { data: builders, error } = await supabase
     .from('builders')
-    .select('status');
+    .select('status')
+    .eq('is_published', true);
 
   if (error) {
     console.error('Error fetching builder stats:', error);

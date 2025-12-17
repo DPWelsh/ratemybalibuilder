@@ -36,7 +36,7 @@ const statusOptions: {
   },
   {
     value: 'unknown',
-    label: 'Unknown',
+    label: 'Neutral',
     description: 'No experience yet',
     icon: HelpCircleIcon,
     color: 'text-muted-foreground',
@@ -61,8 +61,8 @@ export default function AddBuilderPage() {
   const [location, setLocation] = useState('Other');
   const [status, setStatus] = useState<BuilderStatus | null>(null);
   const [companyName, setCompanyName] = useState('');
-  const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -84,8 +84,8 @@ export default function AddBuilderPage() {
           location,
           status: status || 'unknown',
           company_name: companyName || null,
+          rating,
           review_text: reviewText,
-          rating: rating,
         }),
       });
 
@@ -119,7 +119,7 @@ export default function AddBuilderPage() {
           </div>
           <h1 className="text-xl text-foreground sm:text-2xl">Submission received!</h1>
           <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
-            Thank you for your contribution. Our team will review your submission and it will appear in the database once verified.
+            Thank you for contributing. Your builder and review will be reviewed by our team before going live.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center">
             {createdBuilderId && (
@@ -287,7 +287,7 @@ export default function AddBuilderPage() {
               {/* Rating */}
               <div className="space-y-2 sm:space-y-3">
                 <label className="text-sm font-medium">
-                  Your rating *
+                  Rate this builder *
                 </label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -298,9 +298,9 @@ export default function AddBuilderPage() {
                       className="p-1 transition-transform hover:scale-110"
                     >
                       <StarIcon
-                        className={`h-8 w-8 ${
+                        className={`h-8 w-8 sm:h-10 sm:w-10 ${
                           star <= rating
-                            ? 'fill-[var(--color-prompt)] text-[var(--color-prompt)]'
+                            ? 'fill-[var(--color-energy)] text-[var(--color-energy)]'
                             : 'text-muted-foreground/30'
                         }`}
                       />
@@ -318,13 +318,12 @@ export default function AddBuilderPage() {
                   id="reviewText"
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Share your experience with this builder..."
+                  placeholder="Share your experience with this builder (minimum 20 characters)"
                   rows={4}
-                  required
                   className="resize-none"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Minimum 20 characters. Be specific about your experience.
+                  {reviewText.length}/20 characters minimum
                 </p>
               </div>
 
@@ -332,21 +331,25 @@ export default function AddBuilderPage() {
                 type="submit"
                 size="lg"
                 className="h-11 w-full sm:h-12"
-                disabled={isLoading || !status || rating === 0 || reviewText.trim().length < 20}
+                disabled={isLoading || !status || rating === 0 || reviewText.length < 20}
               >
                 {isLoading ? (
                   <>
                     <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                    Adding...
+                    Submitting...
                   </>
                 ) : (
-                  'Add Builder & Review'
+                  'Submit Builder & Review'
                 )}
               </Button>
 
-              {(!status || rating === 0 || reviewText.trim().length < 20) && (
+              {(!status || rating === 0 || reviewText.length < 20) && (
                 <p className="text-center text-xs text-muted-foreground">
-                  {!status ? 'Select your experience' : rating === 0 ? 'Select a rating' : 'Review must be at least 20 characters'}
+                  {!status
+                    ? 'Please select your experience with this builder'
+                    : rating === 0
+                    ? 'Please rate this builder'
+                    : 'Please write at least 20 characters in your review'}
                 </p>
               )}
             </form>
