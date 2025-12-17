@@ -264,9 +264,6 @@ export default function AddBuilderPage() {
                     );
                   })}
                 </div>
-                {!status && (
-                  <p className="text-xs text-muted-foreground">Select your experience level</p>
-                )}
               </div>
 
               <div className="space-y-1.5 sm:space-y-2">
