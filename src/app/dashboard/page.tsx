@@ -16,11 +16,19 @@ import {
   HeartIcon,
   XIcon,
   UnlockIcon,
+  WrenchIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { PRICING, formatPrice } from '@/lib/pricing';
 import { StatusBadge } from '@/components/StatusBadge';
-import { BuilderStatus } from '@/lib/supabase/builders';
+import { BuilderStatus, tradeTypes } from '@/lib/supabase/builders';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface UnlockedBuilder {
   id: string;
@@ -47,6 +55,7 @@ export default function DashboardPage() {
   const [creditBalance, setCreditBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [searchPhone, setSearchPhone] = useState('');
+  const [tradeType, setTradeType] = useState<string>('');
   const [savedBuilders, setSavedBuilders] = useState<SavedBuilder[]>([]);
   const [unlockedBuilders, setUnlockedBuilders] = useState<UnlockedBuilder[]>([]);
   const router = useRouter();
@@ -137,10 +146,11 @@ export default function DashboardPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchPhone) return;
+    if (!searchPhone && !tradeType) return;
 
     const params = new URLSearchParams();
-    params.set('phone', searchPhone);
+    if (searchPhone) params.set('phone', searchPhone);
+    if (tradeType && tradeType !== 'any') params.set('trade', tradeType);
     router.push(`/search?${params.toString()}`);
   };
 
@@ -177,27 +187,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Credit Balance Card */}
-        <Card className="mb-6 border-0 shadow-md sm:mb-8">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Your Credits</p>
-                <p className="mt-1 text-3xl font-medium text-foreground">${creditBalance}</p>
-              </div>
-              <Button asChild>
-                <Link href="/buy-credits">
-                  Buy Credits
-                  <ArrowRightIcon className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-            <p className="mt-4 text-xs text-muted-foreground">
-              {formatPrice(PRICING.search)} per search, {formatPrice(PRICING.unlock)} to unlock full details. Earn {formatPrice(PRICING.reviewCredit)} for each approved review.
-            </p>
-          </CardContent>
-        </Card>
-
         {/* Quick Search */}
         <Card className="mb-6 border-0 shadow-md sm:mb-8">
           <CardContent className="p-4 sm:p-6">
@@ -206,23 +195,44 @@ export default function DashboardPage() {
               <h2 className="font-medium text-foreground">Search a Builder</h2>
             </div>
             <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
-              <div className="space-y-1.5">
-                <label htmlFor="phone" className="text-sm font-medium">
-                  Phone / WhatsApp
-                </label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={searchPhone}
-                  onChange={(e) => setSearchPhone(e.target.value)}
-                  placeholder="+62 812 XXX XXXX"
-                  className="h-11"
-                />
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="phone" className="text-sm font-medium">
+                    Phone / WhatsApp
+                  </label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={searchPhone}
+                    onChange={(e) => setSearchPhone(e.target.value)}
+                    placeholder="+62 812 XXX XXXX"
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">
+                    Trade Type
+                  </label>
+                  <Select value={tradeType} onValueChange={setTradeType}>
+                    <SelectTrigger className="h-11 w-full">
+                      <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
+                      <SelectValue placeholder="Any trade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any trade</SelectItem>
+                      {tradeTypes.map((trade) => (
+                        <SelectItem key={trade} value={trade}>
+                          {trade}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <Button
                 type="submit"
                 className="h-11 w-full sm:w-auto"
-                disabled={!searchPhone}
+                disabled={!searchPhone && !tradeType}
               >
                 Search Builder
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
