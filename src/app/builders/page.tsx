@@ -11,91 +11,125 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { StarRating } from '@/components/StarRating';
 import { FilterBar } from '@/components/FilterBar';
 import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType, locations, tradeTypes } from '@/lib/supabase/builders';
-import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, ChevronDownIcon } from 'lucide-react';
+import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, CheckIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-// Custom dropdown filter component for AG Grid
-interface DropdownFilterProps extends IFilterParams<BuilderRow> {
+// Custom multi-select checkbox filter component for AG Grid (like Enterprise Set Filter)
+interface SetFilterProps extends IFilterParams<BuilderRow> {
   options: string[];
 }
 
-const DropdownFilter = forwardRef((props: DropdownFilterProps, ref) => {
-  const [selectedValue, setSelectedValue] = useState<string>('');
-  const [isOpen, setIsOpen] = useState(false);
+const SetFilter = forwardRef((props: SetFilterProps, ref) => {
+  const [selectedValues, setSelectedValues] = useState<Set<string>>(new Set());
+  const [searchText, setSearchText] = useState('');
+
+  const filteredOptions = props.options.filter(option =>
+    option.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const allSelected = selectedValues.size === 0 || selectedValues.size === props.options.length;
 
   useImperativeHandle(ref, () => ({
     doesFilterPass(params: IDoesFilterPassParams<BuilderRow>) {
-      if (!selectedValue) return true;
+      if (selectedValues.size === 0) return true;
       const value = props.colDef.field ? params.data[props.colDef.field as keyof BuilderRow] : '';
-      return value === selectedValue;
+      return selectedValues.has(value as string);
     },
     isFilterActive() {
-      return selectedValue !== '';
+      return selectedValues.size > 0 && selectedValues.size < props.options.length;
     },
     getModel() {
-      return selectedValue ? { value: selectedValue } : null;
+      if (selectedValues.size === 0 || selectedValues.size === props.options.length) return null;
+      return { values: Array.from(selectedValues) };
     },
-    setModel(model: { value: string } | null) {
-      setSelectedValue(model?.value || '');
+    setModel(model: { values: string[] } | null) {
+      if (model?.values) {
+        setSelectedValues(new Set(model.values));
+      } else {
+        setSelectedValues(new Set());
+      }
     },
   }));
 
-  const handleSelect = (value: string) => {
-    setSelectedValue(value);
-    setIsOpen(false);
+  const handleToggle = (value: string) => {
+    const newSelected = new Set(selectedValues);
+    if (newSelected.has(value)) {
+      newSelected.delete(value);
+    } else {
+      newSelected.add(value);
+    }
+    setSelectedValues(newSelected);
     props.filterChangedCallback();
   };
 
-  const handleClear = () => {
-    setSelectedValue('');
-    setIsOpen(false);
+  const handleSelectAll = () => {
+    if (allSelected) {
+      // If all selected (or none), select none
+      setSelectedValues(new Set());
+    } else {
+      // Select all
+      setSelectedValues(new Set());
+    }
     props.filterChangedCallback();
   };
 
   return (
-    <div className="p-2 min-w-[160px]">
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent"
-        >
-          <span className={selectedValue ? 'text-foreground' : 'text-muted-foreground'}>
-            {selectedValue || 'All'}
-          </span>
-          <ChevronDownIcon className="h-4 w-4 opacity-50" />
-        </button>
-        {isOpen && (
-          <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[200px] overflow-auto rounded-md border bg-popover shadow-md">
-            <button
-              type="button"
-              onClick={handleClear}
-              className="flex w-full items-center px-3 py-2 text-sm hover:bg-accent text-muted-foreground"
-            >
-              All
-            </button>
-            {props.options.map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => handleSelect(option)}
-                className={`flex w-full items-center px-3 py-2 text-sm hover:bg-accent ${
-                  selectedValue === option ? 'bg-accent font-medium' : ''
-                }`}
-              >
-                {option}
-              </button>
-            ))}
+    <div className="p-2 min-w-[200px]">
+      {/* Search */}
+      <div className="relative mb-2">
+        <SearchIcon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          className="w-full rounded-md border border-input bg-background py-1.5 pl-8 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+        />
+      </div>
+
+      {/* Options list */}
+      <div className="max-h-[250px] overflow-auto">
+        {/* Select All */}
+        <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 hover:bg-accent">
+          <div className={`flex h-4 w-4 items-center justify-center rounded border ${
+            allSelected ? 'border-primary bg-primary' : 'border-input'
+          }`}>
+            {allSelected && <CheckIcon className="h-3 w-3 text-primary-foreground" />}
           </div>
-        )}
+          <span className="text-sm font-medium">(Select All)</span>
+        </label>
+
+        {/* Individual options */}
+        {filteredOptions.map((option) => {
+          const isChecked = selectedValues.size === 0 || selectedValues.has(option);
+          return (
+            <label
+              key={option}
+              className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 hover:bg-accent"
+            >
+              <div
+                className={`flex h-4 w-4 items-center justify-center rounded border ${
+                  isChecked ? 'border-primary bg-primary' : 'border-input'
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleToggle(option);
+                }}
+              >
+                {isChecked && <CheckIcon className="h-3 w-3 text-primary-foreground" />}
+              </div>
+              <span className="text-sm">{option}</span>
+            </label>
+          );
+        })}
       </div>
     </div>
   );
 });
-DropdownFilter.displayName = 'DropdownFilter';
+SetFilter.displayName = 'SetFilter';
 
 interface BuilderRow {
   id: string;
@@ -274,7 +308,7 @@ export default function BuildersPage() {
       field: 'location',
       headerName: 'Location',
       width: 150,
-      filter: DropdownFilter,
+      filter: SetFilter,
       filterParams: {
         options: locations,
       },
@@ -283,7 +317,7 @@ export default function BuildersPage() {
       field: 'tradeType',
       headerName: 'Trade',
       width: 200,
-      filter: DropdownFilter,
+      filter: SetFilter,
       filterParams: {
         options: tradeTypes,
       },
@@ -293,7 +327,7 @@ export default function BuildersPage() {
       headerName: 'Status',
       width: 150,
       cellRenderer: StatusCellRenderer,
-      filter: DropdownFilter,
+      filter: SetFilter,
       filterParams: {
         options: ['recommended', 'unknown', 'blacklisted'],
       },
