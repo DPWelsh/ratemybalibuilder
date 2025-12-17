@@ -522,7 +522,7 @@ function BuildersPageContent() {
           >
             <CardContent className="px-4 py-3 text-center sm:p-4">
               <p className="text-2xl font-medium text-[var(--status-blacklisted)] sm:text-3xl">{stats.blacklisted}</p>
-              <p className="text-xs text-muted-foreground sm:text-sm">Blacklisted</p>
+              <p className="text-xs text-muted-foreground sm:text-sm">Flagged</p>
             </CardContent>
           </Card>
         </div>
@@ -554,7 +554,7 @@ function BuildersPageContent() {
 
         {/* AG Grid */}
         <div
-          className="rounded-lg overflow-hidden shadow-md"
+          className="rounded-lg overflow-hidden shadow-md relative"
           style={{
             height: 'calc(100vh - 450px)',
             minHeight: '400px',
@@ -568,6 +568,7 @@ function BuildersPageContent() {
             onCellValueChanged={onCellValueChanged}
             singleClickEdit={true}
             stopEditingWhenCellsLoseFocus={true}
+            noRowsOverlayComponent={() => null}
             theme={themeQuartz.withParams({
               backgroundColor: 'var(--card)',
               headerBackgroundColor: 'var(--secondary)',
@@ -589,6 +590,24 @@ function BuildersPageContent() {
             rowClass={editMode ? '' : 'cursor-pointer'}
             tooltipShowDelay={300}
           />
+
+          {/* No results message */}
+          {rowData.length === 0 && !isLoading && (
+            <div className="absolute left-0 right-0 top-[48px] bottom-0 flex flex-col items-center justify-center bg-card border-t border-border">
+              <SearchIcon className="h-10 w-10 text-muted-foreground/40" />
+              <h3 className="mt-3 text-base font-medium text-foreground">No builders found</h3>
+              <p className="mt-1.5 text-sm text-muted-foreground text-center max-w-xs px-4">
+                {searchQuery ? (
+                  <>No results for &ldquo;{searchQuery}&rdquo;</>
+                ) : (
+                  <>No builders match the current filters</>
+                )}
+              </p>
+              <Button variant="outline" size="sm" className="mt-3" onClick={clearFilters}>
+                Clear filters
+              </Button>
+            </div>
+          )}
         </div>
 
         <p className="mt-3 text-center text-xs text-muted-foreground sm:text-sm">

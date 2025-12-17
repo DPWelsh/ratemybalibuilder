@@ -14,7 +14,7 @@ const statusConfig = {
     text: 'text-[var(--status-blacklisted)]',
     border: 'border-[var(--status-blacklisted)]/20',
     dot: 'bg-[var(--status-blacklisted)]',
-    label: 'Blacklisted',
+    label: 'Flagged',
   },
   recommended: {
     bg: 'bg-[var(--status-recommended)]/10',

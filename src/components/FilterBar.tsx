@@ -19,7 +19,7 @@ import {
 
 const statusOptions: { value: BuilderStatus; label: string }[] = [
   { value: 'recommended', label: 'Recommended' },
-  { value: 'blacklisted', label: 'Blacklisted' },
+  { value: 'blacklisted', label: 'Flagged' },
 ];
 
 interface FilterBarProps {

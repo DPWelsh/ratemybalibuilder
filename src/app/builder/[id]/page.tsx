@@ -247,7 +247,7 @@ export default function BuilderPage() {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center gap-2 text-[var(--color-energy)]">
                   <AlertTriangleIcon className="h-5 w-5" />
-                  <h2 className="font-medium">Warning - Blacklisted Builder</h2>
+                  <h2 className="font-medium">Warning - Flagged Builder</h2>
                 </div>
                 {builder.notes ? (
                   <p className="mt-4 text-sm leading-relaxed">{builder.notes}</p>

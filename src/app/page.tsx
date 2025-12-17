@@ -113,7 +113,7 @@ export default function Home() {
                       />
                     </div>
                     <Select value={tradeType} onValueChange={setTradeType}>
-                      <SelectTrigger className="h-12 w-full sm:w-[180px]">
+                      <SelectTrigger className="h-12 w-full sm:w-[180px]" type="button">
                         <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
                         <SelectValue placeholder="Select trade" />
                       </SelectTrigger>

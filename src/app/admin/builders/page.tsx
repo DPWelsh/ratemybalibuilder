@@ -218,7 +218,7 @@ export default function AdminBuildersPage() {
                         disabled={updatingId === builder.id}
                         className="text-xs"
                       >
-                        Blacklisted
+                        Flagged
                       </Button>
                     </div>
                   </div>

@@ -44,7 +44,7 @@ const statusOptions: {
   },
   {
     value: 'blacklisted',
-    label: 'Blacklisted',
+    label: 'Flagged',
     description: 'Bad experience, avoid',
     icon: AlertTriangleIcon,
     color: 'text-[var(--status-blacklisted)]',
