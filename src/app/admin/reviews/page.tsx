@@ -45,20 +45,27 @@ export default function AdminReviewsPage() {
         review_text,
         photos,
         created_at,
+        user_id,
         builder:builders (
           id,
           name,
           phone
-        ),
-        user:profiles!reviews_user_id_fkey (
-          email
         )
       `)
       .eq('status', 'pending')
       .order('created_at', { ascending: true });
 
-    if (!error && data) {
-      setReviews(data as unknown as PendingReview[]);
+    if (error) {
+      console.error('Error fetching reviews:', error);
+    }
+
+    if (data) {
+      // Map reviews and handle missing user info
+      const mappedReviews = data.map(review => ({
+        ...review,
+        user: { email: review.user_id ? 'Registered User' : 'Anonymous' }
+      }));
+      setReviews(mappedReviews as unknown as PendingReview[]);
     }
     setIsLoading(false);
   };
