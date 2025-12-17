@@ -75,11 +75,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Logged in on app pages: show sidebar
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[var(--color-core)]">
       <Sidebar isAdmin={isAdmin} />
       {/* Main content area with left margin for sidebar */}
-      <main className="pt-14 lg:ml-64 lg:pt-0">
-        {children}
+      <main className="min-h-screen pt-14 lg:ml-64 lg:pt-0">
+        <div className="min-h-screen bg-background lg:rounded-tl-2xl">
+          {children}
+        </div>
       </main>
     </div>
   );

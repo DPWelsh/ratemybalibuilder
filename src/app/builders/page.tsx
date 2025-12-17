@@ -246,8 +246,9 @@ export default function BuildersPage() {
       field: 'name',
       headerName: 'Builder Name',
       flex: 2,
-      minWidth: 150,
+      minWidth: 250,
       cellClass: 'font-medium',
+      tooltipField: 'name',
     },
     {
       field: 'phone',
@@ -423,6 +424,7 @@ export default function BuildersPage() {
             domLayout="normal"
             suppressCellFocus={true}
             rowClass="cursor-pointer"
+            tooltipShowDelay={300}
           />
         </div>
 
