@@ -349,7 +349,7 @@ export default function BuildersPage() {
   const defaultColDef = useMemo<ColDef>(() => ({
     sortable: true,
     resizable: true,
-    floatingFilter: true,
+    floatingFilter: false,
     cellStyle: { display: 'flex', alignItems: 'center' },
   }), []);
 
