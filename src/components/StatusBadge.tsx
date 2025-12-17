@@ -46,27 +46,50 @@ const dotSizeConfig = {
 };
 
 export function StatusBadge({ status, size = 'md', rating }: StatusBadgeProps) {
-  // Determine display status: if rating >= 4.5 and not blacklisted, show as "Top Rated"
-  let displayStatus: keyof typeof statusConfig = status;
-  if (rating && rating >= 4.5 && status !== 'blacklisted') {
-    displayStatus = 'top_rated';
+  // 3 independent statuses:
+  // - 'recommended' = Verified (future paid feature)
+  // - rating >= 4.5 = Top Rated (automatic based on reviews)
+  // - 'blacklisted' = Blacklisted
+
+  const badges: (keyof typeof statusConfig)[] = [];
+
+  // Check for blacklisted first (mutually exclusive with others)
+  if (status === 'blacklisted') {
+    badges.push('blacklisted');
+  } else {
+    // Verified badge (paid feature)
+    if (status === 'recommended') {
+      badges.push('recommended');
+    }
+    // Top Rated badge (automatic based on rating)
+    if (rating && rating >= 4.5) {
+      badges.push('top_rated');
+    }
   }
 
-  const config = statusConfig[displayStatus];
-  if (!config) return null;
+  // Don't show anything for 'unknown' without high rating
+  if (badges.length === 0) return null;
 
   return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-full border font-medium',
-        config.bg,
-        config.text,
-        config.border,
-        sizeConfig[size]
-      )}
-    >
-      <span className={cn('rounded-full', config.dot, dotSizeConfig[size])} />
-      <span>{config.label}</span>
-    </span>
+    <div className="flex flex-wrap gap-1.5">
+      {badges.map((badgeKey) => {
+        const config = statusConfig[badgeKey];
+        return (
+          <span
+            key={badgeKey}
+            className={cn(
+              'inline-flex items-center rounded-full border font-medium',
+              config.bg,
+              config.text,
+              config.border,
+              sizeConfig[size]
+            )}
+          >
+            <span className={cn('rounded-full', config.dot, dotSizeConfig[size])} />
+            <span>{config.label}</span>
+          </span>
+        );
+      })}
+    </div>
   );
 }
