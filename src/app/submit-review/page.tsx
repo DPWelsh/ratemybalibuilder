@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ interface BuilderOption {
   company_name: string | null;
 }
 
-export default function SubmitReviewPage() {
+function SubmitReviewContent() {
   const searchParams = useSearchParams();
   const preselectedBuilderId = searchParams.get('builder');
 
@@ -391,5 +391,17 @@ export default function SubmitReviewPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function SubmitReviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-[calc(100vh-57px)] items-center justify-center">
+        <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    }>
+      <SubmitReviewContent />
+    </Suspense>
   );
 }
