@@ -1,12 +1,47 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrustStats } from '@/components/TrustStats';
-import { PRICING, formatPrice } from '@/lib/pricing';
-import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon, ShieldCheckIcon, QuoteIcon } from 'lucide-react';
+import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon, ShieldCheckIcon, QuoteIcon, WrenchIcon } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { tradeTypes } from '@/lib/supabase/builders';
 
 export default function Home() {
+  const router = useRouter();
+  const [phone, setPhone] = useState('');
+  const [tradeType, setTradeType] = useState<string>('');
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Log the search
+    try {
+      await fetch('/api/search-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, trade_type: tradeType || null }),
+      });
+    } catch {
+      // Don't block search if logging fails
+    }
+
+    // Navigate to search results
+    const params = new URLSearchParams();
+    if (phone) params.set('phone', phone);
+    if (tradeType) params.set('trade', tradeType);
+    router.push(`/search?${params.toString()}`);
+  };
   return (
     <div className="flex min-h-[calc(100vh-57px)] flex-col sm:min-h-[calc(100vh-73px)]">
       {/* Hero Section */}
@@ -42,9 +77,9 @@ export default function Home() {
           </p>
 
           {/* Promotion Banner */}
-          <div className="mx-auto mt-6 max-w-md animate-pulse-subtle rounded-lg border border-[var(--color-prompt)]/30 bg-[var(--color-prompt)]/10 px-4 py-3 sm:mt-8">
+          <div className="mx-auto mt-6 max-w-md animate-pulse-subtle rounded-lg border border-[var(--status-recommended)]/30 bg-[var(--status-recommended)]/10 px-4 py-3 sm:mt-8">
             <p className="text-sm font-medium text-[var(--color-core)]">
-              Early Promotion: New users get <strong className="text-[var(--color-energy)]">$50 worth</strong> of free search credits
+              100% Free — Search unlimited builders, no account required
             </p>
           </div>
 
@@ -52,18 +87,41 @@ export default function Home() {
           <div className="mx-auto mt-8 max-w-xl sm:mt-12">
             <Card className="border-0 shadow-lg">
               <CardContent className="p-4 sm:p-6">
-                <form action="/search" method="GET" className="space-y-3 sm:space-y-4">
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <label htmlFor="phone" className="text-sm font-medium">
-                      Phone / WhatsApp
-                    </label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="+62 812 XXX XXXX"
-                      className="h-11 sm:h-12"
-                    />
+                <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <label htmlFor="phone" className="text-sm font-medium">
+                        Phone / WhatsApp
+                      </label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+62 812 XXX XXXX"
+                        className="h-12"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <label className="text-sm font-medium">
+                        Trade Type
+                      </label>
+                      <Select value={tradeType} onValueChange={setTradeType}>
+                        <SelectTrigger className="h-12 w-full">
+                          <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
+                          <SelectValue placeholder="Any trade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="any">Any trade</SelectItem>
+                          {tradeTypes.map((trade) => (
+                            <SelectItem key={trade} value={trade}>
+                              {trade}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <Button type="submit" size="lg" className="h-11 w-full sm:h-12">
                     Search builder
@@ -71,7 +129,7 @@ export default function Home() {
                   </Button>
                 </form>
                 <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
-                  {formatPrice(PRICING.unlock)} to unlock findings. Only charged if found.
+                  Free to search. Help us grow by adding builders you know.
                 </p>
                 {/* Security badge */}
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
@@ -126,7 +184,7 @@ export default function Home() {
                   Enter the builder&apos;s name and phone number. We&apos;ll check
                   our database instantly.
                 </p>
-                <p className="mt-3 font-medium sm:mt-4">{formatPrice(PRICING.search)}</p>
+                <p className="mt-3 font-medium text-[var(--status-recommended)] sm:mt-4">Free</p>
               </CardContent>
             </Card>
 
@@ -140,7 +198,7 @@ export default function Home() {
                   Found a match? Unlock full details including reviews,
                   photos, and red flags.
                 </p>
-                <p className="mt-3 font-medium sm:mt-4">{formatPrice(PRICING.unlock)}</p>
+                <p className="mt-3 font-medium text-[var(--status-recommended)] sm:mt-4">Free</p>
               </CardContent>
             </Card>
 
@@ -232,24 +290,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Earn Credits CTA */}
+      {/* Contribute CTA */}
       <section className="border-t px-4 py-12 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl">Built something in Bali?</h2>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl">Help build the database</h2>
           <p className="mt-4 text-sm text-muted-foreground sm:mt-6 sm:text-lg">
-            Help other expats by sharing your experience. Submit a review and
-            earn {formatPrice(PRICING.reviewCredit)} in credits toward your next search.
+            Know a builder in Bali? Add them to our database and help other expats make informed decisions.
+            Every contribution makes this community stronger.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
             <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/submit-review">
-                Submit a review
+              <Link href="/add-builder">
+                Add a builder
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-              <Link href="/buy-credits">
-                Buy credits
+              <Link href="/submit-review">
+                Submit a review
               </Link>
             </Button>
           </div>

@@ -280,3 +280,27 @@ begin
   group by b.id, b.name, b.phone, b.status;
 end;
 $$ language plpgsql security definer;
+
+-- ============================================
+-- SEARCH LOGS (track all searches for analytics)
+-- ============================================
+create table public.search_logs (
+  id uuid default uuid_generate_v4() primary key,
+  phone text,
+  trade_type text,
+  user_id uuid references auth.users on delete set null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS
+alter table public.search_logs enable row level security;
+
+-- Allow anonymous inserts (anyone can log a search)
+create policy "Anyone can create search logs" on public.search_logs
+  for insert with check (true);
+
+-- Only admins can view search logs
+create policy "Admins can view search logs" on public.search_logs
+  for select using (
+    exists (select 1 from public.profiles where id = auth.uid() and is_admin = true)
+  );
