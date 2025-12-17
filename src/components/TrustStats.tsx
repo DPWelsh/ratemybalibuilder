@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { HardHatIcon, StarIcon, ShieldCheckIcon } from 'lucide-react';
+import { HardHatIcon, StarIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 interface TrustStatsProps {
@@ -52,7 +52,6 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
 
   const totalBuilders = stats?.builders ?? 0;
   const totalReviews = stats?.reviews ?? 0;
-  const searchesCount = stats?.searches ?? 0;
 
   if (variant === 'compact') {
     return (
@@ -97,18 +96,6 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
             <p className="text-2xl font-medium text-foreground">{totalReviews}</p>
           )}
           <p className="text-sm text-muted-foreground">Reviews Submitted</p>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
-          <ShieldCheckIcon className="h-6 w-6 text-foreground" />
-        </div>
-        <div>
-          {isLoading ? <StatSkeleton /> : (
-            <p className="text-2xl font-medium text-foreground">{searchesCount}+</p>
-          )}
-          <p className="text-sm text-muted-foreground">Searches Made</p>
         </div>
       </div>
     </div>

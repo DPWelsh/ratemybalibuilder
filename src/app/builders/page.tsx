@@ -152,7 +152,7 @@ function StatusCellRenderer(params: ICellRendererParams<BuilderRow>) {
   return <StatusBadge status={params.value as BuilderStatus} size="sm" />;
 }
 
-// Custom cell renderer for star rating
+// Custom cell renderer for star rating (signed in)
 function RatingCellRenderer(params: ICellRendererParams<BuilderRow>) {
   const rating = params.value as number;
   if (!rating || rating === 0) return <span className="text-muted-foreground">No ratings</span>;
@@ -161,6 +161,18 @@ function RatingCellRenderer(params: ICellRendererParams<BuilderRow>) {
       <StarRating rating={rating} size="sm" />
       <span className="text-sm">{rating.toFixed(1)}</span>
     </div>
+  );
+}
+
+// Custom cell renderer for blurred rating (not signed in)
+function BlurredRatingCellRenderer() {
+  return (
+    <Link href="/login" className="flex items-center gap-1.5 group" onClick={(e) => e.stopPropagation()}>
+      <div className="blur-sm select-none pointer-events-none">
+        <StarRating rating={4} size="sm" />
+      </div>
+      <span className="text-xs text-muted-foreground group-hover:text-[var(--color-prompt)] group-hover:underline">Sign in</span>
+    </Link>
   );
 }
 
@@ -220,6 +232,7 @@ function BuildersPageContent() {
   const [stats, setStats] = useState({ total: 0, recommended: 0, blacklisted: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
   // Filter state - initialized from URL params
@@ -236,8 +249,9 @@ function BuildersPageContent() {
       setIsLoading(true);
       const supabase = createClient();
 
-      // Check if user is admin
+      // Check if user is signed in and admin
       const { data: { user } } = await supabase.auth.getUser();
+      setIsSignedIn(!!user);
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
@@ -363,7 +377,7 @@ function BuildersPageContent() {
       field: 'avgRating',
       headerName: 'Rating',
       width: 140,
-      cellRenderer: RatingCellRenderer,
+      cellRenderer: isSignedIn ? RatingCellRenderer : BlurredRatingCellRenderer,
       sort: 'desc',
       editable: false, // Rating is calculated from reviews
     },
@@ -426,7 +440,7 @@ function BuildersPageContent() {
         values: ['recommended', 'blacklisted'],
       },
     },
-  ], [editMode]);
+  ], [editMode, isSignedIn]);
 
   // Default column settings
   const defaultColDef = useMemo<ColDef>(() => ({

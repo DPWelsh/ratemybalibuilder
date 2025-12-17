@@ -247,16 +247,20 @@ export default function BuilderPage() {
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center gap-2 text-[var(--color-energy)]">
                   <AlertTriangleIcon className="h-5 w-5" />
-                  <h2 className="font-medium">Warning</h2>
+                  <h2 className="font-medium">Warning - Blacklisted Builder</h2>
                 </div>
-                <ul className="mt-4 space-y-2">
-                  {redFlags.map((flag, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--color-energy)]" />
-                      <span>{flag}</span>
-                    </li>
-                  ))}
-                </ul>
+                {builder.notes ? (
+                  <p className="mt-4 text-sm leading-relaxed">{builder.notes}</p>
+                ) : (
+                  <ul className="mt-4 space-y-2">
+                    {redFlags.map((flag, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm">
+                        <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--color-energy)]" />
+                        <span>{flag}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </CardContent>
             </Card>
           )}

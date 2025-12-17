@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrustStats } from '@/components/TrustStats';
-import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon, ShieldCheckIcon, QuoteIcon, WrenchIcon, Loader2Icon } from 'lucide-react';
+import { SearchIcon, ArrowRightIcon, ShieldCheckIcon, WrenchIcon, Loader2Icon, PhoneCallIcon, FileCheckIcon, UsersIcon } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -153,22 +153,6 @@ export default function Home() {
             </Card>
           </div>
 
-          {/* Status Legend - horizontal scroll on mobile */}
-          <div className="mt-8 flex items-center justify-center gap-4 text-xs sm:mt-12 sm:gap-8 sm:text-sm">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#22c55e] sm:h-3 sm:w-3" />
-              <span className="text-muted-foreground">Recommended</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-prompt)] sm:h-3 sm:w-3" />
-              <span className="text-muted-foreground">Unknown</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-energy)] sm:h-3 sm:w-3" />
-              <span className="text-muted-foreground">Blacklisted</span>
-            </div>
-          </div>
-
           {/* Trust Stats */}
           <div className="mt-10 sm:mt-16">
             <TrustStats />
@@ -176,129 +160,47 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="border-t bg-card px-4 py-12 sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-5xl">
+      {/* Verification Process Section */}
+      <section className="border-t bg-secondary/30 px-4 py-12 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-4xl">
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl">How it works</h2>
-            <p className="mt-2 text-sm text-muted-foreground sm:mt-4 sm:text-base">
-              Three simple steps to protect your investment
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl">Every listing is manually verified</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+              We don&apos;t just collect reviews — we verify them. Our local team contacts builders directly
+              and cross-references project details to ensure every review reflects real experiences.
             </p>
           </div>
 
-          <div className="mt-8 grid gap-4 sm:mt-16 sm:gap-8 md:grid-cols-3">
-            <Card className="relative overflow-hidden border-0 bg-secondary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
-              <CardContent className="p-5 sm:p-8">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:h-12 sm:w-12">
-                  <SearchIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                </div>
-                <h3 className="mt-4 text-lg sm:mt-6 sm:text-xl">Search</h3>
-                <p className="mt-2 text-sm text-muted-foreground sm:mt-3 sm:text-base">
-                  Enter the builder&apos;s name and phone number. We&apos;ll check
-                  our database instantly.
-                </p>
-                <p className="mt-3 font-medium text-[var(--status-recommended)] sm:mt-4">Free</p>
-              </CardContent>
-            </Card>
+          <div className="mt-10 grid gap-6 sm:mt-12 sm:grid-cols-3 sm:gap-8">
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
+                <PhoneCallIcon className="h-7 w-7 text-[var(--status-recommended)]" />
+              </div>
+              <h3 className="mt-4 font-medium">Direct Contact</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Our Indonesian team calls each builder to verify their business details, active projects, and credentials.
+              </p>
+            </div>
 
-            <Card className="relative overflow-hidden border-0 bg-secondary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
-              <CardContent className="p-5 sm:p-8">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:h-12 sm:w-12">
-                  <UnlockIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                </div>
-                <h3 className="mt-4 text-lg sm:mt-6 sm:text-xl">Unlock</h3>
-                <p className="mt-2 text-sm text-muted-foreground sm:mt-3 sm:text-base">
-                  Found a match? Unlock full details including reviews,
-                  photos, and red flags.
-                </p>
-                <p className="mt-3 font-medium text-[var(--status-recommended)] sm:mt-4">Free</p>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
+                <FileCheckIcon className="h-7 w-7 text-[var(--status-recommended)]" />
+              </div>
+              <h3 className="mt-4 font-medium">Review Validation</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Every review is checked for specific project details, dates, and verifiable information before approval.
+              </p>
+            </div>
 
-            <Card className="relative overflow-hidden border-0 bg-secondary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
-              <CardContent className="p-5 sm:p-8">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground sm:h-12 sm:w-12">
-                  <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                </div>
-                <h3 className="mt-4 text-lg sm:mt-6 sm:text-xl">Decide</h3>
-                <p className="mt-2 text-sm text-muted-foreground sm:mt-3 sm:text-base">
-                  Make an informed decision with real feedback from
-                  others who&apos;ve been there.
-                </p>
-                <p className="mt-3 font-medium text-[#22c55e] sm:mt-4">Peace of mind</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="border-t px-4 py-12 sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl">What people are saying</h2>
-            <p className="mt-2 text-sm text-muted-foreground sm:mt-4 sm:text-base">
-              Real experiences from the Bali building community
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3">
-            {/* Testimonial 1 */}
-            <Card className="border-0 bg-secondary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
-              <CardContent className="p-5 sm:p-6">
-                <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
-                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                  &ldquo;Saved me from a contractor with a history of abandoned projects. Worth every dollar.&rdquo;
-                </p>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-prompt)]/20 text-sm font-medium">
-                    MK
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Mike K.</p>
-                    <p className="text-xs text-muted-foreground">Villa project, Canggu</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Testimonial 2 */}
-            <Card className="border-0 bg-secondary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
-              <CardContent className="p-5 sm:p-6">
-                <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
-                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                  &ldquo;Found a recommended builder through the platform. Our villa was completed on time and on budget.&rdquo;
-                </p>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--status-recommended)]/20 text-sm font-medium">
-                    SL
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Sarah L.</p>
-                    <p className="text-xs text-muted-foreground">New build, Ubud</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Testimonial 3 */}
-            <Card className="border-0 bg-secondary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--color-prompt)]/10">
-              <CardContent className="p-5 sm:p-6">
-                <QuoteIcon className="h-6 w-6 text-[var(--color-prompt)]/50" />
-                <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                  &ldquo;I wish this existed when I started my first project. Would have saved months of stress.&rdquo;
-                </p>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-energy)]/20 text-sm font-medium">
-                    JD
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">James D.</p>
-                    <p className="text-xs text-muted-foreground">Renovation, Seminyak</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
+                <UsersIcon className="h-7 w-7 text-[var(--status-recommended)]" />
+              </div>
+              <h3 className="mt-4 font-medium">Community Reports</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Active expat and local community members flag suspicious activity and report their firsthand experiences.
+              </p>
+            </div>
           </div>
         </div>
       </section>
