@@ -11,7 +11,8 @@ import {
   UsersIcon,
   ShieldIcon,
   MenuIcon,
-  XIcon
+  XIcon,
+  UserIcon
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
@@ -112,6 +113,18 @@ export function Sidebar({ isAdmin }: SidebarProps) {
 
       {/* Bottom Actions */}
       <div className="border-t border-[var(--color-cloud)]/10 p-3">
+        <Link
+          href="/account"
+          onClick={() => setMobileOpen(false)}
+          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+            isActive('/account')
+              ? 'bg-[var(--color-prompt)] text-[var(--color-core)]'
+              : 'text-[var(--color-cloud)]/70 hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-cloud)]'
+          }`}
+        >
+          <UserIcon className="h-5 w-5" />
+          Account
+        </Link>
         <button
           onClick={handleSignOut}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-cloud)]"
