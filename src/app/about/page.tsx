@@ -13,14 +13,14 @@ export default function AboutPage() {
             About RateMyBaliBuilder
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:mt-6 sm:text-lg">
-            Helping expats make informed decisions about construction in Bali
+            Helping you make informed decisions about construction in Bali
           </p>
         </div>
 
         {/* Story */}
         <div className="mt-12 space-y-6 text-muted-foreground sm:mt-16">
           <p>
-            Building in Bali can be an incredible experience—or a nightmare. Too many expats have
+            Building in Bali can be an incredible experience—or a nightmare. Too many people have
             learned this the hard way, losing money to unreliable contractors, facing endless
             delays, or dealing with substandard work that costs even more to fix.
           </p>
@@ -58,7 +58,7 @@ export default function AboutPage() {
               </div>
               <h3 className="mt-4 font-medium text-foreground">Community</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Built by expats, for expats. We protect each other.
+                Built by the community, for the community. We protect each other.
               </p>
             </CardContent>
           </Card>

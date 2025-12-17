@@ -108,7 +108,7 @@ export default function AddBuilderPage() {
           Add a builder
         </h1>
         <p className="mt-2 text-center text-sm text-muted-foreground sm:mt-3 sm:text-base">
-          Know a builder in Bali? Add them to help other expats.
+          Know a builder in Bali? Add them to help others.
         </p>
 
         <Card className="mt-6 border-0 shadow-lg sm:mt-8">

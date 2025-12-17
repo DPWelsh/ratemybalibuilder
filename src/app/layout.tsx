@@ -11,8 +11,8 @@ export const metadata: Metadata = {
     default: "RateMyBaliBuilder - Vet Your Builder Before You Build",
     template: "%s | RateMyBaliBuilder",
   },
-  description: "Search our database of Bali builders. See ratings, reviews, and red flags from real expats. Protect your investment before signing that contract.",
-  keywords: ["Bali builder", "Bali contractor", "Bali construction", "villa builder Bali", "expat Bali", "builder reviews", "contractor reviews Indonesia"],
+  description: "Search our database of Bali builders. See ratings, reviews, and red flags from real clients. Protect your investment before signing that contract.",
+  keywords: ["Bali builder", "Bali contractor", "Bali construction", "villa builder Bali", "builder reviews", "contractor reviews Indonesia", "Bali villa construction"],
   authors: [{ name: "RateMyBaliBuilder" }],
   creator: "RateMyBaliBuilder",
   publisher: "RateMyBaliBuilder",
@@ -37,12 +37,12 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "RateMyBaliBuilder",
     title: "RateMyBaliBuilder - Vet Your Builder Before You Build",
-    description: "Search our database of Bali builders. See ratings, reviews, and red flags from real expats. Protect your investment before signing that contract.",
+    description: "Search our database of Bali builders. See ratings, reviews, and red flags from real clients. Protect your investment before signing that contract.",
   },
   twitter: {
     card: "summary_large_image",
     title: "RateMyBaliBuilder - Vet Your Builder Before You Build",
-    description: "Search our database of Bali builders. See ratings, reviews, and red flags from real expats.",
+    description: "Search our database of Bali builders. See ratings, reviews, and red flags from real clients.",
   },
 };
 

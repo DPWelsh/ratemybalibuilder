@@ -52,7 +52,7 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
 
   const totalBuilders = stats?.builders ?? 0;
   const totalReviews = stats?.reviews ?? 0;
-  const expatsProtected = stats?.searches ?? 0;
+  const searchesCount = stats?.searches ?? 0;
 
   if (variant === 'compact') {
     return (
@@ -106,9 +106,9 @@ export function TrustStats({ variant = 'hero', className = '' }: TrustStatsProps
         </div>
         <div>
           {isLoading ? <StatSkeleton /> : (
-            <p className="text-2xl font-medium text-foreground">{expatsProtected}+</p>
+            <p className="text-2xl font-medium text-foreground">{searchesCount}+</p>
           )}
-          <p className="text-sm text-muted-foreground">Expats Protected</p>
+          <p className="text-sm text-muted-foreground">Searches Made</p>
         </div>
       </div>
     </div>

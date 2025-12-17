@@ -438,7 +438,7 @@ export default function BuildersPage() {
             <UsersIcon className="mx-auto h-8 w-8 text-muted-foreground" />
             <h3 className="mt-3 font-medium text-foreground">Know a builder not listed?</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Help other expats by adding builders you know
+              Help others by adding builders you know
             </p>
             <Button asChild className="mt-4">
               <Link href="/add-builder">Add a Builder</Link>
