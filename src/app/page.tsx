@@ -19,18 +19,28 @@ import { tradeTypes } from '@/lib/supabase/builders';
 
 export default function Home() {
   const router = useRouter();
-  const [phone, setPhone] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [tradeType, setTradeType] = useState<string>('');
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!searchQuery.trim()) return;
+
+    // Determine if input looks like a phone number (mostly digits)
+    const digitsOnly = searchQuery.replace(/[^\d]/g, '');
+    const isPhone = digitsOnly.length >= 6;
 
     // Log the search
     try {
       await fetch('/api/search-logs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, trade_type: tradeType || null }),
+        body: JSON.stringify({
+          phone: isPhone ? searchQuery : null,
+          name: !isPhone ? searchQuery : null,
+          trade_type: tradeType || null,
+        }),
       });
     } catch {
       // Don't block search if logging fails
@@ -38,8 +48,12 @@ export default function Home() {
 
     // Navigate to search results
     const params = new URLSearchParams();
-    if (phone) params.set('phone', phone);
-    if (tradeType) params.set('trade', tradeType);
+    if (isPhone) {
+      params.set('phone', searchQuery);
+    } else {
+      params.set('name', searchQuery);
+    }
+    if (tradeType && tradeType !== 'any') params.set('trade', tradeType);
     router.push(`/search?${params.toString()}`);
   };
   return (
@@ -88,42 +102,43 @@ export default function Home() {
             <Card className="border-0 shadow-lg">
               <CardContent className="p-4 sm:p-6">
                 <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium">
-                        Phone / WhatsApp
-                      </label>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <label htmlFor="search" className="text-sm font-medium">
+                      Search by name or phone number
+                    </label>
+                    <div className="relative">
+                      <SearchIcon className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        placeholder="+62 812 XXX XXXX"
-                        className="h-12"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        id="search"
+                        name="search"
+                        type="text"
+                        placeholder="Enter builder name or phone..."
+                        className="h-12 pl-11 text-base"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </div>
-                    <div className="space-y-1.5 sm:space-y-2">
-                      <label className="text-sm font-medium">
-                        Trade Type
-                      </label>
-                      <Select value={tradeType} onValueChange={setTradeType}>
-                        <SelectTrigger className="h-12 w-full">
-                          <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-                          <SelectValue placeholder="Any trade" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="any">Any trade</SelectItem>
-                          {tradeTypes.map((trade) => (
-                            <SelectItem key={trade} value={trade}>
-                              {trade}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
-                  <Button type="submit" size="lg" className="h-11 w-full sm:h-12">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <label className="text-sm font-medium">
+                      Trade Type <span className="font-normal text-muted-foreground">(optional)</span>
+                    </label>
+                    <Select value={tradeType} onValueChange={setTradeType}>
+                      <SelectTrigger className="h-12 w-full">
+                        <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
+                        <SelectValue placeholder="Any trade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any trade</SelectItem>
+                        {tradeTypes.map((trade) => (
+                          <SelectItem key={trade} value={trade}>
+                            {trade}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={!searchQuery.trim()}>
                     Search builder
                     <ArrowRightIcon className="ml-2 h-4 w-4" />
                   </Button>
