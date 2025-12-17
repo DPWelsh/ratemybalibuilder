@@ -221,12 +221,12 @@ export default function DashboardPage() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-sm font-medium">
-                  Trade Type <span className="font-normal text-muted-foreground">(optional)</span>
+                  What type of trade are you looking for?
                 </label>
                 <Select value={tradeType} onValueChange={setTradeType}>
                   <SelectTrigger className="h-11 w-full">
                     <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-                    <SelectValue placeholder="Any trade" />
+                    <SelectValue placeholder="Select trade" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="any">Any trade</SelectItem>

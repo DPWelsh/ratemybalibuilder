@@ -102,31 +102,23 @@ export default function Home() {
             <Card className="border-0 shadow-lg">
               <CardContent className="p-4 sm:p-6">
                 <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <label htmlFor="search" className="text-sm font-medium">
-                      Search by name or phone number
-                    </label>
-                    <div className="relative">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+                    <div className="relative flex-1">
                       <SearchIcon className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         id="search"
                         name="search"
                         type="text"
-                        placeholder="Enter builder name or phone..."
+                        placeholder="Name or phone..."
                         className="h-12 pl-11 text-base"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </div>
-                  </div>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <label className="text-sm font-medium">
-                      Trade Type <span className="font-normal text-muted-foreground">(optional)</span>
-                    </label>
                     <Select value={tradeType} onValueChange={setTradeType}>
-                      <SelectTrigger className="h-12 w-full">
+                      <SelectTrigger className="h-12 w-full sm:w-[180px]">
                         <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-                        <SelectValue placeholder="Any trade" />
+                        <SelectValue placeholder="Select trade" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="any">Any trade</SelectItem>
