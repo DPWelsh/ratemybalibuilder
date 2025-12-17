@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StarRating } from '@/components/StarRating';
-import { PRICING, formatPrice } from '@/lib/pricing';
 import {
   CheckIcon,
   XIcon,
@@ -181,7 +180,7 @@ export default function AdminReviewsPage() {
                       ) : (
                         <CheckIcon className="h-4 w-4" />
                       )}
-                      Approve (+{formatPrice(PRICING.reviewCredit)} to user)
+                      Approve
                     </Button>
                     <Button
                       variant="outline"
