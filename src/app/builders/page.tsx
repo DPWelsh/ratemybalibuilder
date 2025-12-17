@@ -511,7 +511,7 @@ function BuildersPageContent() {
           >
             <CardContent className="px-4 py-3 text-center sm:p-4">
               <p className="text-2xl font-medium text-[var(--status-recommended)] sm:text-3xl">{stats.recommended}</p>
-              <p className="text-xs text-muted-foreground sm:text-sm">Verified</p>
+              <p className="text-xs text-muted-foreground sm:text-sm">Recommended</p>
             </CardContent>
           </Card>
           <Card
