@@ -21,6 +21,7 @@ import {
   PhoneIcon,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { formatPhone } from '@/lib/utils';
 
 interface Builder {
   id: string;
@@ -179,7 +180,7 @@ export default function BuilderPage() {
               <div className="mt-6 space-y-3">
                 <div className="flex items-center gap-2 text-foreground">
                   <PhoneIcon className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-mono">{builder.phone}</span>
+                  <span className="font-mono">{formatPhone(builder.phone)}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-2">

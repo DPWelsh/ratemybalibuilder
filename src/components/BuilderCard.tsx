@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { LockIcon, ArrowRightIcon } from 'lucide-react';
 import { PRICING, formatPrice } from '@/lib/pricing';
+import { formatPhone } from '@/lib/utils';
 
 interface BuilderCardProps {
   builder: BuilderSearchResult;
@@ -20,7 +21,7 @@ export function BuilderCard({ builder, hasFullAccess = false }: BuilderCardProps
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">
             <h3 className="text-lg font-medium text-foreground sm:text-xl">{builder.name}</h3>
-            <p className="text-sm text-muted-foreground sm:text-base">{builder.phone}</p>
+            <p className="text-sm text-muted-foreground sm:text-base">{formatPhone(builder.phone)}</p>
           </div>
           <StatusBadge status={builder.status} size="md" />
         </div>

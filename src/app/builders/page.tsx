@@ -14,6 +14,7 @@ import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location
 import { createClient } from '@/lib/supabase/client';
 import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, CheckIcon, PencilIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { formatPhone } from '@/lib/utils';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -167,7 +168,7 @@ function RatingCellRenderer(params: ICellRendererParams<BuilderRow>) {
 function PhoneCellRenderer(params: ICellRendererParams<BuilderRow>) {
   const phone = params.value as string;
   if (!phone) return <span className="text-muted-foreground">-</span>;
-  return <span className="font-mono text-sm">{phone}</span>;
+  return <span className="font-mono text-sm">{formatPhone(phone)}</span>;
 }
 
 // Custom cell renderer for website (now free - show link)
@@ -346,7 +347,8 @@ export default function BuildersPage() {
     {
       field: 'phone',
       headerName: 'Phone',
-      width: 150,
+      width: 180,
+      minWidth: 180,
       cellRenderer: editMode ? undefined : PhoneCellRenderer,
       editable: editMode,
     },

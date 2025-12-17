@@ -9,6 +9,7 @@ import { StarRatingInput } from '@/components/StarRating';
 import { CheckCircleIcon, ImagePlusIcon, XIcon, ArrowLeftIcon, Loader2Icon, SearchIcon, UserPlusIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { createClient } from '@/lib/supabase/client';
+import { formatPhone } from '@/lib/utils';
 
 interface BuilderOption {
   id: string;
@@ -216,7 +217,7 @@ function SubmitReviewContent() {
                               >
                                 <p className="font-medium text-foreground">{builder.name}</p>
                                 <p className="text-xs text-muted-foreground">
-                                  {builder.phone}
+                                  {formatPhone(builder.phone)}
                                   {builder.company_name && ` • ${builder.company_name}`}
                                 </p>
                               </button>
@@ -246,7 +247,7 @@ function SubmitReviewContent() {
                   <div className="flex items-center justify-between rounded-lg bg-[var(--status-recommended)]/10 p-3">
                     <div>
                       <p className="font-medium text-foreground">{selectedBuilder.name}</p>
-                      <p className="text-sm text-muted-foreground">{selectedBuilder.phone}</p>
+                      <p className="text-sm text-muted-foreground">{formatPhone(selectedBuilder.phone)}</p>
                       {selectedBuilder.company_name && (
                         <p className="text-sm text-muted-foreground">{selectedBuilder.company_name}</p>
                       )}

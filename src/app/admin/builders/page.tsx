@@ -11,6 +11,7 @@ import {
   RefreshCwIcon,
   SearchIcon,
 } from 'lucide-react';
+import { formatPhone } from '@/lib/utils';
 
 interface Builder {
   id: string;
@@ -170,7 +171,7 @@ export default function AdminBuildersPage() {
                         <p className="mt-1 text-sm text-muted-foreground">{builder.company_name}</p>
                       )}
                       <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                        <span>{builder.phone}</span>
+                        <span>{formatPhone(builder.phone)}</span>
                         <span>{builder.location}</span>
                         <select
                           value={builder.trade_type}

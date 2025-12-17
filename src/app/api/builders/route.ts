@@ -1,6 +1,28 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+// Format phone number with dashes: +62 812-3456-7890
+function formatPhone(phone: string): string {
+  // Remove all non-digits except leading +
+  let digits = phone.replace(/[^\d+]/g, '');
+
+  // Ensure starts with +62
+  if (digits.startsWith('62')) digits = '+' + digits;
+  if (!digits.startsWith('+62')) return phone;
+
+  // Get the number part after +62
+  const numberPart = digits.substring(3);
+
+  // Format: +62 xxx-xxxx-xxxx
+  if (numberPart.length >= 10) {
+    return '+62 ' + numberPart.substring(0, 3) + '-' + numberPart.substring(3, 7) + '-' + numberPart.substring(7);
+  } else if (numberPart.length >= 7) {
+    return '+62 ' + numberPart.substring(0, 3) + '-' + numberPart.substring(3, 7) + (numberPart.length > 7 ? '-' + numberPart.substring(7) : '');
+  }
+
+  return phone;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -21,6 +43,9 @@ export async function POST(request: Request) {
       );
     }
 
+    // Format the phone number consistently
+    const formattedPhone = formatPhone(phone.trim());
+
     // Use admin client to bypass RLS for builder creation
     const supabase = createAdminClient();
 
@@ -28,7 +53,7 @@ export async function POST(request: Request) {
     const { data: existing } = await supabase
       .from('builders')
       .select('id, name')
-      .eq('phone', phone)
+      .eq('phone', formattedPhone)
       .single();
 
     if (existing) {
@@ -43,7 +68,7 @@ export async function POST(request: Request) {
       .from('builders')
       .insert({
         name: name.trim(),
-        phone: phone.trim(),
+        phone: formattedPhone,
         trade_type: trade_type || 'General Contractor',
         location: location || 'Other',
         company_name: company_name?.trim() || null,

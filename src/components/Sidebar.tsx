@@ -54,10 +54,10 @@ export function Sidebar({ isAdmin }: SidebarProps) {
   const NavContent = () => (
     <>
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-[var(--color-cloud)]/10 px-4">
+      <Link href="/" className="flex h-16 items-center gap-2 border-b border-[var(--color-cloud)]/10 px-4 hover:bg-[var(--color-cloud)]/5 transition-colors">
         <Image src="/icon.svg" alt="Logo" width={28} height={28} className="h-7 w-7 brightness-0 invert" />
-        <span className="font-['Raptor'] text-lg text-[var(--color-cloud)]">RateMyBali</span>
-      </div>
+        <span className="font-['Raptor'] text-lg text-[var(--color-cloud)]">RateMyBaliBuilder</span>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-3">
@@ -140,10 +140,10 @@ export function Sidebar({ isAdmin }: SidebarProps) {
     <>
       {/* Mobile Header */}
       <div className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between border-b border-[var(--color-cloud)]/10 bg-[var(--color-core)] px-4 lg:hidden">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image src="/icon.svg" alt="Logo" width={24} height={24} className="h-6 w-6 brightness-0 invert" />
-          <span className="font-['Raptor'] text-base text-[var(--color-cloud)]">RateMyBali</span>
-        </div>
+          <span className="font-['Raptor'] text-base text-[var(--color-cloud)]">RateMyBaliBuilder</span>
+        </Link>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="flex h-10 w-10 items-center justify-center rounded-lg text-[var(--color-cloud)] hover:bg-[var(--color-cloud)]/10"
