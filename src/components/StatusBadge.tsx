@@ -17,19 +17,12 @@ const statusConfig = {
     dot: 'bg-[var(--status-blacklisted)]',
     label: 'Blacklisted',
   },
-  top_rated: {
-    bg: 'bg-amber-500/10',
-    text: 'text-amber-600',
-    border: 'border-amber-500/20',
-    dot: 'bg-amber-500',
-    label: 'Top Rated',
-  },
   recommended: {
     bg: 'bg-[var(--status-recommended)]/10',
     text: 'text-[var(--status-recommended)]',
     border: 'border-[var(--status-recommended)]/20',
     dot: 'bg-[var(--status-recommended)]',
-    label: 'Verified',
+    label: 'Recommended',
   },
 };
 
