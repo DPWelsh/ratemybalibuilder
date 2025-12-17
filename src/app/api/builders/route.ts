@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // Format phone number with dashes: +62 812-3456-7890
@@ -26,7 +26,7 @@ function formatPhone(phone: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, trade_type, location, company_name, status } = body;
+    const { name, phone, trade_type, location, company_name, status, review_text, rating } = body;
 
     // Validation
     if (!name || name.trim().length < 2) {
@@ -85,9 +85,97 @@ export async function POST(request: Request) {
       );
     }
 
+    // Create the review if provided
+    if (review_text && rating) {
+      const { error: reviewError } = await supabase
+        .from('reviews')
+        .insert({
+          builder_id: builder.id,
+          user_id: null, // Anonymous submission
+          rating: rating,
+          review_text: review_text.trim(),
+          status: 'pending', // Requires admin approval
+          photos: [],
+        });
+
+      if (reviewError) {
+        console.error('Error creating review:', reviewError);
+        // Don't fail the whole request, builder was created successfully
+      }
+    }
+
     return NextResponse.json({ success: true, builder });
   } catch (error) {
     console.error('Error in builders API:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const builderId = searchParams.get('id');
+
+    if (!builderId) {
+      return NextResponse.json(
+        { error: 'Builder ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if user is admin
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      return NextResponse.json(
+        { error: 'Admin access required' },
+        { status: 403 }
+      );
+    }
+
+    // Use admin client to delete
+    const adminSupabase = createAdminClient();
+
+    // Delete associated reviews first
+    await adminSupabase
+      .from('reviews')
+      .delete()
+      .eq('builder_id', builderId);
+
+    // Delete the builder
+    const { error } = await adminSupabase
+      .from('builders')
+      .delete()
+      .eq('id', builderId);
+
+    if (error) {
+      console.error('Error deleting builder:', error);
+      return NextResponse.json(
+        { error: 'Failed to delete builder' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error in builders DELETE API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

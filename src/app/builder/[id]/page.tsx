@@ -19,6 +19,7 @@ import {
   GlobeIcon,
   StarIcon,
   PhoneIcon,
+  LockIcon,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatPhone } from '@/lib/utils';
@@ -54,10 +55,15 @@ export default function BuilderPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [avgRating, setAvgRating] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       const supabase = createClient();
+
+      // Check if user is signed in
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsSignedIn(!!user);
 
       // Fetch builder
       const { data: builderData, error: builderError } = await supabase
@@ -220,10 +226,19 @@ export default function BuilderPage() {
               {/* Stats */}
               <div className="mt-6 flex items-center gap-6 border-t border-border pt-6">
                 {avgRating > 0 && (
-                  <div className="flex items-center gap-2">
-                    <StarRating rating={avgRating} size="md" />
-                    <span className="font-medium">{avgRating.toFixed(1)}</span>
-                  </div>
+                  isSignedIn ? (
+                    <div className="flex items-center gap-2">
+                      <StarRating rating={avgRating} size="md" />
+                      <span className="font-medium">{avgRating.toFixed(1)}</span>
+                    </div>
+                  ) : (
+                    <Link href="/login" className="flex items-center gap-2 group">
+                      <div className="blur-sm select-none pointer-events-none">
+                        <StarRating rating={avgRating} size="md" />
+                      </div>
+                      <span className="text-xs text-muted-foreground group-hover:text-[var(--color-prompt)] group-hover:underline">Sign in</span>
+                    </Link>
+                  )
                 )}
                 <div className="text-sm text-muted-foreground">
                   {reviews.length} review{reviews.length !== 1 ? 's' : ''}
@@ -265,11 +280,34 @@ export default function BuilderPage() {
             </Card>
           )}
 
-          {/* Reviews Section - Always visible now (free) */}
+          {/* Reviews Section */}
           <div className="mt-6 sm:mt-8">
-            <h2 className="mb-4 text-lg font-medium sm:text-xl">Reviews</h2>
+            <h2 className="mb-4 text-lg font-medium sm:text-xl">
+              Reviews {reviews.length > 0 && `(${reviews.length})`}
+            </h2>
 
-            {reviews.length > 0 ? (
+            {!isSignedIn ? (
+              /* Locked state - not signed in */
+              <Card className="border-0 bg-secondary/30">
+                <CardContent className="px-4 py-10 text-center sm:py-12">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                    <LockIcon className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-medium text-foreground">Sign in to see reviews</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Create a free account to read detailed reviews and ratings from the community.
+                  </p>
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                    <Button asChild>
+                      <Link href="/login">Sign in</Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link href="/signup">Create account</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : reviews.length > 0 ? (
               <div className="space-y-4">
                 {reviews.map((review) => (
                   <ReviewCard

@@ -10,6 +10,7 @@ import {
   Loader2Icon,
   RefreshCwIcon,
   SearchIcon,
+  Trash2Icon,
 } from 'lucide-react';
 import { formatPhone } from '@/lib/utils';
 
@@ -48,6 +49,7 @@ export default function AdminBuildersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchBuilders = async () => {
     setIsLoading(true);
@@ -104,6 +106,31 @@ export default function AdminBuildersPage() {
     } else {
       alert('Failed to update trade type');
     }
+  };
+
+  const deleteBuilder = async (builderId: string, builderName: string) => {
+    if (!confirm(`Are you sure you want to delete "${builderName}"? This will also delete all their reviews.`)) {
+      return;
+    }
+
+    setDeletingId(builderId);
+
+    try {
+      const response = await fetch(`/api/builders?id=${builderId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setBuilders(builders.filter(b => b.id !== builderId));
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to delete builder');
+      }
+    } catch {
+      alert('Failed to delete builder');
+    }
+
+    setDeletingId(null);
   };
 
   const filteredBuilders = builders.filter(builder =>
@@ -219,6 +246,19 @@ export default function AdminBuildersPage() {
                         className="text-xs"
                       >
                         Flagged
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteBuilder(builder.id, builder.name)}
+                        disabled={deletingId === builder.id}
+                        className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        {deletingId === builder.id ? (
+                          <Loader2Icon className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Trash2Icon className="h-3 w-3" />
+                        )}
                       </Button>
                     </div>
                   </div>

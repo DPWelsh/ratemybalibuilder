@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2Icon, UserPlusIcon, CheckIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon } from 'lucide-react';
+import { Loader2Icon, UserPlusIcon, CheckIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon, StarIcon } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -60,6 +61,8 @@ export default function AddBuilderPage() {
   const [location, setLocation] = useState('Other');
   const [status, setStatus] = useState<BuilderStatus | null>(null);
   const [companyName, setCompanyName] = useState('');
+  const [reviewText, setReviewText] = useState('');
+  const [rating, setRating] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -81,6 +84,8 @@ export default function AddBuilderPage() {
           location,
           status: status || 'unknown',
           company_name: companyName || null,
+          review_text: reviewText,
+          rating: rating,
         }),
       });
 
@@ -112,15 +117,15 @@ export default function AddBuilderPage() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-recommended)]/10 sm:mb-6 sm:h-16 sm:w-16">
             <CheckIcon className="h-7 w-7 text-[var(--status-recommended)] sm:h-8 sm:w-8" />
           </div>
-          <h1 className="text-xl text-foreground sm:text-2xl">Builder added!</h1>
+          <h1 className="text-xl text-foreground sm:text-2xl">Submission received!</h1>
           <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
-            Thank you for contributing to our database. Would you like to leave a review?
+            Thank you for your contribution. Our team will review your submission and it will appear in the database once verified.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center">
             {createdBuilderId && (
               <Button asChild size="lg">
-                <Link href={`/submit-review?builder=${createdBuilderId}`}>
-                  Leave a Review
+                <Link href={`/builder/${createdBuilderId}`}>
+                  View Builder
                 </Link>
               </Button>
             )}
@@ -279,11 +284,55 @@ export default function AddBuilderPage() {
                 />
               </div>
 
+              {/* Rating */}
+              <div className="space-y-2 sm:space-y-3">
+                <label className="text-sm font-medium">
+                  Your rating *
+                </label>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      className="p-1 transition-transform hover:scale-110"
+                    >
+                      <StarIcon
+                        className={`h-8 w-8 ${
+                          star <= rating
+                            ? 'fill-[var(--color-prompt)] text-[var(--color-prompt)]'
+                            : 'text-muted-foreground/30'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Review Text */}
+              <div className="space-y-1.5 sm:space-y-2">
+                <label htmlFor="reviewText" className="text-sm font-medium">
+                  Your review *
+                </label>
+                <Textarea
+                  id="reviewText"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  placeholder="Share your experience with this builder..."
+                  rows={4}
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Minimum 20 characters. Be specific about your experience.
+                </p>
+              </div>
+
               <Button
                 type="submit"
                 size="lg"
                 className="h-11 w-full sm:h-12"
-                disabled={isLoading || !status}
+                disabled={isLoading || !status || rating === 0 || reviewText.trim().length < 20}
               >
                 {isLoading ? (
                   <>
@@ -291,13 +340,13 @@ export default function AddBuilderPage() {
                     Adding...
                   </>
                 ) : (
-                  'Add Builder'
+                  'Add Builder & Review'
                 )}
               </Button>
 
-              {!status && (
+              {(!status || rating === 0 || reviewText.trim().length < 20) && (
                 <p className="text-center text-xs text-muted-foreground">
-                  Please select your experience with this builder to continue
+                  {!status ? 'Select your experience' : rating === 0 ? 'Select a rating' : 'Review must be at least 20 characters'}
                 </p>
               )}
             </form>
