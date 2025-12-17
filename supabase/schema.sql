@@ -17,6 +17,7 @@ CREATE TABLE public.builders (
   project_types ARRAY DEFAULT '{}'::project_type[],
   website text,
   google_reviews_url text,
+  phones jsonb DEFAULT '[]'::jsonb,
   CONSTRAINT builders_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.profiles (

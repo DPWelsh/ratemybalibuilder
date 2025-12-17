@@ -5,10 +5,17 @@ export type Location = 'Canggu' | 'Seminyak' | 'Ubud' | 'Uluwatu' | 'Sanur' | 'D
 export type TradeType = 'General Contractor' | 'Pool Builder' | 'Architect' | 'Interior Designer' | 'Landscaper' | 'Renovation Specialist' | 'Plumber' | 'Electrician' | 'Roofer' | 'Painter' | 'Tiler' | 'Carpenter' | 'Mason' | 'HVAC' | 'Welder' | 'Glass & Glazing';
 export type ProjectType = 'Villas' | 'Renovations' | 'Pools' | 'Commercial' | 'Landscaping' | 'Interior Fit-out';
 
+export interface PhoneEntry {
+  number: string;
+  type: 'primary' | 'whatsapp' | 'office' | 'mobile' | 'other';
+  label: string;
+}
+
 export interface Builder {
   id: string;
   name: string;
   phone: string;
+  phones: PhoneEntry[];
   aliases: string[];
   status: BuilderStatus;
   company_name: string | null;

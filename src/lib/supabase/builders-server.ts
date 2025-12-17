@@ -1,4 +1,5 @@
 import { createClient } from './server';
+import { PhoneEntry } from './builders';
 
 export type BuilderStatus = 'recommended' | 'unknown' | 'blacklisted';
 
@@ -53,17 +54,11 @@ function phoneNumberSimilarity(phone1: string, phone2: string): number {
   return 0;
 }
 
-export interface PhoneEntry {
-  number: string;
-  type: 'primary' | 'whatsapp' | 'office' | 'mobile';
-  label: string;
-}
-
 export interface BuilderSearchResult {
   id: string;
   name: string;
   phone: string;
-  phones?: PhoneEntry[];
+  phones: PhoneEntry[];
   status: BuilderStatus;
   company_name: string | null;
   review_count: number;
