@@ -4,14 +4,15 @@ import { useMemo, useCallback, useState, useEffect, forwardRef, useImperativeHan
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef, ICellRendererParams, RowClickedEvent, ModuleRegistry, AllCommunityModule, themeQuartz, IFilterParams, IDoesFilterPassParams } from 'ag-grid-community';
+import { ColDef, ICellRendererParams, RowClickedEvent, ModuleRegistry, AllCommunityModule, themeQuartz, IFilterParams, IDoesFilterPassParams, CellValueChangedEvent } from 'ag-grid-community';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { StarRating } from '@/components/StarRating';
 import { FilterBar } from '@/components/FilterBar';
 import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType, locations, tradeTypes } from '@/lib/supabase/builders';
-import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, CheckIcon } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, CheckIcon, PencilIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 // Register AG Grid modules
@@ -147,7 +148,8 @@ interface BuilderRow {
 // Custom cell renderer for status badge
 function StatusCellRenderer(params: ICellRendererParams<BuilderRow>) {
   if (!params.value) return null;
-  return <StatusBadge status={params.value as BuilderStatus} size="sm" />;
+  const rating = params.data?.avgRating;
+  return <StatusBadge status={params.value as BuilderStatus} size="sm" rating={rating} />;
 }
 
 // Custom cell renderer for star rating
@@ -212,6 +214,8 @@ export default function BuildersPage() {
   const [builders, setBuilders] = useState<BuilderWithStats[]>([]);
   const [stats, setStats] = useState({ total: 0, recommended: 0, blacklisted: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   // Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -219,10 +223,23 @@ export default function BuildersPage() {
   const [selectedTradeType, setSelectedTradeType] = useState<TradeType | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<BuilderStatus | 'all'>('all');
 
-  // Fetch data on mount
+  // Fetch data and check admin status on mount
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
+      const supabase = createClient();
+
+      // Check if user is admin
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_admin')
+          .eq('id', user.id)
+          .single();
+        setIsAdmin(profile?.is_admin || false);
+      }
+
       const [buildersData, statsData] = await Promise.all([
         getBuilders(),
         getBuilderStats(),
@@ -240,6 +257,48 @@ export default function BuildersPage() {
     setSelectedTradeType('all');
     setSelectedStatus('all');
   };
+
+  // Handle cell value change (admin edit)
+  const onCellValueChanged = useCallback(async (event: CellValueChangedEvent<BuilderRow>) => {
+    if (!event.data || !isAdmin) return;
+
+    const supabase = createClient();
+    const field = event.colDef.field;
+    const newValue = event.newValue;
+    const builderId = event.data.id;
+
+    // Map grid field names to database column names
+    const fieldMap: Record<string, string> = {
+      name: 'name',
+      phone: 'phone',
+      website: 'website',
+      googleReviews: 'google_reviews_url',
+      location: 'location',
+      tradeType: 'trade_type',
+      status: 'status',
+    };
+
+    const dbField = field ? fieldMap[field] : null;
+    if (!dbField) return;
+
+    const { error } = await supabase
+      .from('builders')
+      .update({ [dbField]: newValue })
+      .eq('id', builderId);
+
+    if (error) {
+      console.error('Error updating builder:', error);
+      // Revert the change in the grid
+      event.node.setDataValue(field!, event.oldValue);
+    } else {
+      // Update local state to keep in sync
+      setBuilders(prev => prev.map(b =>
+        b.id === builderId
+          ? { ...b, [dbField]: newValue }
+          : b
+      ));
+    }
+  }, [isAdmin]);
 
   // Prepare and filter row data
   const rowData = useMemo<BuilderRow[]>(() => {
@@ -283,12 +342,14 @@ export default function BuildersPage() {
       minWidth: 200,
       cellClass: 'font-medium',
       tooltipField: 'name',
+      editable: editMode,
     },
     {
       field: 'phone',
       headerName: 'Phone',
       width: 150,
-      cellRenderer: PhoneCellRenderer,
+      cellRenderer: editMode ? undefined : PhoneCellRenderer,
+      editable: editMode,
     },
     {
       field: 'avgRating',
@@ -296,20 +357,23 @@ export default function BuildersPage() {
       width: 140,
       cellRenderer: RatingCellRenderer,
       sort: 'desc',
+      editable: false, // Rating is calculated from reviews
     },
     {
       field: 'website',
       headerName: 'Website',
-      width: 100,
-      cellRenderer: WebsiteCellRenderer,
+      width: editMode ? 150 : 100,
+      cellRenderer: editMode ? undefined : WebsiteCellRenderer,
       sortable: false,
+      editable: editMode,
     },
     {
       field: 'googleReviews',
       headerName: 'Google',
-      width: 100,
-      cellRenderer: GoogleReviewsCellRenderer,
+      width: editMode ? 150 : 100,
+      cellRenderer: editMode ? undefined : GoogleReviewsCellRenderer,
       sortable: false,
+      editable: editMode,
     },
     {
       field: 'location',
@@ -318,6 +382,11 @@ export default function BuildersPage() {
       filter: SetFilter,
       filterParams: {
         options: locations,
+      },
+      editable: editMode,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: locations,
       },
     },
     {
@@ -328,18 +397,28 @@ export default function BuildersPage() {
       filterParams: {
         options: tradeTypes,
       },
+      editable: editMode,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: tradeTypes,
+      },
     },
     {
       field: 'status',
       headerName: 'Status',
       width: 130,
-      cellRenderer: StatusCellRenderer,
+      cellRenderer: editMode ? undefined : StatusCellRenderer,
       filter: SetFilter,
       filterParams: {
-        options: ['recommended', 'unknown', 'blacklisted'],
+        options: ['recommended', 'blacklisted'],
+      },
+      editable: editMode,
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: ['recommended', 'blacklisted'],
       },
     },
-  ], []);
+  ], [editMode]);
 
   // Default column settings
   const defaultColDef = useMemo<ColDef>(() => ({
@@ -349,12 +428,13 @@ export default function BuildersPage() {
     cellStyle: { display: 'flex', alignItems: 'center' },
   }), []);
 
-  // Handle row click
+  // Handle row click (disabled when in edit mode)
   const onRowClicked = useCallback((event: RowClickedEvent<BuilderRow>) => {
+    if (editMode) return; // Don't navigate when editing
     if (event.data) {
       router.push(`/builder/${event.data.id}`);
     }
-  }, [router]);
+  }, [router, editMode]);
 
   if (isLoading) {
     return (
@@ -368,11 +448,24 @@ export default function BuildersPage() {
     <div className="min-h-[calc(100vh-57px)] px-4 py-6 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl text-foreground sm:text-3xl">Builder Database</h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            Browse all builders in our database. Click on any row to see more details.
-          </p>
+        <div className="mb-6 flex items-start justify-between sm:mb-8">
+          <div>
+            <h1 className="text-2xl text-foreground sm:text-3xl">Builder Database</h1>
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+              Browse all builders in our database. Click on any row to see more details.
+            </p>
+          </div>
+          {isAdmin && (
+            <Button
+              variant={editMode ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setEditMode(!editMode)}
+              className="gap-2"
+            >
+              <PencilIcon className="h-4 w-4" />
+              {editMode ? 'Exit Edit Mode' : 'Edit Mode'}
+            </Button>
+          )}
         </div>
 
         {/* Stats */}
@@ -386,7 +479,7 @@ export default function BuildersPage() {
           <Card className="border-0 bg-[var(--status-recommended)]/10">
             <CardContent className="px-4 py-3 text-center sm:p-4">
               <p className="text-2xl font-medium text-[var(--status-recommended)] sm:text-3xl">{stats.recommended}</p>
-              <p className="text-xs text-muted-foreground sm:text-sm">Recommended</p>
+              <p className="text-xs text-muted-foreground sm:text-sm">Verified</p>
             </CardContent>
           </Card>
           <Card className="border-0 bg-[var(--status-blacklisted)]/10">
@@ -435,6 +528,9 @@ export default function BuildersPage() {
             columnDefs={columnDefs}
             defaultColDef={defaultColDef}
             onRowClicked={onRowClicked}
+            onCellValueChanged={onCellValueChanged}
+            singleClickEdit={true}
+            stopEditingWhenCellsLoseFocus={true}
             theme={themeQuartz.withParams({
               backgroundColor: 'var(--card)',
               headerBackgroundColor: 'var(--secondary)',
@@ -453,7 +549,7 @@ export default function BuildersPage() {
             pagination={false}
             domLayout="normal"
             suppressCellFocus={true}
-            rowClass="cursor-pointer"
+            rowClass={editMode ? '' : 'cursor-pointer'}
             tooltipShowDelay={300}
           />
         </div>

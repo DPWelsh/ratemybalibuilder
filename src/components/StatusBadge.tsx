@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 interface StatusBadgeProps {
   status: BuilderStatus;
   size?: 'sm' | 'md' | 'lg';
+  rating?: number; // Optional rating to determine "Top Rated" display
 }
 
 const statusConfig = {
@@ -16,19 +17,19 @@ const statusConfig = {
     dot: 'bg-[var(--status-blacklisted)]',
     label: 'Blacklisted',
   },
-  unknown: {
-    bg: 'bg-[var(--status-unknown)]/10',
-    text: 'text-[var(--status-unknown)]',
-    border: 'border-[var(--status-unknown)]/20',
-    dot: 'bg-[var(--status-unknown)]',
-    label: 'Unknown',
+  top_rated: {
+    bg: 'bg-amber-500/10',
+    text: 'text-amber-600',
+    border: 'border-amber-500/20',
+    dot: 'bg-amber-500',
+    label: 'Top Rated',
   },
   recommended: {
     bg: 'bg-[var(--status-recommended)]/10',
     text: 'text-[var(--status-recommended)]',
     border: 'border-[var(--status-recommended)]/20',
     dot: 'bg-[var(--status-recommended)]',
-    label: 'Recommended',
+    label: 'Verified',
   },
 };
 
@@ -44,8 +45,15 @@ const dotSizeConfig = {
   lg: 'h-2.5 w-2.5',
 };
 
-export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
-  const config = statusConfig[status];
+export function StatusBadge({ status, size = 'md', rating }: StatusBadgeProps) {
+  // Determine display status: if rating >= 4.5 and not blacklisted, show as "Top Rated"
+  let displayStatus: keyof typeof statusConfig = status;
+  if (rating && rating >= 4.5 && status !== 'blacklisted') {
+    displayStatus = 'top_rated';
+  }
+
+  const config = statusConfig[displayStatus];
+  if (!config) return null;
 
   return (
     <span

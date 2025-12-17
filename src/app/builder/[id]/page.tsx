@@ -157,7 +157,7 @@ export default function BuilderPage() {
                     builderName={builder.name}
                     variant="icon"
                   />
-                  <StatusBadge status={builder.status} size="lg" />
+                  <StatusBadge status={builder.status} size="lg" rating={avgRating} />
                 </div>
               </div>
 

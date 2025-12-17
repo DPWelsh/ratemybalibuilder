@@ -53,7 +53,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           </h2>
                           <p className="font-mono text-sm text-muted-foreground">{builder.phone}</p>
                         </div>
-                        <StatusBadge status={builder.status} size="md" />
+                        <StatusBadge status={builder.status} size="md" rating={builder.avg_rating} />
                       </div>
 
                       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
