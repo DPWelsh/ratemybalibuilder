@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 interface StatusBadgeProps {
   status: BuilderStatus;
   size?: 'sm' | 'md' | 'lg';
-  rating?: number; // Optional rating to determine "Top Rated" display
 }
 
 const statusConfig = {
