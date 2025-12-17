@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrustStats } from '@/components/TrustStats';
-import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon, ShieldCheckIcon, QuoteIcon, WrenchIcon } from 'lucide-react';
+import { SearchIcon, UnlockIcon, CheckCircleIcon, ArrowRightIcon, ShieldCheckIcon, QuoteIcon, WrenchIcon, Loader2Icon } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -21,40 +21,37 @@ export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [tradeType, setTradeType] = useState<string>('');
+  const [isSearching, setIsSearching] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!searchQuery.trim()) return;
 
+    setIsSearching(true);
+
     // Determine if input looks like a phone number (mostly digits)
     const digitsOnly = searchQuery.replace(/[^\d]/g, '');
     const isPhone = digitsOnly.length >= 6;
 
-    // Log the search
-    try {
-      await fetch('/api/search-logs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: isPhone ? searchQuery : null,
-          name: !isPhone ? searchQuery : null,
-          trade_type: tradeType || null,
-        }),
-      });
-    } catch {
+    // Log the search (don't await - fire and forget)
+    fetch('/api/search-logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: isPhone ? searchQuery : null,
+        name: !isPhone ? searchQuery : null,
+        trade_type: tradeType || null,
+      }),
+    }).catch(() => {
       // Don't block search if logging fails
-    }
+    });
 
-    // Navigate to search results
+    // Navigate to builders page with search query
     const params = new URLSearchParams();
-    if (isPhone) {
-      params.set('phone', searchQuery);
-    } else {
-      params.set('name', searchQuery);
-    }
+    params.set('q', searchQuery);
     if (tradeType && tradeType !== 'any') params.set('trade', tradeType);
-    router.push(`/search?${params.toString()}`);
+    router.push(`/builders?${params.toString()}`);
   };
   return (
     <div className="flex min-h-[calc(100vh-57px)] flex-col sm:min-h-[calc(100vh-73px)]">
@@ -130,9 +127,18 @@ export default function Home() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={!searchQuery.trim()}>
-                    Search builder
-                    <ArrowRightIcon className="ml-2 h-4 w-4" />
+                  <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={!searchQuery.trim() || isSearching}>
+                    {isSearching ? (
+                      <>
+                        <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                        Searching...
+                      </>
+                    ) : (
+                      <>
+                        Search builder
+                        <ArrowRightIcon className="ml-2 h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 </form>
                 <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">

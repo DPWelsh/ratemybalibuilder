@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo, useCallback, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useMemo, useCallback, useState, useEffect, forwardRef, useImperativeHandle, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ICellRendererParams, RowClickedEvent, ModuleRegistry, AllCommunityModule, themeQuartz, IFilterParams, IDoesFilterPassParams, CellValueChangedEvent } from 'ag-grid-community';
 import { Card, CardContent } from '@/components/ui/card';
@@ -207,8 +207,13 @@ function GoogleReviewsCellRenderer(params: ICellRendererParams<BuilderRow>) {
   );
 }
 
-export default function BuildersPage() {
+function BuildersPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get initial values from URL params
+  const initialQuery = searchParams.get('q') || '';
+  const initialTrade = searchParams.get('trade') || '';
 
   // Data state
   const [builders, setBuilders] = useState<BuilderWithStats[]>([]);
@@ -217,10 +222,12 @@ export default function BuildersPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
-  // Filter state
-  const [searchQuery, setSearchQuery] = useState('');
+  // Filter state - initialized from URL params
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedLocation, setSelectedLocation] = useState<Location | 'all'>('all');
-  const [selectedTradeType, setSelectedTradeType] = useState<TradeType | 'all'>('all');
+  const [selectedTradeType, setSelectedTradeType] = useState<TradeType | 'all'>(
+    tradeTypes.includes(initialTrade as TradeType) ? (initialTrade as TradeType) : 'all'
+  );
   const [selectedStatus, setSelectedStatus] = useState<BuilderStatus | 'all'>('all');
 
   // Fetch data and check admin status on mount
@@ -471,19 +478,34 @@ export default function BuildersPage() {
 
         {/* Stats */}
         <div className="mb-6 grid grid-cols-3 gap-3 sm:mb-8 sm:gap-4">
-          <Card className="border-0 bg-secondary/50">
+          <Card
+            className={`border-0 cursor-pointer transition-all hover:scale-[1.02] ${
+              selectedStatus === 'all' ? 'bg-secondary ring-2 ring-foreground/20' : 'bg-secondary/50'
+            }`}
+            onClick={() => setSelectedStatus('all')}
+          >
             <CardContent className="px-4 py-3 text-center sm:p-4">
               <p className="text-2xl font-medium text-foreground sm:text-3xl">{stats.total}</p>
               <p className="text-xs text-muted-foreground sm:text-sm">Total Builders</p>
             </CardContent>
           </Card>
-          <Card className="border-0 bg-[var(--status-recommended)]/10">
+          <Card
+            className={`border-0 cursor-pointer transition-all hover:scale-[1.02] ${
+              selectedStatus === 'recommended' ? 'bg-[var(--status-recommended)]/20 ring-2 ring-[var(--status-recommended)]' : 'bg-[var(--status-recommended)]/10'
+            }`}
+            onClick={() => setSelectedStatus(selectedStatus === 'recommended' ? 'all' : 'recommended')}
+          >
             <CardContent className="px-4 py-3 text-center sm:p-4">
               <p className="text-2xl font-medium text-[var(--status-recommended)] sm:text-3xl">{stats.recommended}</p>
               <p className="text-xs text-muted-foreground sm:text-sm">Verified</p>
             </CardContent>
           </Card>
-          <Card className="border-0 bg-[var(--status-blacklisted)]/10">
+          <Card
+            className={`border-0 cursor-pointer transition-all hover:scale-[1.02] ${
+              selectedStatus === 'blacklisted' ? 'bg-[var(--status-blacklisted)]/20 ring-2 ring-[var(--status-blacklisted)]' : 'bg-[var(--status-blacklisted)]/10'
+            }`}
+            onClick={() => setSelectedStatus(selectedStatus === 'blacklisted' ? 'all' : 'blacklisted')}
+          >
             <CardContent className="px-4 py-3 text-center sm:p-4">
               <p className="text-2xl font-medium text-[var(--status-blacklisted)] sm:text-3xl">{stats.blacklisted}</p>
               <p className="text-xs text-muted-foreground sm:text-sm">Blacklisted</p>
@@ -574,5 +596,17 @@ export default function BuildersPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function BuildersPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-[calc(100vh-57px)] items-center justify-center">
+        <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    }>
+      <BuildersPageContent />
+    </Suspense>
   );
 }
