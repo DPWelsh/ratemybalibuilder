@@ -18,7 +18,7 @@ import {
 } from '@/lib/supabase/builders';
 
 const statusOptions: { value: BuilderStatus; label: string }[] = [
-  { value: 'recommended', label: 'Verified' },
+  { value: 'recommended', label: 'Recommended' },
   { value: 'blacklisted', label: 'Blacklisted' },
 ];
 

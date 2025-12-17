@@ -37,7 +37,7 @@ const dotSizeConfig = {
   lg: 'h-2.5 w-2.5',
 };
 
-export function StatusBadge({ status, size = 'md' }: Omit<StatusBadgeProps, 'rating'>) {
+export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
   // Only 2 statuses: Recommended and Blacklisted
   // 'unknown' shows no badge
   if (status !== 'recommended' && status !== 'blacklisted') {

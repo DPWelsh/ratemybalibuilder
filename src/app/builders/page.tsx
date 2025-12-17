@@ -148,8 +148,7 @@ interface BuilderRow {
 // Custom cell renderer for status badge
 function StatusCellRenderer(params: ICellRendererParams<BuilderRow>) {
   if (!params.value) return null;
-  const rating = params.data?.avgRating;
-  return <StatusBadge status={params.value as BuilderStatus} size="sm" rating={rating} />;
+  return <StatusBadge status={params.value as BuilderStatus} size="sm" />;
 }
 
 // Custom cell renderer for star rating
