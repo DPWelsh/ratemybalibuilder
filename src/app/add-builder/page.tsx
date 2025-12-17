@@ -76,13 +76,13 @@ export default function AddBuilderPage() {
           </div>
           <h1 className="text-xl text-foreground sm:text-2xl">Builder added!</h1>
           <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
-            Thank you for contributing to our database. This builder is now searchable.
+            Thank you for contributing to our database. Would you like to leave a review?
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center">
             {createdBuilderId && (
               <Button asChild size="lg">
-                <Link href={`/builder/${createdBuilderId}`}>
-                  View Builder
+                <Link href={`/submit-review?builder=${createdBuilderId}`}>
+                  Leave a Review
                 </Link>
               </Button>
             )}

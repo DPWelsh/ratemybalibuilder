@@ -203,28 +203,20 @@ export default function DashboardPage() {
               <h2 className="font-medium text-foreground">Search a Builder</h2>
             </div>
             <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
-              <div className="space-y-1.5">
-                <label htmlFor="search" className="text-sm font-medium">
-                  Search by name or phone number
-                </label>
-                <div className="relative">
+              <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+                <div className="relative flex-1">
                   <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="search"
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Enter builder name or phone..."
+                    placeholder="Name or phone..."
                     className="h-11 pl-10"
                   />
                 </div>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">
-                  What type of trade are you looking for?
-                </label>
                 <Select value={tradeType} onValueChange={setTradeType}>
-                  <SelectTrigger className="h-11 w-full">
+                  <SelectTrigger className="h-11 w-full sm:w-[160px]">
                     <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
                     <SelectValue placeholder="Select trade" />
                   </SelectTrigger>

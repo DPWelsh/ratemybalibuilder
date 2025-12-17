@@ -1,24 +1,93 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { StarRatingInput } from '@/components/StarRating';
-import { CheckCircleIcon, ImagePlusIcon, XIcon, ArrowLeftIcon, Loader2Icon } from 'lucide-react';
+import { CheckCircleIcon, ImagePlusIcon, XIcon, ArrowLeftIcon, Loader2Icon, SearchIcon, UserPlusIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { createClient } from '@/lib/supabase/client';
+
+interface BuilderOption {
+  id: string;
+  name: string;
+  phone: string;
+  company_name: string | null;
+}
 
 export default function SubmitReviewPage() {
-  const [builderName, setBuilderName] = useState('');
-  const [builderPhone, setBuilderPhone] = useState('');
+  const searchParams = useSearchParams();
+  const preselectedBuilderId = searchParams.get('builder');
+
+  const [builders, setBuilders] = useState<BuilderOption[]>([]);
+  const [loadingBuilders, setLoadingBuilders] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedBuilder, setSelectedBuilder] = useState<BuilderOption | null>(null);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch all builders on mount
+  useEffect(() => {
+    async function fetchBuilders() {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('builders')
+        .select('id, name, phone, company_name')
+        .order('name');
+
+      if (error) {
+        console.error('Error fetching builders:', error);
+      } else {
+        setBuilders(data || []);
+
+        // Pre-select builder if provided in URL
+        if (preselectedBuilderId && data) {
+          const builder = data.find(b => b.id === preselectedBuilderId);
+          if (builder) {
+            setSelectedBuilder(builder);
+            setSearchQuery(builder.name);
+          }
+        }
+      }
+      setLoadingBuilders(false);
+    }
+
+    fetchBuilders();
+  }, [preselectedBuilderId]);
+
+  const handleBuilderSelect = (builder: BuilderOption) => {
+    setSelectedBuilder(builder);
+    setSearchQuery(builder.name);
+    setShowDropdown(false);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setShowDropdown(true);
+    // Clear selection if user types something different
+    if (selectedBuilder && value !== selectedBuilder.name) {
+      setSelectedBuilder(null);
+    }
+  };
+
+  // Filter builders based on search query
+  const filteredBuilders = builders.filter(builder => {
+    const query = searchQuery.toLowerCase();
+    return (
+      builder.name.toLowerCase().includes(query) ||
+      builder.phone.includes(query) ||
+      (builder.company_name && builder.company_name.toLowerCase().includes(query))
+    );
+  }).slice(0, 10); // Limit to 10 results
 
   const handlePhotoUpload = () => {
-    // Simulate photo upload with placeholder
     if (photos.length < 5) {
       const newPhoto = `https://picsum.photos/seed/${Date.now()}/400/300`;
       setPhotos([...photos, newPhoto]);
@@ -29,10 +98,10 @@ export default function SubmitReviewPage() {
     setPhotos(photos.filter((_, i) => i !== index));
   };
 
-  const [error, setError] = useState<string | null>(null);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedBuilder) return;
+
     setIsSubmitting(true);
     setError(null);
 
@@ -41,8 +110,9 @@ export default function SubmitReviewPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          builderName,
-          builderPhone,
+          builderId: selectedBuilder.id,
+          builderName: selectedBuilder.name,
+          builderPhone: selectedBuilder.phone,
           rating,
           reviewText,
           photos,
@@ -63,7 +133,7 @@ export default function SubmitReviewPage() {
     }
   };
 
-  const isValid = builderName.trim() && builderPhone.trim() && rating > 0 && reviewText.trim().length >= 50;
+  const isValid = selectedBuilder && rating > 0 && reviewText.trim().length >= 50;
 
   if (isSubmitted) {
     return (
@@ -110,38 +180,101 @@ export default function SubmitReviewPage() {
         <Card className="mt-6 border-0 shadow-lg sm:mt-8">
           <CardContent className="p-5 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Builder Info */}
+              {/* Builder Selection */}
               <div className="space-y-4">
-                <h2 className="font-medium text-foreground">Builder Information</h2>
+                <h2 className="font-medium text-foreground">Select Builder</h2>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="builderName" className="text-sm font-medium">
-                    Builder / Company Name
+                  <label className="text-sm font-medium">
+                    Search by name, phone, or company
                   </label>
-                  <Input
-                    id="builderName"
-                    value={builderName}
-                    onChange={(e) => setBuilderName(e.target.value)}
-                    placeholder="e.g. Pak Wayan Construction"
-                    className="h-11"
-                    required
-                  />
+                  <div className="relative">
+                    <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      onFocus={() => setShowDropdown(true)}
+                      placeholder="Type to search builders..."
+                      className="h-11 pl-10"
+                      disabled={loadingBuilders}
+                    />
+                    {loadingBuilders && (
+                      <Loader2Icon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                    )}
+
+                    {/* Dropdown results */}
+                    {showDropdown && searchQuery && filteredBuilders.length > 0 && !selectedBuilder && (
+                      <div className="absolute z-10 mt-1 w-full rounded-md border border-input bg-background shadow-lg">
+                        <ul className="max-h-[250px] overflow-auto py-1">
+                          {filteredBuilders.map((builder) => (
+                            <li key={builder.id}>
+                              <button
+                                type="button"
+                                onClick={() => handleBuilderSelect(builder)}
+                                className="w-full px-3 py-2 text-left hover:bg-secondary/50 focus:bg-secondary/50 focus:outline-none"
+                              >
+                                <p className="font-medium text-foreground">{builder.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {builder.phone}
+                                  {builder.company_name && ` • ${builder.company_name}`}
+                                </p>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* No results message */}
+                    {showDropdown && searchQuery && filteredBuilders.length === 0 && !loadingBuilders && (
+                      <div className="absolute z-10 mt-1 w-full rounded-md border border-input bg-background p-3 shadow-lg">
+                        <p className="text-sm text-muted-foreground">No builders found matching &quot;{searchQuery}&quot;</p>
+                        <Link
+                          href="/add-builder"
+                          className="mt-2 inline-flex items-center gap-1 text-sm text-[var(--color-prompt)] hover:underline"
+                        >
+                          <UserPlusIcon className="h-3 w-3" />
+                          Add this builder
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label htmlFor="builderPhone" className="text-sm font-medium">
-                    Phone / WhatsApp Number
-                  </label>
-                  <Input
-                    id="builderPhone"
-                    type="tel"
-                    value={builderPhone}
-                    onChange={(e) => setBuilderPhone(e.target.value)}
-                    placeholder="+62 812 XXX XXXX"
-                    className="h-11"
-                    required
-                  />
-                </div>
+                {selectedBuilder && (
+                  <div className="flex items-center justify-between rounded-lg bg-[var(--status-recommended)]/10 p-3">
+                    <div>
+                      <p className="font-medium text-foreground">{selectedBuilder.name}</p>
+                      <p className="text-sm text-muted-foreground">{selectedBuilder.phone}</p>
+                      {selectedBuilder.company_name && (
+                        <p className="text-sm text-muted-foreground">{selectedBuilder.company_name}</p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedBuilder(null);
+                        setSearchQuery('');
+                      }}
+                      className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    >
+                      <XIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+
+                {!selectedBuilder && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <UserPlusIcon className="h-4 w-4" />
+                    <span>
+                      Builder not listed?{' '}
+                      <Link href="/add-builder" className="text-[var(--color-prompt)] hover:underline">
+                        Add them first
+                      </Link>
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Rating */}
@@ -241,8 +374,7 @@ export default function SubmitReviewPage() {
                 <div className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
                   <p className="font-medium mb-1">To submit your review:</p>
                   <ul className="list-disc list-inside space-y-0.5">
-                    {!builderName.trim() && <li>Enter builder name</li>}
-                    {!builderPhone.trim() && <li>Enter phone number</li>}
+                    {!selectedBuilder && <li>Select a builder</li>}
                     {rating === 0 && <li>Select a rating</li>}
                     {reviewText.trim().length < 50 && (
                       <li>Write at least 50 characters ({50 - reviewText.trim().length} more needed)</li>

@@ -53,7 +53,8 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     const body = await request.json();
-    const { builderName, builderPhone, rating, reviewText, photos } = body as {
+    const { builderId: providedBuilderId, builderName, builderPhone, rating, reviewText, photos } = body as {
+      builderId?: string;
       builderName: string;
       builderPhone: string;
       rating: number;
@@ -62,14 +63,6 @@ export async function POST(request: NextRequest) {
     };
 
     // Validate input
-    if (!builderName || builderName.length < 2) {
-      return NextResponse.json({ error: 'Builder name is required' }, { status: 400 });
-    }
-
-    if (!builderPhone || !builderPhone.startsWith('+62')) {
-      return NextResponse.json({ error: 'Valid Indonesian phone number required' }, { status: 400 });
-    }
-
     if (!rating || rating < 1 || rating > 5) {
       return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 });
     }
@@ -78,34 +71,48 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Review must be at least 50 characters' }, { status: 400 });
     }
 
-    // Check if builder exists (by phone number with fuzzy matching)
-    const existingBuilder = await findBuilderByPhone(builderPhone);
-
     let builderId: string;
 
-    if (existingBuilder) {
-      builderId = existingBuilder.id;
+    // If builderId is provided directly, use it
+    if (providedBuilderId) {
+      builderId = providedBuilderId;
     } else {
-      // Create a new builder (status: unknown, pending admin review)
-      const { data: newBuilder, error: builderError } = await supabaseAdmin
-        .from('builders')
-        .insert({
-          name: builderName,
-          phone: builderPhone,
-          status: 'unknown',
-          location: 'Other',
-          trade_type: 'General Contractor',
-          project_types: [],
-        })
-        .select('id')
-        .single();
-
-      if (builderError || !newBuilder) {
-        console.error('Failed to create builder:', builderError);
-        return NextResponse.json({ error: 'Failed to create builder' }, { status: 500 });
+      // Legacy flow: look up by phone or create new builder
+      if (!builderName || builderName.length < 2) {
+        return NextResponse.json({ error: 'Builder name is required' }, { status: 400 });
       }
 
-      builderId = newBuilder.id;
+      if (!builderPhone || !builderPhone.startsWith('+62')) {
+        return NextResponse.json({ error: 'Valid Indonesian phone number required' }, { status: 400 });
+      }
+
+      // Check if builder exists (by phone number with fuzzy matching)
+      const existingBuilder = await findBuilderByPhone(builderPhone);
+
+      if (existingBuilder) {
+        builderId = existingBuilder.id;
+      } else {
+        // Create a new builder (status: unknown, pending admin review)
+        const { data: newBuilder, error: builderError } = await supabaseAdmin
+          .from('builders')
+          .insert({
+            name: builderName,
+            phone: builderPhone,
+            status: 'unknown',
+            location: 'Other',
+            trade_type: 'General Contractor',
+            project_types: [],
+          })
+          .select('id')
+          .single();
+
+        if (builderError || !newBuilder) {
+          console.error('Failed to create builder:', builderError);
+          return NextResponse.json({ error: 'Failed to create builder' }, { status: 500 });
+        }
+
+        builderId = newBuilder.id;
+      }
     }
 
     // Create the review (status: pending)
