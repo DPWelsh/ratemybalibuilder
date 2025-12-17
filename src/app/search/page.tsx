@@ -51,7 +51,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           <h2 className="text-lg font-medium text-foreground sm:text-xl">
                             {builder.name}
                           </h2>
-                          <MaskedPhone phone={builder.phone} masked={true} />
+                          <p className="font-mono text-sm text-muted-foreground">{builder.phone}</p>
                         </div>
                         <StatusBadge status={builder.status} size="md" />
                       </div>

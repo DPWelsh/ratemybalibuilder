@@ -280,57 +280,15 @@ export default function BuildersPage() {
       field: 'name',
       headerName: 'Builder Name',
       flex: 2,
-      minWidth: 250,
+      minWidth: 200,
       cellClass: 'font-medium',
       tooltipField: 'name',
     },
     {
       field: 'phone',
       headerName: 'Phone',
-      width: 160,
+      width: 150,
       cellRenderer: PhoneCellRenderer,
-    },
-    {
-      field: 'website',
-      headerName: 'Website',
-      width: 130,
-      cellRenderer: WebsiteCellRenderer,
-      sortable: false,
-    },
-    {
-      field: 'googleReviews',
-      headerName: 'Google',
-      width: 130,
-      cellRenderer: GoogleReviewsCellRenderer,
-      sortable: false,
-    },
-    {
-      field: 'location',
-      headerName: 'Location',
-      width: 150,
-      filter: SetFilter,
-      filterParams: {
-        options: locations,
-      },
-    },
-    {
-      field: 'tradeType',
-      headerName: 'Trade',
-      width: 200,
-      filter: SetFilter,
-      filterParams: {
-        options: tradeTypes,
-      },
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 150,
-      cellRenderer: StatusCellRenderer,
-      filter: SetFilter,
-      filterParams: {
-        options: ['recommended', 'unknown', 'blacklisted'],
-      },
     },
     {
       field: 'avgRating',
@@ -339,9 +297,46 @@ export default function BuildersPage() {
       cellRenderer: RatingCellRenderer,
     },
     {
-      field: 'reviewCount',
-      headerName: 'Reviews',
+      field: 'website',
+      headerName: 'Website',
       width: 100,
+      cellRenderer: WebsiteCellRenderer,
+      sortable: false,
+    },
+    {
+      field: 'googleReviews',
+      headerName: 'Google',
+      width: 100,
+      cellRenderer: GoogleReviewsCellRenderer,
+      sortable: false,
+    },
+    {
+      field: 'location',
+      headerName: 'Location',
+      width: 130,
+      filter: SetFilter,
+      filterParams: {
+        options: locations,
+      },
+    },
+    {
+      field: 'tradeType',
+      headerName: 'Trade',
+      width: 170,
+      filter: SetFilter,
+      filterParams: {
+        options: tradeTypes,
+      },
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 130,
+      cellRenderer: StatusCellRenderer,
+      filter: SetFilter,
+      filterParams: {
+        options: ['recommended', 'unknown', 'blacklisted'],
+      },
     },
   ], []);
 

@@ -1,27 +1,24 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatusBadge } from '@/components/StatusBadge';
-import { MaskedPhone } from '@/components/MaskedPhone';
 import { StarRating } from '@/components/StarRating';
 import { ReviewCard } from '@/components/ReviewCard';
 import { ReviewPrompt } from '@/components/ReviewPrompt';
 import { SaveBuilderButton } from '@/components/SaveBuilderButton';
 import { createClient } from '@/lib/supabase/client';
-import { PRICING, formatPrice } from '@/lib/pricing';
 import {
-  LockIcon,
   MessageCircleIcon,
   InstagramIcon,
   AlertTriangleIcon,
   ArrowLeftIcon,
-  CheckCircleIcon,
   Loader2Icon,
   GlobeIcon,
   StarIcon,
+  PhoneIcon,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -50,28 +47,16 @@ interface Review {
 
 export default function BuilderPage() {
   const params = useParams();
-  const router = useRouter();
   const builderId = params.id as string;
 
   const [builder, setBuilder] = useState<Builder | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [avgRating, setAvgRating] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isUnlocking, setIsUnlocking] = useState(false);
-  const [userBalance, setUserBalance] = useState<number | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
   useEffect(() => {
     async function fetchData() {
       const supabase = createClient();
-
-      // Check if user is logged in
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
 
       // Fetch builder
       const { data: builderData, error: builderError } = await supabase
@@ -86,27 +71,6 @@ export default function BuilderPage() {
       }
 
       setBuilder(builderData);
-
-      // Check if user has unlocked this builder
-      if (user) {
-        const { data: searchData } = await supabase
-          .from('searches')
-          .select('level')
-          .eq('user_id', user.id)
-          .eq('builder_id', builderId)
-          .single();
-
-        setIsUnlocked(searchData?.level === 'full');
-
-        // Get user's credit balance
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('credit_balance')
-          .eq('id', user.id)
-          .single();
-
-        setUserBalance(profile?.credit_balance ?? 0);
-      }
 
       // Fetch approved reviews
       const { data: reviewsData } = await supabase
@@ -130,64 +94,6 @@ export default function BuilderPage() {
 
     fetchData();
   }, [builderId]);
-
-  const handleUnlock = async () => {
-    if (!isLoggedIn) {
-      router.push('/login?redirect=/builder/' + builderId);
-      return;
-    }
-
-    if (userBalance !== null && userBalance < PRICING.unlock) {
-      setToastMessage(`Not enough credits. You need ${PRICING.unlock} credits.`);
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 4000);
-      return;
-    }
-
-    setIsUnlocking(true);
-
-    try {
-      const response = await fetch('/api/credits/deduct', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'unlock',
-          builderId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 402) {
-          router.push('/buy-credits');
-          return;
-        }
-        throw new Error(data.error || 'Failed to unlock');
-      }
-
-      // Update state
-      setIsUnlocked(true);
-      setUserBalance(data.newBalance);
-
-      // Show success toast
-      if (!data.alreadyPaid) {
-        setToastMessage(`Unlocked! ${data.charged} credits used.`);
-        setToastType('success');
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 4000);
-      }
-    } catch (error) {
-      console.error('Unlock error:', error);
-      setToastMessage('Failed to unlock. Please try again.');
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 4000);
-    } finally {
-      setIsUnlocking(false);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -223,25 +129,7 @@ export default function BuilderPage() {
   ] : [];
 
   return (
-    <div className="min-h-[calc(100vh-57px)] pb-24 sm:min-h-[calc(100vh-73px)] sm:pb-8">
-      {/* Toast */}
-      {showToast && (
-        <div className="fixed left-4 right-4 top-20 z-50 mx-auto max-w-md sm:left-auto sm:right-6 sm:top-24">
-          <div className={`flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg ${
-            toastType === 'success'
-              ? 'bg-foreground text-background'
-              : 'bg-[var(--status-blacklisted)] text-white'
-          }`}>
-            {toastType === 'success' ? (
-              <CheckCircleIcon className="h-5 w-5 flex-shrink-0 text-[var(--status-recommended)]" />
-            ) : (
-              <AlertTriangleIcon className="h-5 w-5 flex-shrink-0" />
-            )}
-            <p className="text-sm">{toastMessage}</p>
-          </div>
-        </div>
-      )}
-
+    <div className="min-h-[calc(100vh-57px)] sm:min-h-[calc(100vh-73px)]">
       <div className="px-4 py-6 sm:px-6 sm:py-8">
         <div className="mx-auto max-w-2xl">
           {/* Back Button */}
@@ -287,44 +175,45 @@ export default function BuilderPage() {
                 </div>
               )}
 
-              {/* Contact Info */}
+              {/* Contact Info - Always visible now (free) */}
               <div className="mt-6 space-y-3">
-                <MaskedPhone phone={builder.phone} masked={!isUnlocked} />
+                <div className="flex items-center gap-2 text-foreground">
+                  <PhoneIcon className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-mono">{builder.phone}</span>
+                </div>
 
-                {isUnlocked && (
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    <Button asChild size="sm" className="gap-2">
-                      <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                        <MessageCircleIcon className="h-4 w-4" />
-                        WhatsApp
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Button asChild size="sm" className="gap-2">
+                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                      <MessageCircleIcon className="h-4 w-4" />
+                      WhatsApp
+                    </a>
+                  </Button>
+                  {instagramLink && (
+                    <Button asChild variant="outline" size="sm" className="gap-2">
+                      <a href={instagramLink} target="_blank" rel="noopener noreferrer">
+                        <InstagramIcon className="h-4 w-4" />
+                        {builder.instagram}
                       </a>
                     </Button>
-                    {instagramLink && (
-                      <Button asChild variant="outline" size="sm" className="gap-2">
-                        <a href={instagramLink} target="_blank" rel="noopener noreferrer">
-                          <InstagramIcon className="h-4 w-4" />
-                          {builder.instagram}
-                        </a>
-                      </Button>
-                    )}
-                    {builder.website && (
-                      <Button asChild variant="outline" size="sm" className="gap-2">
-                        <a href={builder.website.startsWith('http') ? builder.website : `https://${builder.website}`} target="_blank" rel="noopener noreferrer">
-                          <GlobeIcon className="h-4 w-4" />
-                          Website
-                        </a>
-                      </Button>
-                    )}
-                    {builder.google_reviews_url && (
-                      <Button asChild variant="outline" size="sm" className="gap-2">
-                        <a href={builder.google_reviews_url} target="_blank" rel="noopener noreferrer">
-                          <StarIcon className="h-4 w-4" />
-                          Google Reviews
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                )}
+                  )}
+                  {builder.website && (
+                    <Button asChild variant="outline" size="sm" className="gap-2">
+                      <a href={builder.website.startsWith('http') ? builder.website : `https://${builder.website}`} target="_blank" rel="noopener noreferrer">
+                        <GlobeIcon className="h-4 w-4" />
+                        Website
+                      </a>
+                    </Button>
+                  )}
+                  {builder.google_reviews_url && (
+                    <Button asChild variant="outline" size="sm" className="gap-2">
+                      <a href={builder.google_reviews_url} target="_blank" rel="noopener noreferrer">
+                        <StarIcon className="h-4 w-4" />
+                        Google Reviews
+                      </a>
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {/* Stats */}
@@ -342,19 +231,17 @@ export default function BuilderPage() {
             </CardContent>
           </Card>
 
-          {/* Review Prompt - Only when unlocked */}
-          {isUnlocked && (
-            <div className="mt-4 sm:mt-6">
-              <ReviewPrompt
-                builderName={builder.name}
-                builderId={builder.id}
-                variant="banner"
-              />
-            </div>
-          )}
+          {/* Review Prompt */}
+          <div className="mt-4 sm:mt-6">
+            <ReviewPrompt
+              builderName={builder.name}
+              builderId={builder.id}
+              variant="banner"
+            />
+          </div>
 
           {/* Red Flags Section - Only for blacklisted */}
-          {builder.status === 'blacklisted' && isUnlocked && (
+          {builder.status === 'blacklisted' && (
             <Card className="mt-4 border-0 border-l-4 border-l-[var(--color-energy)] bg-[var(--color-energy)]/5 shadow-md sm:mt-6">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center gap-2 text-[var(--color-energy)]">
@@ -373,104 +260,39 @@ export default function BuilderPage() {
             </Card>
           )}
 
-          {/* Reviews Section */}
+          {/* Reviews Section - Always visible now (free) */}
           <div className="mt-6 sm:mt-8">
             <h2 className="mb-4 text-lg font-medium sm:text-xl">Reviews</h2>
 
-            {isUnlocked ? (
-              reviews.length > 0 ? (
-                <div className="space-y-4">
-                  {reviews.map((review) => (
-                    <ReviewCard
-                      key={review.id}
-                      review={{
-                        id: review.id,
-                        builderId: builderId,
-                        rating: review.rating,
-                        text: review.review_text,
-                        photos: review.photos || [],
-                        createdAt: review.created_at,
-                      }}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <Card className="border-0 bg-secondary/30">
-                  <CardContent className="px-4 py-8 text-center">
-                    <p className="text-muted-foreground">No reviews yet for this builder.</p>
-                    <Button asChild className="mt-4">
-                      <Link href="/submit-review">Be the first to review</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              )
-            ) : (
-              // Locked state - blurred preview
-              <div className="relative">
-                <div className="space-y-4 blur-sm pointer-events-none">
-                  {reviews.length > 0 ? (
-                    reviews.slice(0, 2).map((review) => (
-                      <Card key={review.id} className="border-0 bg-secondary/30">
-                        <CardContent className="p-4 sm:p-5">
-                          <StarRating rating={review.rating} size="sm" />
-                          <p className="mt-3 text-sm leading-relaxed">
-                            {review.review_text.slice(0, 100)}...
-                          </p>
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    <Card className="border-0 bg-secondary/30">
-                      <CardContent className="p-4 sm:p-5">
-                        <p className="text-sm">Reviews are locked until you unlock this profile.</p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center bg-background/50">
-                  <div className="text-center">
-                    <LockIcon className="mx-auto h-8 w-8 text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Unlock to see {reviews.length > 0 ? `all ${reviews.length} reviews` : 'full details'}
-                    </p>
-                  </div>
-                </div>
+            {reviews.length > 0 ? (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={{
+                      id: review.id,
+                      builderId: builderId,
+                      rating: review.rating,
+                      text: review.review_text,
+                      photos: review.photos || [],
+                      createdAt: review.created_at,
+                    }}
+                  />
+                ))}
               </div>
+            ) : (
+              <Card className="border-0 bg-secondary/30">
+                <CardContent className="px-4 py-8 text-center">
+                  <p className="text-muted-foreground">No reviews yet for this builder.</p>
+                  <Button asChild className="mt-4">
+                    <Link href="/submit-review">Be the first to review</Link>
+                  </Button>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
       </div>
-
-      {/* Sticky Unlock CTA - Only when locked */}
-      {!isUnlocked && (
-        <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-card p-4 shadow-lg sm:relative sm:mt-8 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
-          <div className="mx-auto max-w-2xl sm:px-6">
-            <Button
-              onClick={handleUnlock}
-              disabled={isUnlocking}
-              size="lg"
-              className="h-12 w-full"
-            >
-              {isUnlocking ? (
-                <>
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                  Unlocking...
-                </>
-              ) : (
-                <>
-                  <LockIcon className="mr-2 h-4 w-4" />
-                  Unlock Full Details - {formatPrice(PRICING.unlock)}
-                </>
-              )}
-            </Button>
-            <p className="mt-2 text-center text-xs text-muted-foreground">
-              {isLoggedIn
-                ? `Your balance: ${userBalance} credits`
-                : 'Sign in to unlock'}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
