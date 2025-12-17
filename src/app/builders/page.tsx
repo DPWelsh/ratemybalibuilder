@@ -295,6 +295,7 @@ export default function BuildersPage() {
       headerName: 'Rating',
       width: 140,
       cellRenderer: RatingCellRenderer,
+      sort: 'desc',
     },
     {
       field: 'website',
