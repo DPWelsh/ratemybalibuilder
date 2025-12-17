@@ -8,19 +8,49 @@ const supabaseAdmin = createAdminClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Normalize phone number to just digits for comparison
+function normalizePhone(phone: string): string {
+  return phone.replace(/[^\d]/g, '');
+}
+
+// Find builder by phone with fuzzy matching
+async function findBuilderByPhone(phone: string): Promise<{ id: string } | null> {
+  const normalizedPhone = normalizePhone(phone);
+  const shortPhone = normalizedPhone.slice(-10); // Last 10 digits
+
+  // Get all builders and match in JS for fuzzy matching
+  const { data: builders } = await supabaseAdmin
+    .from('builders')
+    .select('id, phone, phones');
+
+  if (!builders) return null;
+
+  for (const builder of builders) {
+    // Check primary phone
+    const builderPhoneDigits = normalizePhone(builder.phone || '');
+    if (builderPhoneDigits.includes(shortPhone) || shortPhone.includes(builderPhoneDigits.slice(-10))) {
+      return { id: builder.id };
+    }
+
+    // Check phones array
+    const phones = (builder.phones || []) as { number: string }[];
+    for (const p of phones) {
+      const pDigits = normalizePhone(p.number);
+      if (pDigits.includes(shortPhone) || shortPhone.includes(pDigits.slice(-10))) {
+        return { id: builder.id };
+      }
+    }
+  }
+
+  return null;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Check if user is authenticated
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized - please log in' },
-        { status: 401 }
-      );
-    }
+    // Get user if authenticated (optional for freemium)
+    const { data: { user } } = await supabase.auth.getUser();
 
     const body = await request.json();
     const { builderName, builderPhone, rating, reviewText, photos } = body as {
@@ -48,12 +78,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Review must be at least 50 characters' }, { status: 400 });
     }
 
-    // Check if builder exists (by phone number)
-    const { data: existingBuilder } = await supabaseAdmin
-      .from('builders')
-      .select('id')
-      .eq('phone', builderPhone)
-      .single();
+    // Check if builder exists (by phone number with fuzzy matching)
+    const existingBuilder = await findBuilderByPhone(builderPhone);
 
     let builderId: string;
 
@@ -87,7 +113,7 @@ export async function POST(request: NextRequest) {
       .from('reviews')
       .insert({
         builder_id: builderId,
-        user_id: user.id,
+        user_id: user?.id || null,
         rating,
         review_text: reviewText,
         photos: photos || [],

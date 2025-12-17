@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { StarRatingInput } from '@/components/StarRating';
-import { PRICING, formatPrice } from '@/lib/pricing';
 import { CheckCircleIcon, ImagePlusIcon, XIcon, ArrowLeftIcon, Loader2Icon } from 'lucide-react';
 
 export default function SubmitReviewPage() {
@@ -77,12 +76,6 @@ export default function SubmitReviewPage() {
           <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
             Thank you for helping the community. Your review will be checked and published within 24 hours.
           </p>
-          <div className="mt-6 rounded-lg bg-[var(--color-prompt)]/10 p-4">
-            <p className="text-sm font-medium text-foreground">{formatPrice(PRICING.reviewCredit)} credits earned</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Credits will be added to your account once the review is approved.
-            </p>
-          </div>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button asChild>
               <Link href="/">Search Builders</Link>
@@ -111,7 +104,7 @@ export default function SubmitReviewPage() {
 
         <h1 className="text-2xl text-foreground sm:text-3xl">Submit a Review</h1>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-          Share your experience and earn {formatPrice(PRICING.reviewCredit)} in credits when approved.
+          Share your experience to help other expats in Bali.
         </p>
 
         <Card className="mt-6 border-0 shadow-lg sm:mt-8">
@@ -243,8 +236,23 @@ export default function SubmitReviewPage() {
                 )}
               </Button>
 
+              {/* Show why button is disabled */}
+              {!isValid && !isSubmitting && (
+                <div className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
+                  <p className="font-medium mb-1">To submit your review:</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {!builderName.trim() && <li>Enter builder name</li>}
+                    {!builderPhone.trim() && <li>Enter phone number</li>}
+                    {rating === 0 && <li>Select a rating</li>}
+                    {reviewText.trim().length < 50 && (
+                      <li>Write at least 50 characters ({50 - reviewText.trim().length} more needed)</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
               <p className="text-center text-xs text-muted-foreground">
-                Reviews are checked before publishing. You&apos;ll earn {formatPrice(PRICING.reviewCredit)} in credits once approved.
+                Reviews are checked before publishing.
               </p>
             </form>
           </CardContent>
