@@ -45,6 +45,8 @@ export function Sidebar({ isAdmin }: SidebarProps) {
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
+    // Exact match for /admin to avoid highlighting when on /admin/reviews etc.
+    if (href === '/admin') return pathname === '/admin';
     return pathname.startsWith(href);
   };
 
