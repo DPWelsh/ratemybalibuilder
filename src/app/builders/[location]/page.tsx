@@ -125,7 +125,7 @@ export default async function LocationPage({ params }: PageProps) {
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Before hiring any builder in {locationData.name}, search their phone number
-                on RateMyBaliBuilder to see reviews from other expats. Check if they&apos;re
+                on RateMyBaliBuilder to see reviews from other clients. Check if they&apos;re
                 recommended, unknown, or blacklisted based on real experiences.
               </p>
             </div>

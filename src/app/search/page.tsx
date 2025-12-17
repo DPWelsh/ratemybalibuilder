@@ -88,7 +88,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </div>
               <h2 className="text-lg font-medium text-foreground sm:text-xl">No builders found</h2>
               <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground sm:text-base">
-                We don&apos;t have this builder in our database yet. Help other expats by submitting a review.
+                We don&apos;t have this builder in our database yet. Help others by submitting a review.
               </p>
               <Button asChild className="mt-6">
                 <Link href="/submit-review">

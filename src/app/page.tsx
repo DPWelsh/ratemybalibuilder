@@ -210,7 +210,7 @@ export default function Home() {
                 <h3 className="mt-4 text-lg sm:mt-6 sm:text-xl">Decide</h3>
                 <p className="mt-2 text-sm text-muted-foreground sm:mt-3 sm:text-base">
                   Make an informed decision with real feedback from
-                  other expats who&apos;ve been there.
+                  others who&apos;ve been there.
                 </p>
                 <p className="mt-3 font-medium text-[#22c55e] sm:mt-4">Peace of mind</p>
               </CardContent>
@@ -223,7 +223,7 @@ export default function Home() {
       <section className="border-t px-4 py-12 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl">What expats are saying</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl">What people are saying</h2>
             <p className="mt-2 text-sm text-muted-foreground sm:mt-4 sm:text-base">
               Real experiences from the Bali building community
             </p>
@@ -295,7 +295,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl">Help build the database</h2>
           <p className="mt-4 text-sm text-muted-foreground sm:mt-6 sm:text-lg">
-            Know a builder in Bali? Add them to our database and help other expats make informed decisions.
+            Know a builder in Bali? Add them to our database and help others make informed decisions.
             Every contribution makes this community stronger.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">

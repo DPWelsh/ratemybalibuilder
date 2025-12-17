@@ -111,7 +111,7 @@ function ReportForm() {
           Report a builder
         </h1>
         <p className="mt-2 text-center text-sm text-muted-foreground sm:mt-3 sm:text-base">
-          Had a bad experience? Help warn other expats.
+          Had a bad experience? Help warn others.
         </p>
 
         <Card className="mt-6 border-0 shadow-lg sm:mt-8">

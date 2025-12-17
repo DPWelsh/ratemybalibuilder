@@ -104,7 +104,7 @@ export default function SubmitReviewPage() {
 
         <h1 className="text-2xl text-foreground sm:text-3xl">Submit a Review</h1>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-          Share your experience to help other expats in Bali.
+          Share your experience to help others building in Bali.
         </p>
 
         <Card className="mt-6 border-0 shadow-lg sm:mt-8">
