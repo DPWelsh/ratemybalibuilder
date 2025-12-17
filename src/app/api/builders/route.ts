@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, trade_type, location, company_name } = body;
+    const { name, phone, trade_type, location, company_name, status } = body;
 
     // Validation
     if (!name || name.trim().length < 2) {
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         trade_type: trade_type || 'General Contractor',
         location: location || 'Other',
         company_name: company_name?.trim() || null,
-        status: 'unknown',
+        status: status || 'unknown',
       })
       .select()
       .single();

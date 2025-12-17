@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2Icon, UserPlusIcon, CheckIcon } from 'lucide-react';
+import { Loader2Icon, UserPlusIcon, CheckIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -14,14 +13,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { tradeTypes, locations } from '@/lib/supabase/builders';
+import { tradeTypes, locations, BuilderStatus } from '@/lib/supabase/builders';
+
+const statusOptions: {
+  value: BuilderStatus;
+  label: string;
+  description: string;
+  icon: typeof ThumbsUpIcon;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+}[] = [
+  {
+    value: 'recommended',
+    label: 'Recommended',
+    description: 'Had a good experience',
+    icon: ThumbsUpIcon,
+    color: 'text-[var(--status-recommended)]',
+    bgColor: 'bg-[var(--status-recommended)]/10',
+    borderColor: 'border-[var(--status-recommended)]',
+  },
+  {
+    value: 'unknown',
+    label: 'Unknown',
+    description: 'No experience yet',
+    icon: HelpCircleIcon,
+    color: 'text-muted-foreground',
+    bgColor: 'bg-secondary',
+    borderColor: 'border-muted-foreground',
+  },
+  {
+    value: 'blacklisted',
+    label: 'Blacklisted',
+    description: 'Bad experience, avoid',
+    icon: AlertTriangleIcon,
+    color: 'text-[var(--status-blacklisted)]',
+    bgColor: 'bg-[var(--status-blacklisted)]/10',
+    borderColor: 'border-[var(--status-blacklisted)]',
+  },
+];
 
 export default function AddBuilderPage() {
-  const router = useRouter();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [tradeType, setTradeType] = useState('General Contractor');
   const [location, setLocation] = useState('Other');
+  const [status, setStatus] = useState<BuilderStatus | null>(null);
   const [companyName, setCompanyName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,6 +79,7 @@ export default function AddBuilderPage() {
           phone,
           trade_type: tradeType,
           location,
+          status: status || 'unknown',
           company_name: companyName || null,
         }),
       });
@@ -196,6 +234,41 @@ export default function AddBuilderPage() {
                 </div>
               </div>
 
+              <div className="space-y-2 sm:space-y-3">
+                <label className="text-sm font-medium">
+                  Your experience with this builder *
+                </label>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  {statusOptions.map((opt) => {
+                    const Icon = opt.icon;
+                    const isSelected = status === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setStatus(opt.value)}
+                        className={`flex flex-col items-center gap-1.5 rounded-lg border-2 p-3 transition-all sm:gap-2 sm:p-4 ${
+                          isSelected
+                            ? `${opt.borderColor} ${opt.bgColor}`
+                            : 'border-transparent bg-secondary/50 hover:bg-secondary'
+                        }`}
+                      >
+                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isSelected ? opt.color : 'text-muted-foreground'}`} />
+                        <span className={`text-xs font-medium sm:text-sm ${isSelected ? opt.color : 'text-foreground'}`}>
+                          {opt.label}
+                        </span>
+                        <span className="hidden text-[10px] text-muted-foreground sm:block">
+                          {opt.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {!status && (
+                  <p className="text-xs text-muted-foreground">Select your experience level</p>
+                )}
+              </div>
+
               <div className="space-y-1.5 sm:space-y-2">
                 <label htmlFor="companyName" className="text-sm font-medium">
                   Company Name (optional)
@@ -213,7 +286,7 @@ export default function AddBuilderPage() {
                 type="submit"
                 size="lg"
                 className="h-11 w-full sm:h-12"
-                disabled={isLoading}
+                disabled={isLoading || !status}
               >
                 {isLoading ? (
                   <>
@@ -224,6 +297,12 @@ export default function AddBuilderPage() {
                   'Add Builder'
                 )}
               </Button>
+
+              {!status && (
+                <p className="text-center text-xs text-muted-foreground">
+                  Please select your experience with this builder to continue
+                </p>
+              )}
             </form>
           </CardContent>
         </Card>
