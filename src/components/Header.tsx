@@ -12,6 +12,7 @@ import type { User } from '@supabase/supabase-js';
 export function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [creditBalance, setCreditBalance] = useState<number>(0);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -25,12 +26,13 @@ export function Header() {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('credit_balance')
+          .select('credit_balance, is_admin')
           .eq('id', user.id)
           .single();
 
         if (profile) {
           setCreditBalance(profile.credit_balance);
+          setIsAdmin(profile.is_admin || false);
         }
       }
       setIsLoading(false);
@@ -78,6 +80,14 @@ export function Header() {
             </div>
           ) : user ? (
             <>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-[var(--color-prompt)] transition-colors hover:text-[var(--color-prompt)]/80"
+                >
+                  Admin
+                </Link>
+              )}
               <Link
                 href="/dashboard"
                 className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
@@ -146,6 +156,18 @@ export function Header() {
               </div>
             ) : user ? (
               <>
+                {isAdmin && (
+                  <>
+                    <Link
+                      href="/admin"
+                      onClick={closeMobileMenu}
+                      className="rounded-lg px-3 py-3 font-medium text-[var(--color-prompt)] transition-colors hover:bg-[var(--color-cloud)]/10"
+                    >
+                      Admin
+                    </Link>
+                    <div className="my-2 h-px bg-[var(--color-cloud)]/10" />
+                  </>
+                )}
                 <div className="px-3 py-2">
                   <CreditBalance balance={creditBalance} showBuyLink={false} />
                 </div>

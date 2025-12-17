@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Header } from "@/components/Header";
+import { AppLayout } from "@/components/AppLayout";
 import { Footer } from "@/components/Footer";
 
 const siteUrl = "https://ratemybalibuilder.com";
@@ -61,9 +61,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased flex min-h-screen flex-col" suppressHydrationWarning>
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <AppLayout>
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </AppLayout>
       </body>
     </html>
   );
