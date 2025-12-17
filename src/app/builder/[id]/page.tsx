@@ -55,10 +55,15 @@ export default function BuilderPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [avgRating, setAvgRating] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       const supabase = createClient();
+
+      // Check auth status
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
 
       // Fetch builder
       const { data: builderData, error: builderError } = await supabase
@@ -199,7 +204,7 @@ export default function BuilderPage() {
                 </div>
               )}
 
-              {/* Contact Info - Always visible now (free) */}
+              {/* Contact Info - Always visible */}
               <div className="mt-6 space-y-3">
                 <div className="flex items-center gap-2 text-foreground">
                   <PhoneIcon className="h-4 w-4 text-muted-foreground" />
@@ -241,17 +246,31 @@ export default function BuilderPage() {
               </div>
 
               {/* Stats */}
-              <div className="mt-6 flex items-center gap-6 border-t border-border pt-6">
-                {avgRating > 0 && (
-                  <div className="flex items-center gap-2">
-                    <StarRating rating={avgRating} size="md" />
-                    <span className="font-medium">{avgRating.toFixed(1)}</span>
+              {isLoggedIn ? (
+                <div className="mt-6 flex items-center gap-6 border-t border-border pt-6">
+                  {avgRating > 0 && (
+                    <div className="flex items-center gap-2">
+                      <StarRating rating={avgRating} size="md" />
+                      <span className="font-medium">{avgRating.toFixed(1)}</span>
+                    </div>
+                  )}
+                  <div className="text-sm text-muted-foreground">
+                    {reviews.length} review{reviews.length !== 1 ? 's' : ''}
                   </div>
-                )}
-                <div className="text-sm text-muted-foreground">
-                  {reviews.length} review{reviews.length !== 1 ? 's' : ''}
                 </div>
-              </div>
+              ) : (
+                <div className="mt-6 border-t border-border pt-6 relative">
+                  <div className="flex items-center gap-6 blur-sm select-none pointer-events-none" aria-hidden="true">
+                    <div className="flex items-center gap-2">
+                      <StarRating rating={5} size="md" />
+                      <span className="font-medium">5.0</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      2 reviews
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -288,35 +307,67 @@ export default function BuilderPage() {
             </Card>
           )}
 
-          {/* Reviews Section - Always visible now (free) */}
+          {/* Reviews Section */}
           <div className="mt-6 sm:mt-8">
             <h2 className="mb-4 text-lg font-medium sm:text-xl">Reviews</h2>
 
-            {reviews.length > 0 ? (
-              <div className="space-y-4">
-                {reviews.map((review) => (
-                  <ReviewCard
-                    key={review.id}
-                    review={{
-                      id: review.id,
-                      builderId: builderId,
-                      rating: review.rating,
-                      text: review.review_text,
-                      photos: review.photos || [],
-                      createdAt: review.created_at,
-                    }}
-                  />
-                ))}
-              </div>
+            {isLoggedIn ? (
+              reviews.length > 0 ? (
+                <div className="space-y-4">
+                  {reviews.map((review) => (
+                    <ReviewCard
+                      key={review.id}
+                      review={{
+                        id: review.id,
+                        builderId: builderId,
+                        rating: review.rating,
+                        text: review.review_text,
+                        photos: review.photos || [],
+                        createdAt: review.created_at,
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-0 bg-secondary/30">
+                  <CardContent className="px-4 py-8 text-center">
+                    <p className="text-muted-foreground">No reviews yet for this builder.</p>
+                    <Button asChild className="mt-4">
+                      <Link href="/submit-review">Be the first to review</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              )
             ) : (
-              <Card className="border-0 bg-secondary/30">
-                <CardContent className="px-4 py-8 text-center">
-                  <p className="text-muted-foreground">No reviews yet for this builder.</p>
-                  <Button asChild className="mt-4">
-                    <Link href="/submit-review">Be the first to review</Link>
+              <div className="relative">
+                {/* Blurred placeholder reviews */}
+                <div className="space-y-4 blur-sm select-none pointer-events-none" aria-hidden="true">
+                  <Card className="border-0 shadow-md">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <StarRating rating={5} size="sm" />
+                        <span className="text-sm text-muted-foreground">Dec 17, 2025</span>
+                      </div>
+                      <p className="text-sm leading-relaxed">Great work on our villa project. Very professional and completed everything on time. Would definitely recommend to others looking for quality work in Bali.</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-md">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <StarRating rating={5} size="sm" />
+                        <span className="text-sm text-muted-foreground">Dec 15, 2025</span>
+                      </div>
+                      <p className="text-sm leading-relaxed">Excellent craftsmanship and attention to detail. Communication was clear throughout the project. Highly recommend for any construction needs.</p>
+                    </CardContent>
+                  </Card>
+                </div>
+                {/* Login overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-background/30">
+                  <Button asChild size="sm">
+                    <Link href="/login">Sign in to read reviews</Link>
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )}
           </div>
         </div>
