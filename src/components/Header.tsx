@@ -100,6 +100,12 @@ export function Header() {
               >
                 Submit Review
               </Link>
+              <Link
+                href="/account"
+                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+              >
+                Account
+              </Link>
               <button
                 onClick={handleSignOut}
                 className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
@@ -192,6 +198,13 @@ export function Header() {
                   className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
                 >
                   Submit Review
+                </Link>
+                <Link
+                  href="/account"
+                  onClick={closeMobileMenu}
+                  className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
+                >
+                  Account
                 </Link>
                 <button
                   onClick={handleSignOut}
