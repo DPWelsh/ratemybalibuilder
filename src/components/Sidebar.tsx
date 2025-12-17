@@ -5,10 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboardIcon,
-  SearchIcon,
   PlusCircleIcon,
   StarIcon,
-  SettingsIcon,
   LogOutIcon,
   UsersIcon,
   ShieldIcon,
@@ -25,7 +23,6 @@ interface SidebarProps {
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboardIcon },
   { href: '/builders', label: 'Browse Builders', icon: UsersIcon },
-  { href: '/', label: 'Search', icon: SearchIcon },
   { href: '/submit-review', label: 'Submit Review', icon: StarIcon },
   { href: '/add-builder', label: 'Add Builder', icon: PlusCircleIcon },
 ];
