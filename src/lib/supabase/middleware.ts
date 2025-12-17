@@ -43,8 +43,9 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes
-  const protectedRoutes = ['/builders', '/builder', '/search', '/submit-review', '/buy-credits', '/account', '/admin', '/dashboard'];
+  // Protected routes - only routes that truly require login
+  // /builders, /builder, /search are now public (can browse without login, need login to unlock)
+  const protectedRoutes = ['/submit-review', '/buy-credits', '/account', '/admin', '/dashboard'];
   const isProtectedRoute = protectedRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route)
   );
@@ -52,7 +53,7 @@ export async function updateSession(request: NextRequest) {
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    url.searchParams.set('redirect', request.nextUrl.pathname);
+    url.searchParams.set('redirect', request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.redirect(url);
   }
 

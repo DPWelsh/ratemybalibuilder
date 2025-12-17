@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium text-foreground">Submit a Review</h3>
-                  <p className="text-sm text-muted-foreground">Earn {formatPrice(PRICING.reviewCredit)} credits</p>
+                  <p className="text-sm text-muted-foreground">Help others find good builders</p>
                 </div>
               </div>
               <Button asChild variant="outline" className="mt-4 w-full">
