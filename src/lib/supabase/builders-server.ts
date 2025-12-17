@@ -2,6 +2,57 @@ import { createClient } from './server';
 
 export type BuilderStatus = 'recommended' | 'unknown' | 'blacklisted';
 
+// Calculate similarity between two phone number strings (0-1)
+function phoneNumberSimilarity(phone1: string, phone2: string): number {
+  if (!phone1 || !phone2) return 0;
+
+  // Get just the digits
+  const digits1 = phone1.replace(/[^\d]/g, '');
+  const digits2 = phone2.replace(/[^\d]/g, '');
+
+  if (!digits1 || !digits2) return 0;
+
+  // Compare last 8-10 digits (most significant part)
+  const compare1 = digits1.slice(-10);
+  const compare2 = digits2.slice(-10);
+
+  // Check if one contains the other
+  if (compare1.includes(compare2) || compare2.includes(compare1)) {
+    return 1;
+  }
+
+  // Calculate matching digits from the end
+  let matchCount = 0;
+  const minLen = Math.min(compare1.length, compare2.length);
+  for (let i = 1; i <= minLen; i++) {
+    if (compare1[compare1.length - i] === compare2[compare2.length - i]) {
+      matchCount++;
+    } else {
+      break;
+    }
+  }
+
+  // If at least 7 digits match from the end, consider it a close match
+  if (matchCount >= 7) {
+    return matchCount / minLen;
+  }
+
+  // Also check for matches with 1-2 digit typos
+  let diffCount = 0;
+  for (let i = 0; i < minLen; i++) {
+    if (compare1[compare1.length - 1 - i] !== compare2[compare2.length - 1 - i]) {
+      diffCount++;
+    }
+  }
+
+  // Allow up to 2 digit differences in 10 digit number
+  if (diffCount <= 2 && minLen >= 8) {
+    return (minLen - diffCount) / minLen;
+  }
+
+  return 0;
+}
+
 export interface PhoneEntry {
   number: string;
   type: 'primary' | 'whatsapp' | 'office' | 'mobile';
@@ -22,41 +73,17 @@ export interface BuilderSearchResult {
 export async function searchBuilders(name?: string, phone?: string): Promise<BuilderSearchResult[]> {
   const supabase = await createClient();
 
-  // Clean phone number for search (remove spaces, dashes, parentheses)
-  const cleanPhone = phone?.replace(/[\s\-\(\)]/g, '') || '';
+  // Clean phone number for search - remove all non-digits
+  const cleanPhone = phone?.replace(/[^\d]/g, '') || '';
+  // Also try with just the last 8-10 digits for partial matching
+  const shortPhone = cleanPhone.length > 8 ? cleanPhone.slice(-10) : cleanPhone;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let builders: any[] = [];
 
   if (cleanPhone) {
-    // Search by phone - check primary phone AND phones JSONB array
-    const { data, error } = await supabase
-      .from('builders')
-      .select(`
-        id,
-        name,
-        phone,
-        phones,
-        status,
-        company_name,
-        aliases,
-        reviews!left (
-          rating,
-          status
-        )
-      `)
-      .or(`phone.ilike.%${cleanPhone}%`);
-
-    if (error) {
-      console.error('Error searching builders:', error);
-      return [];
-    }
-
-    builders = data || [];
-
-    // Also search in phones JSONB array using text search
-    // This is a fallback since Supabase doesn't support JSONB array text search easily
-    const { data: allBuilders } = await supabase
+    // Get all builders and search in JS for better phone matching
+    const { data: allBuilders, error } = await supabase
       .from('builders')
       .select(`
         id,
@@ -72,22 +99,63 @@ export async function searchBuilders(name?: string, phone?: string): Promise<Bui
         )
       `);
 
+    if (error) {
+      console.error('Error searching builders:', error);
+      return [];
+    }
+
+    // Store potential fuzzy matches with their similarity scores
+    const fuzzyMatches: { builder: typeof allBuilders[0]; similarity: number }[] = [];
+
     if (allBuilders) {
       for (const b of allBuilders) {
-        // Check if already in results
-        if (builders.find(existing => existing.id === b.id)) continue;
+        // Normalize the builder's phone number (remove all non-digits)
+        const builderPhoneDigits = b.phone?.replace(/[^\d]/g, '') || '';
 
-        // Check phones JSONB array
+        // Check for exact/substring match first
+        const matchesPrimary =
+          builderPhoneDigits.includes(cleanPhone) ||
+          cleanPhone.includes(builderPhoneDigits) ||
+          builderPhoneDigits.includes(shortPhone) ||
+          shortPhone.includes(builderPhoneDigits.slice(-10));
+
+        if (matchesPrimary) {
+          builders.push(b);
+          continue;
+        }
+
+        // Check phones JSONB array for exact match
         const phones = b.phones as PhoneEntry[] || [];
-        const matchesPhone = phones.some(p => {
-          const normalizedNumber = p.number.replace(/[\s\-\(\)]/g, '');
-          return normalizedNumber.includes(cleanPhone) || cleanPhone.includes(normalizedNumber.slice(-8));
+        const matchesSecondary = phones.some(p => {
+          const normalizedNumber = p.number.replace(/[^\d]/g, '');
+          return normalizedNumber.includes(cleanPhone) ||
+                 cleanPhone.includes(normalizedNumber) ||
+                 normalizedNumber.includes(shortPhone);
         });
 
-        if (matchesPhone) {
+        if (matchesSecondary) {
           builders.push(b);
+          continue;
+        }
+
+        // If no exact match, calculate fuzzy similarity
+        const primarySimilarity = phoneNumberSimilarity(cleanPhone, builderPhoneDigits);
+        const phonesMaxSimilarity = Math.max(
+          0,
+          ...phones.map(p => phoneNumberSimilarity(cleanPhone, p.number))
+        );
+        const maxSimilarity = Math.max(primarySimilarity, phonesMaxSimilarity);
+
+        if (maxSimilarity >= 0.7) {
+          fuzzyMatches.push({ builder: b, similarity: maxSimilarity });
         }
       }
+    }
+
+    // If no exact matches found, add fuzzy matches sorted by similarity
+    if (builders.length === 0 && fuzzyMatches.length > 0) {
+      fuzzyMatches.sort((a, b) => b.similarity - a.similarity);
+      builders = fuzzyMatches.slice(0, 10).map(m => m.builder);
     }
   } else if (name && name.trim()) {
     // Search by name

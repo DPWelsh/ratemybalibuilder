@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -15,12 +15,13 @@ export async function POST(request: Request) {
     }
 
     const supabase = await createClient();
+    const adminSupabase = createAdminClient();
 
     // Get user if authenticated (optional)
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Create the report
-    const { error } = await supabase
+    // Create the report using admin client to bypass RLS
+    const { error } = await adminSupabase
       .from('builder_reports')
       .insert({
         builder_id: builder_id || null,

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -21,7 +21,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const supabase = await createClient();
+    // Use admin client to bypass RLS for builder creation
+    const supabase = createAdminClient();
 
     // Check if builder already exists with this phone
     const { data: existing } = await supabase

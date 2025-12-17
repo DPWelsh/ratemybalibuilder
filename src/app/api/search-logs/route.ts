@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -7,12 +7,13 @@ export async function POST(request: Request) {
     const { phone, trade_type } = body;
 
     const supabase = await createClient();
+    const adminSupabase = createAdminClient();
 
     // Get user if authenticated (optional)
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Log the search
-    const { error } = await supabase
+    // Log the search using admin client to bypass RLS
+    const { error } = await adminSupabase
       .from('search_logs')
       .insert({
         phone: phone || null,

@@ -1,21 +1,101 @@
 'use client';
 
-import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useMemo, useCallback, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef, ICellRendererParams, RowClickedEvent, ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
+import { ColDef, ICellRendererParams, RowClickedEvent, ModuleRegistry, AllCommunityModule, themeQuartz, IFilterParams, IDoesFilterPassParams } from 'ag-grid-community';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/StatusBadge';
 import { StarRating } from '@/components/StarRating';
 import { FilterBar } from '@/components/FilterBar';
-import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType } from '@/lib/supabase/builders';
-import { PRICING, formatPrice } from '@/lib/pricing';
-import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon } from 'lucide-react';
+import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location, TradeType, locations, tradeTypes } from '@/lib/supabase/builders';
+import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, ChevronDownIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
+
+// Custom dropdown filter component for AG Grid
+interface DropdownFilterProps extends IFilterParams<BuilderRow> {
+  options: string[];
+}
+
+const DropdownFilter = forwardRef((props: DropdownFilterProps, ref) => {
+  const [selectedValue, setSelectedValue] = useState<string>('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    doesFilterPass(params: IDoesFilterPassParams<BuilderRow>) {
+      if (!selectedValue) return true;
+      const value = props.colDef.field ? params.data[props.colDef.field as keyof BuilderRow] : '';
+      return value === selectedValue;
+    },
+    isFilterActive() {
+      return selectedValue !== '';
+    },
+    getModel() {
+      return selectedValue ? { value: selectedValue } : null;
+    },
+    setModel(model: { value: string } | null) {
+      setSelectedValue(model?.value || '');
+    },
+  }));
+
+  const handleSelect = (value: string) => {
+    setSelectedValue(value);
+    setIsOpen(false);
+    props.filterChangedCallback();
+  };
+
+  const handleClear = () => {
+    setSelectedValue('');
+    setIsOpen(false);
+    props.filterChangedCallback();
+  };
+
+  return (
+    <div className="p-2 min-w-[160px]">
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent"
+        >
+          <span className={selectedValue ? 'text-foreground' : 'text-muted-foreground'}>
+            {selectedValue || 'All'}
+          </span>
+          <ChevronDownIcon className="h-4 w-4 opacity-50" />
+        </button>
+        {isOpen && (
+          <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[200px] overflow-auto rounded-md border bg-popover shadow-md">
+            <button
+              type="button"
+              onClick={handleClear}
+              className="flex w-full items-center px-3 py-2 text-sm hover:bg-accent text-muted-foreground"
+            >
+              All
+            </button>
+            {props.options.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => handleSelect(option)}
+                className={`flex w-full items-center px-3 py-2 text-sm hover:bg-accent ${
+                  selectedValue === option ? 'bg-accent font-medium' : ''
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+DropdownFilter.displayName = 'DropdownFilter';
 
 interface BuilderRow {
   id: string;
@@ -48,40 +128,46 @@ function RatingCellRenderer(params: ICellRendererParams<BuilderRow>) {
   );
 }
 
-// Custom cell renderer for blurred phone number
+// Custom cell renderer for phone number (now free - show full)
 function PhoneCellRenderer(params: ICellRendererParams<BuilderRow>) {
   const phone = params.value as string;
   if (!phone) return <span className="text-muted-foreground">-</span>;
-  // Show first few digits, blur the rest
-  const visible = phone.slice(0, 6);
-  return (
-    <span className="font-mono text-sm">
-      {visible}<span className="text-muted-foreground/50 blur-[3px] select-none">••••••</span>
-    </span>
-  );
+  return <span className="font-mono text-sm">{phone}</span>;
 }
 
-// Custom cell renderer for blurred website
+// Custom cell renderer for website (now free - show link)
 function WebsiteCellRenderer(params: ICellRendererParams<BuilderRow>) {
   const website = params.value as string | null;
   if (!website) return <span className="text-muted-foreground">-</span>;
   return (
-    <div className="flex items-center gap-1.5">
-      <GlobeIcon className="h-3.5 w-3.5 text-muted-foreground" />
-      <span className="text-sm text-muted-foreground/50 blur-[3px] select-none">website.com</span>
-    </div>
+    <a
+      href={website.startsWith('http') ? website : `https://${website}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1.5 text-[var(--color-prompt)] hover:underline"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <GlobeIcon className="h-3.5 w-3.5" />
+      <span className="text-sm">Visit</span>
+    </a>
   );
 }
 
-// Custom cell renderer for blurred Google reviews
+// Custom cell renderer for Google reviews (now free - show link)
 function GoogleReviewsCellRenderer(params: ICellRendererParams<BuilderRow>) {
   const url = params.value as string | null;
   if (!url) return <span className="text-muted-foreground">-</span>;
   return (
-    <div className="flex items-center gap-1.5">
-      <StarIcon className="h-3.5 w-3.5 text-muted-foreground" />
-      <span className="text-sm text-muted-foreground/50 blur-[3px] select-none">Google Reviews</span>
-    </div>
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-1.5 text-[var(--color-prompt)] hover:underline"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <StarIcon className="h-3.5 w-3.5" />
+      <span className="text-sm">Reviews</span>
+    </a>
   );
 }
 
@@ -94,6 +180,7 @@ export default function BuildersPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Filter state
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState<Location | 'all'>('all');
   const [selectedTradeType, setSelectedTradeType] = useState<TradeType | 'all'>('all');
   const [selectedStatus, setSelectedStatus] = useState<BuilderStatus | 'all'>('all');
@@ -114,6 +201,7 @@ export default function BuildersPage() {
   }, []);
 
   const clearFilters = () => {
+    setSearchQuery('');
     setSelectedLocation('all');
     setSelectedTradeType('all');
     setSelectedStatus('all');
@@ -121,12 +209,22 @@ export default function BuildersPage() {
 
   // Prepare and filter row data
   const rowData = useMemo<BuilderRow[]>(() => {
+    const query = searchQuery.toLowerCase().trim();
     return builders
       .filter((builder) => {
+        // Text search across all relevant fields
+        const searchMatch = !query ||
+          builder.name.toLowerCase().includes(query) ||
+          builder.phone?.toLowerCase().includes(query) ||
+          builder.company_name?.toLowerCase().includes(query) ||
+          builder.location?.toLowerCase().includes(query) ||
+          builder.trade_type?.toLowerCase().includes(query) ||
+          builder.status?.toLowerCase().includes(query);
+
         const locationMatch = selectedLocation === 'all' || builder.location === selectedLocation;
         const tradeMatch = selectedTradeType === 'all' || builder.trade_type === selectedTradeType;
         const statusMatch = selectedStatus === 'all' || builder.status === selectedStatus;
-        return locationMatch && tradeMatch && statusMatch;
+        return searchMatch && locationMatch && tradeMatch && statusMatch;
       })
       .map((builder) => ({
         id: builder.id,
@@ -140,7 +238,7 @@ export default function BuildersPage() {
         avgRating: builder.avg_rating,
         reviewCount: builder.review_count,
       }));
-  }, [builders, selectedLocation, selectedTradeType, selectedStatus]);
+  }, [builders, searchQuery, selectedLocation, selectedTradeType, selectedStatus]);
 
   // Column definitions
   const columnDefs = useMemo<ColDef<BuilderRow>[]>(() => [
@@ -156,7 +254,6 @@ export default function BuildersPage() {
       headerName: 'Phone',
       width: 160,
       cellRenderer: PhoneCellRenderer,
-      sortable: false,
     },
     {
       field: 'website',
@@ -175,34 +272,41 @@ export default function BuildersPage() {
     {
       field: 'location',
       headerName: 'Location',
-      width: 120,
-      sortable: true,
+      width: 150,
+      filter: DropdownFilter,
+      filterParams: {
+        options: locations,
+      },
     },
     {
       field: 'tradeType',
       headerName: 'Trade',
-      width: 160,
-      sortable: true,
+      width: 200,
+      filter: DropdownFilter,
+      filterParams: {
+        options: tradeTypes,
+      },
     },
     {
       field: 'status',
       headerName: 'Status',
-      width: 140,
+      width: 150,
       cellRenderer: StatusCellRenderer,
-      sortable: true,
+      filter: DropdownFilter,
+      filterParams: {
+        options: ['recommended', 'unknown', 'blacklisted'],
+      },
     },
     {
       field: 'avgRating',
       headerName: 'Rating',
       width: 140,
       cellRenderer: RatingCellRenderer,
-      sortable: true,
     },
     {
       field: 'reviewCount',
       headerName: 'Reviews',
       width: 100,
-      sortable: true,
     },
   ], []);
 
@@ -210,6 +314,7 @@ export default function BuildersPage() {
   const defaultColDef = useMemo<ColDef>(() => ({
     sortable: true,
     resizable: true,
+    floatingFilter: true,
     cellStyle: { display: 'flex', alignItems: 'center' },
   }), []);
 
@@ -259,6 +364,20 @@ export default function BuildersPage() {
               <p className="text-xs text-muted-foreground sm:text-sm">Blacklisted</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Search */}
+        <div className="mb-4 sm:mb-6">
+          <div className="relative">
+            <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by name, phone, location, trade..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-11 pl-10"
+            />
+          </div>
         </div>
 
         {/* Filters */}
@@ -317,10 +436,10 @@ export default function BuildersPage() {
             <UsersIcon className="mx-auto h-8 w-8 text-muted-foreground" />
             <h3 className="mt-3 font-medium text-foreground">Know a builder not listed?</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              Submit a review and earn {formatPrice(PRICING.reviewCredit)} in credits
+              Help other expats by adding builders you know
             </p>
             <Button asChild className="mt-4">
-              <Link href="/submit-review">Submit a Review</Link>
+              <Link href="/add-builder">Add a Builder</Link>
             </Button>
           </CardContent>
         </Card>
