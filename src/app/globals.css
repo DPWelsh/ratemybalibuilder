@@ -108,6 +108,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Improve scroll and paint performance */
+.contain-paint {
+  contain: paint;
+}
+
 /* Display headings use Acid Grotesk */
 .font-display {
   font-family: 'Acid Grotesk', system-ui, sans-serif;

@@ -186,7 +186,7 @@ export default function SuppliersPage() {
 
   return (
     <div className="min-h-screen px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl contain-paint">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Trusted Supplier Directory</h1>
@@ -258,7 +258,7 @@ export default function SuppliersPage() {
               const hasMore = suppliers.length > ITEMS_PER_CATEGORY;
 
               return (
-                <Card key={category} className="overflow-hidden">
+                <Card key={category} className="overflow-hidden" style={{ contentVisibility: 'auto' }}>
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <span>{CATEGORY_ICONS[category] || '📦'}</span>
@@ -273,7 +273,7 @@ export default function SuppliersPage() {
                       {displayedSuppliers.map((supplier, idx) => (
                         <div
                           key={`${supplier.name}-${idx}`}
-                          className="rounded-lg border p-3 transition-colors hover:border-[var(--color-energy)]/50"
+                          className="rounded-lg border p-3"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <h3 className="font-medium text-sm">{supplier.name}</h3>
@@ -283,10 +283,9 @@ export default function SuppliersPage() {
                           </div>
 
                           {supplier.area && (
-                            <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                              <MapPinIcon className="h-3 w-3" />
-                              {supplier.area}
-                            </div>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              📍 {supplier.area}
+                            </p>
                           )}
 
                           {supplier.notes && (
@@ -300,10 +299,9 @@ export default function SuppliersPage() {
                               href={`https://wa.me/${supplier.whatsapp}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="mt-2 inline-flex items-center gap-1.5 rounded bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-700"
+                              className="mt-2 inline-block rounded bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-700"
                             >
-                              <PhoneIcon className="h-3 w-3" />
-                              WhatsApp
+                              💬 WhatsApp
                             </a>
                           )}
                         </div>
