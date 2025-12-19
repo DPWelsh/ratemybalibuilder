@@ -308,7 +308,7 @@ export default function Home() {
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl">Contribute & get rewarded</h2>
           <p className="mt-4 text-sm text-muted-foreground sm:mt-6 sm:text-lg">
-            Add a builder or submit a review and get <strong>free access</strong> to our complete Bali Investment Guide —
+            Add a builder or submit a review and get <strong>free access</strong> to our complete Bali Investment Guide -
             19 chapters on land ownership, ROI calculations, and trusted supplier contacts.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
