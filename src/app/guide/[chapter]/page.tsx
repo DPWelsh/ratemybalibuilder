@@ -41,10 +41,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${chapter.title} | Invest in Bali Guide`,
+    title: `${chapter.title} | Bali Investment Guide`,
     description: chapter.description,
     openGraph: {
-      title: `${chapter.title} | Invest in Bali Guide`,
+      title: `${chapter.title} | Bali Investment Guide`,
       description: chapter.description,
       url: `https://ratemybalibuilder.com/guide/${chapter.slug}`,
     },
@@ -262,8 +262,12 @@ export default async function ChapterPage({ params }: PageProps) {
             timeRequired: `PT${readingTime}M`,
             isPartOf: {
               '@type': 'Book',
-              name: 'Invest in Bali Guide',
+              name: 'Bali Investment Guide',
               url: 'https://ratemybalibuilder.com/guide',
+              author: {
+                '@type': 'Organization',
+                name: 'RateMyBaliBuilder',
+              },
             },
           }),
         }}

@@ -65,7 +65,7 @@ export function PaywallCTA({
           <p className="mx-auto mt-3 max-w-md text-muted-foreground">
             {isPremium
               ? 'This chapter contains our exclusive supplier contacts with direct phone numbers and special discounts.'
-              : `Continue reading this chapter and get access to all ${19} chapters of the Invest in Bali Guide.`}
+              : `Continue reading this chapter and get access to all ${19} chapters of the Bali Investment Guide.`}
           </p>
 
           {/* What's included */}
