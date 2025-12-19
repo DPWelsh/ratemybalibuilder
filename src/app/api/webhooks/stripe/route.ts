@@ -11,7 +11,6 @@ const supabaseAdmin = createClient(
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
-  const planId = session.metadata?.planId as MembershipPlanId | undefined;
   const credits = parseInt(session.metadata?.credits || '0', 10);
 
   // Handle credit purchase
@@ -31,37 +30,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }
 
     console.log(`Successfully added ${credits} credits to user ${userId}`);
-    return;
-  }
-
-  // Handle one-time guide purchase
-  if (planId === 'guide_only' && userId) {
-    console.log(`Processing guide purchase for user ${userId}`);
-
-    // Create membership record
-    const { error: membershipError } = await supabaseAdmin
-      .from('memberships')
-      .insert({
-        user_id: userId,
-        plan: 'guide_only',
-        status: 'active',
-        stripe_customer_id: session.customer as string,
-        current_period_start: new Date().toISOString(),
-        current_period_end: null, // Lifetime access
-      });
-
-    if (membershipError) {
-      console.error('Failed to create membership:', membershipError);
-      throw new Error('Failed to create membership');
-    }
-
-    // Update profile membership tier
-    await supabaseAdmin
-      .from('profiles')
-      .update({ membership_tier: 'guide' })
-      .eq('id', userId);
-
-    console.log(`Successfully activated guide access for user ${userId}`);
     return;
   }
 
