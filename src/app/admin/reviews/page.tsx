@@ -10,7 +10,11 @@ import {
   XIcon,
   Loader2Icon,
   RefreshCwIcon,
+  PencilIcon,
+  SaveIcon,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { tradeTypes, locations } from '@/lib/supabase/builders';
 
 interface PendingReview {
   id: string;
@@ -22,16 +26,28 @@ interface PendingReview {
     id: string;
     name: string;
     phone: string;
+    trade_type: string;
+    location: string;
   };
   user: {
     email: string;
   };
 }
 
+interface EditingBuilder {
+  reviewId: string;
+  name: string;
+  phone: string;
+  trade_type: string;
+  location: string;
+}
+
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<PendingReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [editingBuilder, setEditingBuilder] = useState<EditingBuilder | null>(null);
+  const [savingBuilder, setSavingBuilder] = useState(false);
 
   const fetchReviews = async () => {
     setIsLoading(true);
@@ -49,7 +65,9 @@ export default function AdminReviewsPage() {
         builder:builders (
           id,
           name,
-          phone
+          phone,
+          trade_type,
+          location
         )
       `)
       .eq('status', 'pending')
@@ -73,6 +91,60 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     fetchReviews();
   }, []);
+
+  const startEditingBuilder = (review: PendingReview) => {
+    setEditingBuilder({
+      reviewId: review.id,
+      name: review.builder?.name || '',
+      phone: review.builder?.phone || '',
+      trade_type: review.builder?.trade_type || 'General Contractor',
+      location: review.builder?.location || 'Other',
+    });
+  };
+
+  const cancelEditingBuilder = () => {
+    setEditingBuilder(null);
+  };
+
+  const saveBuilderChanges = async (builderId: string) => {
+    if (!editingBuilder) return;
+
+    setSavingBuilder(true);
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('builders')
+      .update({
+        name: editingBuilder.name,
+        phone: editingBuilder.phone,
+        trade_type: editingBuilder.trade_type,
+        location: editingBuilder.location,
+      })
+      .eq('id', builderId);
+
+    if (!error) {
+      // Update local state
+      setReviews(reviews.map(r =>
+        r.id === editingBuilder.reviewId
+          ? {
+              ...r,
+              builder: {
+                ...r.builder,
+                name: editingBuilder.name,
+                phone: editingBuilder.phone,
+                trade_type: editingBuilder.trade_type,
+                location: editingBuilder.location,
+              }
+            }
+          : r
+      ));
+      setEditingBuilder(null);
+    } else {
+      alert('Failed to save builder changes');
+    }
+
+    setSavingBuilder(false);
+  };
 
   const handleAction = async (reviewId: string, action: 'approve' | 'reject') => {
     setProcessingId(reviewId);
@@ -133,25 +205,108 @@ export default function AdminReviewsPage() {
           </Card>
         ) : (
           <div className="mt-8 space-y-6">
-            {reviews.map((review) => (
+            {reviews.map((review) => {
+              const isEditing = editingBuilder?.reviewId === review.id;
+
+              return (
               <Card key={review.id} className="border-0 shadow-md">
                 <CardContent className="p-5 sm:p-6">
-                  {/* Header */}
+                  {/* Header - Builder Info */}
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <h3 className="font-medium text-foreground">
-                        Review for: {review.builder?.name || 'Unknown Builder'}
-                      </h3>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Phone: {review.builder?.phone || 'N/A'}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        By: {review.user?.email || 'Unknown'}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Submitted: {new Date(review.created_at).toLocaleString()}
-                      </p>
-                    </div>
+                    {isEditing ? (
+                      /* Edit Mode */
+                      <div className="flex-1 space-y-3">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Builder Name</label>
+                            <Input
+                              value={editingBuilder.name}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, name: e.target.value })}
+                              className="h-9"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Phone</label>
+                            <Input
+                              value={editingBuilder.phone}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, phone: e.target.value })}
+                              className="h-9"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Trade Type</label>
+                            <select
+                              value={editingBuilder.trade_type}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, trade_type: e.target.value })}
+                              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            >
+                              {tradeTypes.map((type) => (
+                                <option key={type} value={type}>{type}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Location</label>
+                            <select
+                              value={editingBuilder.location}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, location: e.target.value })}
+                              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            >
+                              {locations.map((loc) => (
+                                <option key={loc} value={loc}>{loc}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => saveBuilderChanges(review.builder?.id)}
+                            disabled={savingBuilder}
+                          >
+                            {savingBuilder ? (
+                              <Loader2Icon className="mr-1.5 h-3 w-3 animate-spin" />
+                            ) : (
+                              <SaveIcon className="mr-1.5 h-3 w-3" />
+                            )}
+                            Save
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={cancelEditingBuilder}>
+                            Cancel
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          By: {review.user?.email || 'Anonymous'} • Submitted: {new Date(review.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    ) : (
+                      /* View Mode */
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium text-foreground">
+                            {review.builder?.name || 'Unknown Builder'}
+                          </h3>
+                          <span className="text-xs text-muted-foreground">
+                            ({review.builder?.trade_type || 'Unknown Trade'})
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => startEditingBuilder(review)}
+                            className="h-6 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            <PencilIcon className="h-3 w-3" />
+                            Edit
+                          </Button>
+                        </div>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {review.builder?.phone || 'N/A'} • {review.builder?.location || 'Unknown Location'}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          By: {review.user?.email || 'Anonymous'} • Submitted: {new Date(review.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    )}
                     <StarRating rating={review.rating} size="md" />
                   </div>
 
@@ -176,32 +331,35 @@ export default function AdminReviewsPage() {
                   )}
 
                   {/* Actions */}
-                  <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
-                    <Button
-                      onClick={() => handleAction(review.id, 'approve')}
-                      disabled={processingId === review.id}
-                      className="gap-2"
-                    >
-                      {processingId === review.id ? (
-                        <Loader2Icon className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <CheckIcon className="h-4 w-4" />
-                      )}
-                      Approve
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleAction(review.id, 'reject')}
-                      disabled={processingId === review.id}
-                      className="gap-2"
-                    >
-                      <XIcon className="h-4 w-4" />
-                      Reject
-                    </Button>
+                  <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
+                    <div className="flex items-center gap-3">
+                      <Button
+                        onClick={() => handleAction(review.id, 'approve')}
+                        disabled={processingId === review.id}
+                        className="gap-2"
+                      >
+                        {processingId === review.id ? (
+                          <Loader2Icon className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <CheckIcon className="h-4 w-4" />
+                        )}
+                        Approve
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleAction(review.id, 'reject')}
+                        disabled={processingId === review.id}
+                        className="gap-2"
+                      >
+                        <XIcon className="h-4 w-4" />
+                        Reject
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>

@@ -13,8 +13,11 @@ import {
   CheckIcon,
   XIcon,
   Trash2Icon,
+  PencilIcon,
+  SaveIcon,
 } from 'lucide-react';
 import { formatPhone } from '@/lib/utils';
+import { tradeTypes, locations } from '@/lib/supabase/builders';
 
 interface Builder {
   id: string;
@@ -24,34 +27,28 @@ interface Builder {
   status: 'recommended' | 'unknown' | 'blacklisted';
   location: string;
   trade_type: string;
+  website: string | null;
+  google_reviews_url: string | null;
   created_at: string;
   is_published: boolean;
 }
 
-const TRADE_TYPES = [
-  'General Contractor',
-  'Architect',
-  'Interior Designer',
-  'Pool Builder',
-  'Landscaper',
-  'Renovation Specialist',
-  'Plumber',
-  'Electrician',
-  'Roofer',
-  'Painter',
-  'Tiler',
-  'Carpenter',
-  'Mason',
-  'HVAC',
-  'Welder',
-  'Glass & Glazing',
-] as const;
+interface EditingBuilder {
+  id: string;
+  name: string;
+  phone: string;
+  location: string;
+  trade_type: string;
+  website: string;
+  google_reviews_url: string;
+}
 
 export default function AdminBuildersPage() {
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [editingBuilder, setEditingBuilder] = useState<EditingBuilder | null>(null);
 
   const fetchBuilders = async () => {
     setIsLoading(true);
@@ -69,9 +66,64 @@ export default function AdminBuildersPage() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchBuilders();
   }, []);
+
+  const startEditing = (builder: Builder) => {
+    setEditingBuilder({
+      id: builder.id,
+      name: builder.name,
+      phone: builder.phone,
+      location: builder.location,
+      trade_type: builder.trade_type,
+      website: builder.website || '',
+      google_reviews_url: builder.google_reviews_url || '',
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingBuilder(null);
+  };
+
+  const saveBuilder = async () => {
+    if (!editingBuilder) return;
+
+    setUpdatingId(editingBuilder.id);
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('builders')
+      .update({
+        name: editingBuilder.name,
+        phone: editingBuilder.phone,
+        location: editingBuilder.location,
+        trade_type: editingBuilder.trade_type,
+        website: editingBuilder.website || null,
+        google_reviews_url: editingBuilder.google_reviews_url || null,
+      })
+      .eq('id', editingBuilder.id);
+
+    if (!error) {
+      setBuilders(builders.map(b =>
+        b.id === editingBuilder.id
+          ? {
+              ...b,
+              name: editingBuilder.name,
+              phone: editingBuilder.phone,
+              location: editingBuilder.location,
+              trade_type: editingBuilder.trade_type,
+              website: editingBuilder.website || null,
+              google_reviews_url: editingBuilder.google_reviews_url || null,
+            }
+          : b
+      ));
+      setEditingBuilder(null);
+    } else {
+      alert('Failed to save changes');
+    }
+
+    setUpdatingId(null);
+  };
 
   const updateStatus = async (builderId: string, newStatus: 'recommended' | 'unknown' | 'blacklisted') => {
     setUpdatingId(builderId);
@@ -91,23 +143,6 @@ export default function AdminBuildersPage() {
     }
 
     setUpdatingId(null);
-  };
-
-  const updateTradeType = async (builderId: string, newTradeType: string) => {
-    const supabase = createClient();
-
-    const { error } = await supabase
-      .from('builders')
-      .update({ trade_type: newTradeType })
-      .eq('id', builderId);
-
-    if (!error) {
-      setBuilders(builders.map(b =>
-        b.id === builderId ? { ...b, trade_type: newTradeType } : b
-      ));
-    } else {
-      alert('Failed to update trade type');
-    }
   };
 
   const togglePublished = async (builderId: string, isPublished: boolean) => {
@@ -138,13 +173,11 @@ export default function AdminBuildersPage() {
     setUpdatingId(builderId);
     const supabase = createClient();
 
-    // First delete associated reviews
     await supabase
       .from('reviews')
       .delete()
       .eq('builder_id', builderId);
 
-    // Then delete the builder
     const { error } = await supabase
       .from('builders')
       .delete()
@@ -159,7 +192,6 @@ export default function AdminBuildersPage() {
     setUpdatingId(null);
   };
 
-  // Separate pending and published builders
   const pendingBuilders = builders.filter(b => !b.is_published);
   const publishedBuilders = builders.filter(b => b.is_published);
 
@@ -215,109 +247,207 @@ export default function AdminBuildersPage() {
               </CardContent>
             </Card>
           ) : (
-            filteredBuilders.map((builder) => (
-              <Card key={builder.id} className={`border-0 shadow-sm ${!builder.is_published ? 'ring-2 ring-[var(--color-energy)]/50' : ''}`}>
-                <CardContent className="p-4 sm:p-5">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-medium text-foreground">{builder.name}</h3>
-                        <StatusBadge status={builder.status} size="sm" />
-                        {!builder.is_published && (
-                          <span className="inline-flex items-center rounded-full bg-[var(--color-energy)]/10 px-2 py-0.5 text-xs font-medium text-[var(--color-energy)]">
-                            Pending
-                          </span>
-                        )}
+            filteredBuilders.map((builder) => {
+              const isEditing = editingBuilder?.id === builder.id;
+
+              return (
+                <Card key={builder.id} className={`border-0 shadow-sm ${!builder.is_published ? 'ring-2 ring-[var(--color-energy)]/50' : ''}`}>
+                  <CardContent className="p-4 sm:p-5">
+                    {isEditing ? (
+                      /* Edit Mode */
+                      <div className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Name</label>
+                            <Input
+                              value={editingBuilder.name}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, name: e.target.value })}
+                              className="h-9"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Phone</label>
+                            <Input
+                              value={editingBuilder.phone}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, phone: e.target.value })}
+                              className="h-9"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Trade Type</label>
+                            <select
+                              value={editingBuilder.trade_type}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, trade_type: e.target.value })}
+                              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            >
+                              {tradeTypes.map((type) => (
+                                <option key={type} value={type}>{type}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Location</label>
+                            <select
+                              value={editingBuilder.location}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, location: e.target.value })}
+                              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            >
+                              {locations.map((loc) => (
+                                <option key={loc} value={loc}>{loc}</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Website</label>
+                            <Input
+                              value={editingBuilder.website}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, website: e.target.value })}
+                              placeholder="https://..."
+                              className="h-9"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-muted-foreground">Google Reviews URL</label>
+                            <Input
+                              value={editingBuilder.google_reviews_url}
+                              onChange={(e) => setEditingBuilder({ ...editingBuilder, google_reviews_url: e.target.value })}
+                              placeholder="https://..."
+                              className="h-9"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={saveBuilder}
+                            disabled={updatingId === builder.id}
+                          >
+                            {updatingId === builder.id ? (
+                              <Loader2Icon className="mr-2 h-3 w-3 animate-spin" />
+                            ) : (
+                              <SaveIcon className="mr-2 h-3 w-3" />
+                            )}
+                            Save
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={cancelEditing}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
                       </div>
-                      {builder.company_name && (
-                        <p className="mt-1 text-sm text-muted-foreground">{builder.company_name}</p>
-                      )}
-                      <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                        <span>{formatPhone(builder.phone)}</span>
-                        <span>{builder.location}</span>
-                        <select
-                          value={builder.trade_type}
-                          onChange={(e) => updateTradeType(builder.id, e.target.value)}
-                          className="rounded-md border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        >
-                          {TRADE_TYPES.map((type) => (
-                            <option key={type} value={type}>
-                              {type}
-                            </option>
-                          ))}
-                        </select>
+                    ) : (
+                      /* View Mode */
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="font-medium text-foreground">{builder.name}</h3>
+                            <StatusBadge status={builder.status} size="sm" />
+                            {!builder.is_published && (
+                              <span className="inline-flex items-center rounded-full bg-[var(--color-energy)]/10 px-2 py-0.5 text-xs font-medium text-[var(--color-energy)]">
+                                Pending
+                              </span>
+                            )}
+                          </div>
+                          {builder.company_name && (
+                            <p className="mt-1 text-sm text-muted-foreground">{builder.company_name}</p>
+                          )}
+                          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                            <span>{formatPhone(builder.phone)}</span>
+                            <span>{builder.location}</span>
+                            <span>{builder.trade_type}</span>
+                            {builder.website && (
+                              <a href={builder.website} target="_blank" rel="noopener noreferrer" className="text-[var(--color-prompt)] hover:underline">
+                                Website
+                              </a>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-wrap gap-2">
+                          {/* Edit Button */}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => startEditing(builder)}
+                            className="text-xs gap-1"
+                          >
+                            <PencilIcon className="h-3 w-3" />
+                            Edit
+                          </Button>
+
+                          {/* Publish/Unpublish Button */}
+                          <Button
+                            variant={builder.is_published ? 'outline' : 'default'}
+                            size="sm"
+                            onClick={() => togglePublished(builder.id, builder.is_published)}
+                            disabled={updatingId === builder.id}
+                            className="text-xs gap-1"
+                          >
+                            {updatingId === builder.id ? (
+                              <Loader2Icon className="h-3 w-3 animate-spin" />
+                            ) : builder.is_published ? (
+                              <>
+                                <XIcon className="h-3 w-3" />
+                                Unpublish
+                              </>
+                            ) : (
+                              <>
+                                <CheckIcon className="h-3 w-3" />
+                                Publish
+                              </>
+                            )}
+                          </Button>
+
+                          {/* Status buttons */}
+                          <Button
+                            variant={builder.status === 'recommended' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateStatus(builder.id, 'recommended')}
+                            disabled={updatingId === builder.id}
+                            className="text-xs whitespace-nowrap"
+                          >
+                            Recommended
+                          </Button>
+                          <Button
+                            variant={builder.status === 'unknown' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateStatus(builder.id, 'unknown')}
+                            disabled={updatingId === builder.id}
+                            className="text-xs"
+                          >
+                            Neutral
+                          </Button>
+                          <Button
+                            variant={builder.status === 'blacklisted' ? 'destructive' : 'outline'}
+                            size="sm"
+                            onClick={() => updateStatus(builder.id, 'blacklisted')}
+                            disabled={updatingId === builder.id}
+                            className="text-xs"
+                          >
+                            Flagged
+                          </Button>
+
+                          {/* Delete Button */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteBuilder(builder.id, builder.name)}
+                            disabled={updatingId === builder.id}
+                            className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2Icon className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex flex-wrap gap-2">
-                      {/* Publish/Unpublish Button */}
-                      <Button
-                        variant={builder.is_published ? 'outline' : 'default'}
-                        size="sm"
-                        onClick={() => togglePublished(builder.id, builder.is_published)}
-                        disabled={updatingId === builder.id}
-                        className="text-xs gap-1"
-                      >
-                        {updatingId === builder.id ? (
-                          <Loader2Icon className="h-3 w-3 animate-spin" />
-                        ) : builder.is_published ? (
-                          <>
-                            <XIcon className="h-3 w-3" />
-                            Unpublish
-                          </>
-                        ) : (
-                          <>
-                            <CheckIcon className="h-3 w-3" />
-                            Publish
-                          </>
-                        )}
-                      </Button>
-
-                      {/* Status buttons */}
-                      <Button
-                        variant={builder.status === 'recommended' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => updateStatus(builder.id, 'recommended')}
-                        disabled={updatingId === builder.id}
-                        className="text-xs"
-                      >
-                        Recommended
-                      </Button>
-                      <Button
-                        variant={builder.status === 'unknown' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => updateStatus(builder.id, 'unknown')}
-                        disabled={updatingId === builder.id}
-                        className="text-xs"
-                      >
-                        Neutral
-                      </Button>
-                      <Button
-                        variant={builder.status === 'blacklisted' ? 'destructive' : 'outline'}
-                        size="sm"
-                        onClick={() => updateStatus(builder.id, 'blacklisted')}
-                        disabled={updatingId === builder.id}
-                        className="text-xs"
-                      >
-                        Flagged
-                      </Button>
-
-                      {/* Delete Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteBuilder(builder.id, builder.name)}
-                        disabled={updatingId === builder.id}
-                        className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2Icon className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })
           )}
         </div>
       </div>
