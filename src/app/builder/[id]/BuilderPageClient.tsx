@@ -21,6 +21,32 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatPhone } from '@/lib/utils';
+import { LockIcon } from 'lucide-react';
+
+// Mask name for non-logged-in users - show first word only
+function maskName(name: string): string {
+  if (!name) return '';
+  const firstWord = name.split(' ')[0];
+  if (firstWord.length <= 3 && name.split(' ').length > 1) {
+    return name.split(' ').slice(0, 2).join(' ') + ' ***';
+  }
+  return firstWord + ' ***';
+}
+
+// Mask phone for non-logged-in users - show country code + first 3 digits
+function maskPhone(phone: string): string {
+  if (!phone) return '';
+  const digits = phone.replace(/\D/g, '');
+  let firstThree = '8XX';
+  if (digits.startsWith('62') && digits.length > 4) {
+    firstThree = digits.slice(2, 5);
+  } else if (digits.startsWith('0') && digits.length > 3) {
+    firstThree = digits.slice(1, 4);
+  } else if (digits.length >= 3) {
+    firstThree = digits.slice(0, 3);
+  }
+  return `+62 ${firstThree}-XXXX-XXXX`;
+}
 
 interface Builder {
   id: string;
@@ -177,7 +203,9 @@ export function BuilderPageClient({ builderId, initialBuilder }: BuilderPageClie
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h1 className="text-xl font-medium text-foreground sm:text-2xl">{builder.name}</h1>
+                  <h1 className="text-xl font-medium text-foreground sm:text-2xl">
+                    {isLoggedIn ? builder.name : maskName(builder.name)}
+                  </h1>
                   {builder.company_name && (
                     <p className="mt-1 text-sm text-muted-foreground">{builder.company_name}</p>
                   )}
@@ -207,45 +235,58 @@ export function BuilderPageClient({ builderId, initialBuilder }: BuilderPageClie
                 </div>
               )}
 
-              {/* Contact Info - Always visible */}
+              {/* Contact Info */}
               <div className="mt-6 space-y-3">
                 <div className="flex items-center gap-2 text-foreground">
                   <PhoneIcon className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-mono">{formatPhone(builder.phone)}</span>
+                  <span className="font-mono">
+                    {isLoggedIn ? formatPhone(builder.phone) : maskPhone(builder.phone)}
+                  </span>
                 </div>
 
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <Button asChild size="sm" className="gap-2">
-                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                      <MessageCircleIcon className="h-4 w-4" />
-                      WhatsApp
-                    </a>
-                  </Button>
-                  {instagramLink && (
-                    <Button asChild variant="outline" size="sm" className="gap-2">
-                      <a href={instagramLink} target="_blank" rel="noopener noreferrer">
-                        <InstagramIcon className="h-4 w-4" />
-                        {builder.instagram}
+                {isLoggedIn ? (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Button asChild size="sm" className="gap-2">
+                      <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                        <MessageCircleIcon className="h-4 w-4" />
+                        WhatsApp
                       </a>
                     </Button>
-                  )}
-                  {builder.website && (
+                    {instagramLink && (
+                      <Button asChild variant="outline" size="sm" className="gap-2">
+                        <a href={instagramLink} target="_blank" rel="noopener noreferrer">
+                          <InstagramIcon className="h-4 w-4" />
+                          {builder.instagram}
+                        </a>
+                      </Button>
+                    )}
+                    {builder.website && (
+                      <Button asChild variant="outline" size="sm" className="gap-2">
+                        <a href={builder.website.startsWith('http') ? builder.website : `https://${builder.website}`} target="_blank" rel="noopener noreferrer">
+                          <GlobeIcon className="h-4 w-4" />
+                          Website
+                        </a>
+                      </Button>
+                    )}
+                    {builder.google_reviews_url && (
+                      <Button asChild variant="outline" size="sm" className="gap-2">
+                        <a href={builder.google_reviews_url} target="_blank" rel="noopener noreferrer">
+                          <StarIcon className="h-4 w-4" />
+                          Google Reviews
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="pt-2">
                     <Button asChild variant="outline" size="sm" className="gap-2">
-                      <a href={builder.website.startsWith('http') ? builder.website : `https://${builder.website}`} target="_blank" rel="noopener noreferrer">
-                        <GlobeIcon className="h-4 w-4" />
-                        Website
-                      </a>
+                      <Link href={`/login?redirect=${encodeURIComponent(`/builder/${builderId}`)}`}>
+                        <LockIcon className="h-4 w-4" />
+                        Sign in to contact
+                      </Link>
                     </Button>
-                  )}
-                  {builder.google_reviews_url && (
-                    <Button asChild variant="outline" size="sm" className="gap-2">
-                      <a href={builder.google_reviews_url} target="_blank" rel="noopener noreferrer">
-                        <StarIcon className="h-4 w-4" />
-                        Google Reviews
-                      </a>
-                    </Button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               {/* Stats */}
