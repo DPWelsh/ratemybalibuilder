@@ -120,6 +120,14 @@ export default function AddBuilderPage() {
       setError('Please enter a valid phone number');
       return;
     }
+    if (!tradeType) {
+      setError('Please select a trade type');
+      return;
+    }
+    if (!location) {
+      setError('Please select a location');
+      return;
+    }
     if (!status) {
       setError('Please select your experience');
       return;
@@ -138,8 +146,8 @@ export default function AddBuilderPage() {
         body: JSON.stringify({
           name: name.trim(),
           phone,
-          trade_type: tradeType || 'General Contractor',
-          location: location || 'Other',
+          trade_type: tradeType,
+          location: location,
           status,
           rating,
           review_text: reviewText.trim(),
