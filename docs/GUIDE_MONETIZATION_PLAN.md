@@ -1,36 +1,73 @@
-# Invest in Bali Guide - Monetization Implementation Plan
+# RateMyBaliBuilder - Product & Monetization Plan
 
 ## Overview
 
-Transform the 85-page "Invest in Bali Guide" into a revenue-generating membership product while maximizing user acquisition through strategic free content.
+RateMyBaliBuilder offers two complementary products to help people build successfully in Bali:
+
+1. **Builder Directory** (Free) - Community-driven database of verified builder reviews and blacklist warnings
+2. **Bali Investment Guide** (Premium) - Comprehensive guide to Bali real estate investment
 
 ---
 
-## Content Structure
+## Product 1: Builder Directory (Free)
 
-### What We Have (19,000+ words)
+### What It Is
+A searchable database of Bali builders, contractors, and tradespeople with:
+- Community-verified reviews
+- Blacklist warnings and scam alerts
+- Status indicators (Recommended, Unknown, Flagged)
+- Search by name or phone number
 
-| # | Chapter | Words | Monetization |
+### Monetization
+- **Free to use** - drives traffic and builds trust
+- Cross-promotes the Investment Guide
+- Builds email list through account creation
+- Priority verification for Guide members
+
+### Key Pages
+- `/` - Homepage with search
+- `/builders` - Full directory
+- `/builders/[location]` - Location pages (Canggu, Ubud, etc.)
+- `/find/[trade]` - Trade pages (plumber, electrician, etc.)
+- `/builder/[id]` - Individual builder profiles
+
+---
+
+## Product 2: Bali Investment Guide (Premium)
+
+### Content Structure (19 Chapters)
+
+| # | Chapter | Words | Access Level |
 |---|---------|-------|--------------|
-| 01 | Introduction - Why Bali | 531 | FREE (SEO) |
-| 02 | Disclaimer | 84 | FREE |
-| 03 | Leasehold Land | 1,361 | TEASER + GATED |
-| 04 | Freehold Land | 1,818 | TEASER + GATED |
-| 05 | Selecting Land | 1,288 | GATED |
-| 06 | Choosing the Area | 700 | FREE (SEO) |
-| 07 | Land Zoning | 852 | GATED |
-| 08 | Customer Audience & Tax | 700 | GATED |
-| 09 | Calculating ROI | 2,380 | **LEAD MAGNET** |
-| 10 | Design Process | 2,926 | GATED |
-| 11 | PBG Building Permit | 330 | GATED |
-| 12 | Finding Construction Co | 784 | TEASER + GATED |
-| 13 | Contract with Builder | 242 | GATED |
-| 14 | Supervising Construction | 500 | GATED |
-| 15 | Interior Decorating | 686 | GATED |
-| 16 | Villa Management | 496 | GATED |
-| 17 | Selling Your Project | 240 | GATED |
-| 18 | Marketing | 1,996 | GATED |
-| 19 | Suppliers & Contacts | 1,441 | **PREMIUM ONLY** |
+| 01 | Introduction - Why Bali | 500+ | **FREE** (SEO) |
+| 02 | Disclaimer | 200+ | **FREE** |
+| 03 | Leasehold Land | 1,300+ | TEASER + GATED |
+| 04 | Freehold Land | 1,800+ | TEASER + GATED |
+| 05 | Selecting Land | 1,200+ | GATED |
+| 06 | Choosing the Area | 700+ | **FREE** (SEO) |
+| 07 | Land Zoning | 800+ | GATED |
+| 08 | Customer Audience & Tax | 700+ | GATED |
+| 09 | Calculating ROI | 2,300+ | **LEAD MAGNET** |
+| 10 | Design Process | 2,900+ | GATED |
+| 11 | PBG Building Permit | 800+ | GATED |
+| 12 | Finding Construction Co | 1,500+ | TEASER + GATED |
+| 13 | Contract with Builder | 1,800+ | GATED |
+| 14 | Supervising Construction | 1,500+ | GATED |
+| 15 | Interior Decorating | 1,400+ | GATED |
+| 16 | Villa Management | 1,500+ | GATED |
+| 17 | Selling Your Project | 1,400+ | GATED |
+| 18 | Marketing | 1,800+ | GATED |
+| 19 | Suppliers & Contacts | 1,400+ | **PREMIUM ONLY** |
+
+### Access Levels
+
+| Level | Description | Requirement |
+|-------|-------------|-------------|
+| FREE | Full access, indexed by search engines | None |
+| TEASER | 30% preview + paywall | None |
+| LEAD MAGNET | Full chapter after email capture | Email |
+| GATED | Requires membership | Paid |
+| PREMIUM | Highest value content | Paid (Investor tier) |
 
 ---
 
@@ -38,89 +75,83 @@ Transform the 85-page "Invest in Bali Guide" into a revenue-generating membershi
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  STAGE 1: AWARENESS (Public - No Login)                     │
+│  STAGE 1: AWARENESS (Public)                                │
 ├─────────────────────────────────────────────────────────────┤
-│  • Trade landing pages (/find/plumber, etc.) ✓ DONE         │
-│  • Location pages (/builders/canggu, etc.) ✓ DONE           │
-│  • Free guide chapters (Why Bali, Choosing Area)            │
+│  • Builder directory search (free)                          │
+│  • Trade landing pages (/find/plumber, etc.)                │
+│  • Location pages (/builders/canggu, etc.)                  │
+│  • Free guide chapters (Introduction, Choosing Area)        │
 │  • Teaser content (first 30% of gated chapters)             │
-│  • All content indexed by Google & cited by LLMs            │
+│  • LLM-optimized content (llms.txt)                         │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  STAGE 2: CAPTURE (Email Required)                          │
 ├─────────────────────────────────────────────────────────────┤
-│  • Lead Magnet: "ROI Calculator Chapter" (2,380 words)      │
-│  • Popup/banner on guide pages: "Get the full chapter"      │
+│  • Lead Magnet: "ROI Calculator Chapter"                    │
 │  • Email stored in Supabase `email_subscribers` table       │
-│  • Triggers welcome email with PDF download link            │
 │  • Expected conversion: 5-10% of guide page visitors        │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  STAGE 3: NURTURE (Email Sequence)                          │
+│  STAGE 3: CONVERT (Paid Membership)                         │
 ├─────────────────────────────────────────────────────────────┤
-│  • Day 0: ROI Chapter PDF + welcome                         │
-│  • Day 2: "5 Biggest Mistakes Investors Make" (teaser)      │
-│  • Day 5: "Why Supplier Contacts Save You 40%" (teaser)     │
-│  • Day 7: Membership offer (limited discount?)              │
-│  • Ongoing: Monthly Bali market updates                     │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│  STAGE 4: CONVERT (Paid Membership)                         │
-├─────────────────────────────────────────────────────────────┤
-│  OPTION A: One-Time Purchase                                │
-│  • $49 USD - Full guide PDF download                        │
-│  • Instant access, no recurring                             │
+│  OPTION A: Guide Only                                       │
+│  • $49 USD - One-time purchase                              │
+│  • Full guide access (web + PDF)                            │
+│  • All 19 chapters                                          │
 │                                                             │
 │  OPTION B: Investor Membership (Recommended)                │
 │  • $19/month OR $149/year (save 35%)                        │
-│  • Full guide access (web + PDF)                            │
-│  • Supplier contact list (67 contacts!)                     │
-│  • Contract templates                                       │
+│  • Full guide access                                        │
+│  • Supplier contact list (67+ contacts)                     │
+│  • Priority builder verification                            │
 │  • ROI calculator tool                                      │
-│  • Priority builder verification requests                   │
-│  • Monthly market updates                                   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Database Schema Changes
+## Pricing Structure
 
-### New Tables
+| Plan | Price | Includes |
+|------|-------|----------|
+| Free | $0 | Builder directory, 3 free chapters, teaser content |
+| Guide Only | $49 one-time | All 19 chapters (web + PDF) |
+| Investor Monthly | $19/month | Guide + supplier contacts + priority verification |
+| Investor Yearly | $149/year | Same as monthly, save 35% |
+
+---
+
+## Database Schema
+
+### Existing Tables
+- `profiles` - User accounts
+- `builders` - Builder directory
+- `reviews` - Builder reviews
+
+### New/Updated Tables
 
 ```sql
 -- Email subscribers (lead magnet captures)
 CREATE TABLE public.email_subscribers (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   email text UNIQUE NOT NULL,
-  source text DEFAULT 'guide', -- 'guide', 'homepage', 'trade-page'
-  lead_magnet text, -- 'roi-chapter', 'checklist', etc.
+  source text DEFAULT 'guide',
+  lead_magnet text,
   subscribed_at timestamp with time zone DEFAULT now(),
   unsubscribed_at timestamp with time zone,
   metadata jsonb DEFAULT '{}'
 );
 
--- Guide access tracking
-CREATE TABLE public.guide_access (
-  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id uuid REFERENCES auth.users(id),
-  email text, -- for non-logged-in lead magnet access
-  chapter_slug text NOT NULL,
-  accessed_at timestamp with time zone DEFAULT now()
-);
-
--- Memberships
+-- Memberships (Stripe integration)
 CREATE TABLE public.memberships (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id uuid REFERENCES auth.users(id) NOT NULL,
   plan text NOT NULL, -- 'guide_only', 'investor_monthly', 'investor_yearly'
-  status text NOT NULL DEFAULT 'active', -- 'active', 'cancelled', 'expired'
+  status text NOT NULL DEFAULT 'active',
   stripe_subscription_id text,
   stripe_customer_id text,
   current_period_start timestamp with time zone,
@@ -131,7 +162,7 @@ CREATE TABLE public.memberships (
 
 -- Update profiles table
 ALTER TABLE public.profiles
-ADD COLUMN membership_tier text DEFAULT 'free', -- 'free', 'guide', 'investor'
+ADD COLUMN membership_tier text DEFAULT 'free',
 ADD COLUMN stripe_customer_id text;
 ```
 
@@ -140,251 +171,66 @@ ADD COLUMN stripe_customer_id text;
 ## URL Structure
 
 ```
-/guide                          → Guide landing page (free)
+# Builder Directory (Free)
+/                               → Homepage with search
+/builders                       → Full directory
+/builders/[location]            → Location pages
+/find/[trade]                   → Trade pages
+/builder/[id]                   → Builder profile
+
+# Investment Guide
+/guide                          → Guide landing page
 /guide/introduction             → Free chapter
 /guide/choosing-the-area        → Free chapter
-/guide/leasehold-land           → Teaser (30%) + paywall
-/guide/freehold-land            → Teaser (30%) + paywall
-/guide/calculating-roi          → Lead magnet (email-gated)
-/guide/[chapter]                → Paywall (membership required)
-/guide/suppliers                → Premium only (high value)
+/guide/leasehold-land           → Teaser + paywall
+/guide/calculating-roi          → Lead magnet (email)
+/guide/[chapter]                → Paywall (membership)
+/guide/suppliers                → Premium only
 
-/pricing                        → Membership pricing page
+# Account & Payments
+/pricing                        → Pricing page
 /checkout                       → Stripe checkout
+/account                        → Account settings
 /account/membership             → Manage subscription
-```
-
----
-
-## Component Architecture
-
-### 1. Guide Chapter Page (`/guide/[chapter]/page.tsx`)
-
-```tsx
-// Pseudo-code structure
-export default function ChapterPage({ chapter }) {
-  const user = useUser();
-  const membership = useMembership();
-
-  // Determine access level
-  const accessLevel = getAccessLevel(chapter, user, membership);
-
-  if (accessLevel === 'full') {
-    return <FullChapter content={chapter.content} />;
-  }
-
-  if (accessLevel === 'lead-magnet') {
-    return <LeadMagnetGate chapter={chapter} />;
-  }
-
-  if (accessLevel === 'teaser') {
-    return (
-      <>
-        <TeaserContent content={chapter.teaser} />
-        <PaywallCTA membership={membership} />
-      </>
-    );
-  }
-
-  return <PaywallCTA membership={membership} />;
-}
-```
-
-### 2. Lead Magnet Component
-
-```tsx
-// Email capture modal/inline form
-function LeadMagnetGate({ chapter }) {
-  const [email, setEmail] = useState('');
-
-  async function handleSubmit() {
-    // 1. Save to email_subscribers table
-    // 2. Grant temporary access to chapter
-    // 3. Trigger email with PDF link
-    // 4. Show success + content
-  }
-
-  return (
-    <Card>
-      <h2>Get the Full "{chapter.title}" Chapter Free</h2>
-      <p>Enter your email to unlock this chapter + get our ROI calculator</p>
-      <Input type="email" value={email} onChange={...} />
-      <Button>Send Me the Chapter</Button>
-      <p className="text-sm">No spam. Unsubscribe anytime.</p>
-    </Card>
-  );
-}
-```
-
-### 3. Paywall Component
-
-```tsx
-function PaywallCTA({ teaser }) {
-  return (
-    <div className="relative">
-      {/* Blurred preview of remaining content */}
-      <div className="blur-sm opacity-50 pointer-events-none">
-        {teaser && <div dangerouslySetInnerHTML={{ __html: teaser }} />}
-      </div>
-
-      {/* Overlay CTA */}
-      <Card className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center">
-          <h3>Unlock the Full Guide</h3>
-          <p>Get all 19 chapters + supplier contacts</p>
-          <div className="flex gap-4">
-            <Button href="/pricing">See Plans</Button>
-            <Button variant="outline" href="/guide/calculating-roi">
-              Try Free Chapter First
-            </Button>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-}
 ```
 
 ---
 
 ## Stripe Integration
 
-### Products to Create in Stripe Dashboard
+### Products to Create
 
 | Product | Price | Type |
 |---------|-------|------|
-| Bali Guide - One Time | $49 | One-time |
-| Investor Membership - Monthly | $19/mo | Subscription |
-| Investor Membership - Yearly | $149/yr | Subscription |
+| Bali Investment Guide | $49 | One-time |
+| Investor Membership Monthly | $19/mo | Subscription |
+| Investor Membership Yearly | $149/yr | Subscription |
 
-### Webhook Events to Handle
+### Webhook Events
 
-```typescript
-// /api/webhooks/stripe/route.ts
-
-switch (event.type) {
-  case 'checkout.session.completed':
-    // Create/update membership in database
-    // Grant access to guide
-    break;
-
-  case 'customer.subscription.updated':
-    // Update membership status
-    break;
-
-  case 'customer.subscription.deleted':
-    // Revoke access, update status to 'cancelled'
-    break;
-
-  case 'invoice.payment_failed':
-    // Send warning email, maybe grace period
-    break;
-}
-```
-
----
-
-## Implementation Phases
-
-### Phase 1: Foundation (Week 1)
-- [ ] Create database tables (email_subscribers, memberships)
-- [ ] Create `/guide` landing page
-- [ ] Create guide chapter data structure (markdown files or DB)
-- [ ] Create 2-3 free chapters
-- [ ] Basic chapter page with no paywall
-
-### Phase 2: Lead Magnet (Week 1-2)
-- [ ] Create email capture component
-- [ ] Set up email_subscribers table + API
-- [ ] Create ROI chapter as lead magnet
-- [ ] Add lead magnet gate to ROI chapter page
-- [ ] Test email capture flow
-
-### Phase 3: Paywall (Week 2)
-- [ ] Create PaywallCTA component
-- [ ] Add teaser content extraction logic
-- [ ] Gate remaining chapters behind paywall
-- [ ] Create `/pricing` page
-
-### Phase 4: Stripe Integration (Week 2-3)
-- [ ] Create Stripe products + prices
-- [ ] Build checkout flow
-- [ ] Implement webhook handlers
-- [ ] Create membership management in `/account`
-- [ ] Test purchase flow end-to-end
-
-### Phase 5: Polish (Week 3)
-- [ ] Add membership badge to header
-- [ ] Create PDF download for members
-- [ ] Add supplier contacts page (premium)
-- [ ] Analytics: track conversions
-- [ ] Email sequences (if using email service)
+- `checkout.session.completed` - Grant access
+- `customer.subscription.updated` - Update status
+- `customer.subscription.deleted` - Revoke access
+- `invoice.payment_failed` - Send warning
 
 ---
 
 ## Success Metrics
 
-| Metric | Target | How to Track |
-|--------|--------|--------------|
-| Guide page views | 1000/mo | Analytics |
-| Email capture rate | 5-10% | email_subscribers / page views |
-| Email → Member conversion | 2-5% | memberships / email_subscribers |
-| Direct conversion (no email) | 1-2% | memberships / page views |
-| Monthly recurring revenue | $500+ | Stripe dashboard |
-| Churn rate | <10% | Cancelled / total members |
+| Metric | Target |
+|--------|--------|
+| Guide page views | 1,000+/month |
+| Email capture rate | 5-10% |
+| Email → Member conversion | 2-5% |
+| Monthly recurring revenue | $500+ |
+| Churn rate | <10% |
 
 ---
 
-## Content Files Structure
+## Key Principles
 
-```
-/content/guide/
-├── chapters.json           # Chapter metadata + order
-├── 01-introduction.md      # Free
-├── 02-why-bali.md          # Free
-├── 03-leasehold-land.md    # Teaser + gated
-├── 04-freehold-land.md     # Teaser + gated
-├── 05-selecting-land.md    # Gated
-├── 06-choosing-area.md     # Free (SEO value)
-├── 07-land-zoning.md       # Gated
-├── 08-customer-audience.md # Gated
-├── 09-calculating-roi.md   # Lead magnet
-├── 10-design-process.md    # Gated
-├── 11-building-permit.md   # Gated
-├── 12-finding-builder.md   # Teaser + gated
-├── 13-contracts.md         # Gated
-├── 14-supervising.md       # Gated
-├── 15-interior.md          # Gated
-├── 16-villa-management.md  # Gated
-├── 17-selling.md           # Gated
-├── 18-marketing.md         # Gated
-└── 19-suppliers.md         # Premium only
-```
-
----
-
-## Quick Start Commands
-
-```bash
-# 1. Run database migrations
-npx supabase db push
-
-# 2. Create Stripe products (do in dashboard or CLI)
-stripe products create --name="Bali Investment Guide"
-stripe prices create --product=prod_xxx --unit-amount=4900 --currency=usd
-
-# 3. Add webhook endpoint in Stripe dashboard
-# URL: https://ratemybalibuilder.com/api/webhooks/stripe
-
-# 4. Test locally with Stripe CLI
-stripe listen --forward-to localhost:3000/api/webhooks/stripe
-```
-
----
-
-## Notes
-
-- **Supplier contacts are the crown jewel** - These alone justify the membership price. Keep them premium-only.
-- **ROI calculator chapter is the best lead magnet** - It's actionable, valuable, and naturally leads to "I need to find a builder" (your core product).
-- **Free content must be genuinely useful** - It builds trust and gets indexed by search engines + LLMs.
-- **Consider annual discount** - 35% off ($149 vs $228) incentivizes commitment and reduces churn.
+1. **Builder Directory is free forever** - This drives traffic and builds trust
+2. **Supplier contacts are the crown jewel** - Keep them premium-only
+3. **ROI chapter is the best lead magnet** - Actionable and leads to "I need a builder"
+4. **Cross-promote naturally** - Guide mentions directory, directory promotes guide
+5. **Free content must be genuinely useful** - Builds trust and SEO value
