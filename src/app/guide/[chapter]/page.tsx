@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   chapters,
   getChapterBySlug,
@@ -18,9 +17,12 @@ import {
   MailIcon,
   BookOpenIcon,
   CheckCircleIcon,
+  ClockIcon,
+  MenuIcon,
 } from 'lucide-react';
 import { LeadMagnetGate } from '@/components/guide/LeadMagnetGate';
 import { PaywallCTA } from '@/components/guide/PaywallCTA';
+import { GuideSidebar } from '@/components/guide/GuideSidebar';
 
 interface PageProps {
   params: Promise<{ chapter: string }>;
@@ -75,127 +77,174 @@ export default async function ChapterPage({ params }: PageProps) {
     ? getTeaserContent(content, chapter.teaserPercentage || 30)
     : '';
 
+  // Calculate reading time
+  const wordCount = content.split(/\s+/).length;
+  const readingTime = Math.ceil(wordCount / 200);
+
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <div className="border-b bg-secondary/30 px-4 py-6 sm:px-6">
-        <div className="mx-auto max-w-3xl">
+    <div className="min-h-screen bg-background">
+      {/* Mobile header */}
+      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
+        <div className="flex items-center justify-between px-4 py-3">
           <Link
             href="/guide"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2 text-sm text-muted-foreground"
           >
-            <ArrowLeftIcon className="mr-2 h-4 w-4" />
-            Back to Guide
+            <ArrowLeftIcon className="h-4 w-4" />
+            Guide
           </Link>
-          <div className="mt-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-medium">
-              {String(chapter.order).padStart(2, '0')}
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold sm:text-3xl">{chapter.title}</h1>
-              <p className="mt-1 text-muted-foreground">{chapter.description}</p>
-            </div>
-          </div>
-
-          {/* Access badge */}
-          <div className="mt-4">
-            {isFreeAccess && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1 text-sm text-green-600">
-                <CheckCircleIcon className="h-4 w-4" />
-                Free Chapter
-              </span>
-            )}
-            {isLeadMagnet && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-sm text-amber-600">
-                <MailIcon className="h-4 w-4" />
-                Free with Email
-              </span>
-            )}
-            {isTeaser && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-sm text-blue-600">
-                <BookOpenIcon className="h-4 w-4" />
-                Preview Available
-              </span>
-            )}
-            {(isGated || isPremium) && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
-                <LockIcon className="h-4 w-4" />
-                {isPremium ? 'Premium Members Only' : 'Members Only'}
-              </span>
-            )}
-          </div>
+          <span className="text-sm font-medium">
+            Chapter {chapter.order} of {chapters.length}
+          </span>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mx-auto max-w-3xl">
-          {/* Free chapters - show full content */}
-          {isFreeAccess && (
-            <article
-              className="prose prose-lg max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: formatContentToHtml(content) }}
-            />
-          )}
+      <div className="mx-auto max-w-7xl">
+        <div className="flex">
+          {/* Sidebar - desktop only */}
+          <GuideSidebar
+            currentChapter={chapter.slug}
+            className="hidden lg:flex lg:w-72 lg:shrink-0 lg:flex-col lg:border-r lg:px-6 lg:py-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto"
+          />
 
-          {/* Lead magnet - show gate */}
-          {isLeadMagnet && (
-            <LeadMagnetGate
-              chapterTitle={chapter.title}
-              chapterSlug={chapter.slug}
-              formattedContent={formatContentToHtml(content)}
-            />
-          )}
+          {/* Main content */}
+          <main className="flex-1 min-w-0">
+            {/* Chapter header */}
+            <header className="border-b bg-gradient-to-b from-secondary/50 to-background px-4 py-8 sm:px-8 lg:px-12">
+              <div className="max-w-3xl">
+                {/* Chapter number badge */}
+                <div className="flex items-center gap-4 mb-4">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-lg font-bold">
+                    {String(chapter.order).padStart(2, '0')}
+                  </span>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <ClockIcon className="h-4 w-4" />
+                      {readingTime} min read
+                    </span>
+                    <span>•</span>
+                    <span>{wordCount.toLocaleString()} words</span>
+                  </div>
+                </div>
 
-          {/* Teaser - show partial content + paywall */}
-          {isTeaser && (
-            <>
-              <article
-                className="prose prose-lg max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{
-                  __html: formatContentToHtml(teaserContent),
-                }}
-              />
-              <PaywallCTA
-                chapter={chapter}
-                remainingContent={content.slice(teaserContent.length)}
-              />
-            </>
-          )}
+                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                  {chapter.title}
+                </h1>
+                <p className="mt-3 text-lg text-muted-foreground">
+                  {chapter.description}
+                </p>
 
-          {/* Gated/Premium - show paywall only */}
-          {(isGated || isPremium) && (
-            <PaywallCTA chapter={chapter} isPremium={isPremium} />
-          )}
+                {/* Access badge */}
+                <div className="mt-4">
+                  {isFreeAccess && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1.5 text-sm font-medium text-green-600">
+                      <CheckCircleIcon className="h-4 w-4" />
+                      Free Chapter
+                    </span>
+                  )}
+                  {isLeadMagnet && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1.5 text-sm font-medium text-amber-600">
+                      <MailIcon className="h-4 w-4" />
+                      Free with Email
+                    </span>
+                  )}
+                  {isTeaser && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1.5 text-sm font-medium text-blue-600">
+                      <BookOpenIcon className="h-4 w-4" />
+                      Preview Available
+                    </span>
+                  )}
+                  {(isGated || isPremium) && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground">
+                      <LockIcon className="h-4 w-4" />
+                      {isPremium ? 'Premium Members Only' : 'Members Only'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </header>
 
-          {/* Navigation */}
-          <div className="mt-12 flex items-center justify-between border-t pt-8">
-            {prevChapter ? (
-              <Link href={`/guide/${prevChapter.slug}`}>
-                <Button variant="outline">
-                  <ArrowLeftIcon className="mr-2 h-4 w-4" />
-                  {prevChapter.title}
-                </Button>
-              </Link>
-            ) : (
-              <div />
-            )}
-            {nextChapter ? (
-              <Link href={`/guide/${nextChapter.slug}`}>
-                <Button>
-                  {nextChapter.title}
-                  <ArrowRightIcon className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/guide">
-                <Button>
-                  Back to Guide
-                  <ArrowRightIcon className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            )}
-          </div>
+            {/* Chapter content */}
+            <div className="px-4 py-8 sm:px-8 lg:px-12">
+              <div className="max-w-3xl">
+                {/* Free chapters - show full content */}
+                {isFreeAccess && (
+                  <article
+                    className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-p:text-foreground/80 prose-p:leading-relaxed dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: formatContentToHtml(content) }}
+                  />
+                )}
+
+                {/* Lead magnet - show gate */}
+                {isLeadMagnet && (
+                  <LeadMagnetGate
+                    chapterTitle={chapter.title}
+                    chapterSlug={chapter.slug}
+                    formattedContent={formatContentToHtml(content)}
+                  />
+                )}
+
+                {/* Teaser - show partial content + paywall */}
+                {isTeaser && (
+                  <>
+                    <article
+                      className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-p:text-foreground/80 prose-p:leading-relaxed dark:prose-invert"
+                      dangerouslySetInnerHTML={{
+                        __html: formatContentToHtml(teaserContent),
+                      }}
+                    />
+                    <PaywallCTA
+                      chapter={chapter}
+                      remainingContent={content.slice(teaserContent.length)}
+                    />
+                  </>
+                )}
+
+                {/* Gated/Premium - show paywall only */}
+                {(isGated || isPremium) && (
+                  <PaywallCTA chapter={chapter} isPremium={isPremium} />
+                )}
+
+                {/* Navigation */}
+                <nav className="mt-16 flex items-center justify-between border-t pt-8">
+                  {prevChapter ? (
+                    <Link href={`/guide/${prevChapter.slug}`} className="group">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                        <ArrowLeftIcon className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                        Previous
+                      </div>
+                      <p className="font-medium group-hover:text-primary transition-colors">
+                        {prevChapter.title}
+                      </p>
+                    </Link>
+                  ) : (
+                    <div />
+                  )}
+                  {nextChapter ? (
+                    <Link href={`/guide/${nextChapter.slug}`} className="group text-right">
+                      <div className="flex items-center justify-end gap-2 text-sm text-muted-foreground mb-1">
+                        Next
+                        <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </div>
+                      <p className="font-medium group-hover:text-primary transition-colors">
+                        {nextChapter.title}
+                      </p>
+                    </Link>
+                  ) : (
+                    <Link href="/guide" className="group text-right">
+                      <div className="flex items-center justify-end gap-2 text-sm text-muted-foreground mb-1">
+                        Finish
+                        <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </div>
+                      <p className="font-medium group-hover:text-primary transition-colors">
+                        Back to Guide Overview
+                      </p>
+                    </Link>
+                  )}
+                </nav>
+              </div>
+            </div>
+          </main>
         </div>
       </div>
 
@@ -209,6 +258,8 @@ export default async function ChapterPage({ params }: PageProps) {
             name: chapter.title,
             description: chapter.description,
             position: chapter.order,
+            wordCount: wordCount,
+            timeRequired: `PT${readingTime}M`,
             isPartOf: {
               '@type': 'Book',
               name: 'Invest in Bali Guide',
