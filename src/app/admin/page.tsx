@@ -68,8 +68,8 @@ export default async function AdminDashboard() {
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
             <Link key={stat.label} href={stat.href}>
-              <Card className={`border-0 transition-shadow hover:shadow-lg ${stat.urgent ? 'ring-2 ring-[var(--status-blacklisted)]' : ''}`}>
-                <CardContent className="p-5">
+              <Card className={`border-0 transition-shadow hover:shadow-lg h-full ${stat.urgent ? 'ring-2 ring-[var(--status-blacklisted)]' : ''}`}>
+                <CardContent className="p-5 h-full flex flex-col">
                   <div className="flex items-center justify-between">
                     <stat.icon className="h-5 w-5 text-muted-foreground" />
                     {stat.urgent && (
@@ -78,9 +78,7 @@ export default async function AdminDashboard() {
                   </div>
                   <p className="mt-4 text-3xl font-medium text-foreground">{stat.value}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
-                  {stat.subtext && (
-                    <p className="mt-1 text-xs text-muted-foreground">{stat.subtext}</p>
-                  )}
+                  <p className="mt-1 text-xs text-muted-foreground min-h-[1rem]">{stat.subtext || '\u00A0'}</p>
                 </CardContent>
               </Card>
             </Link>
