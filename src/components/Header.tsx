@@ -123,19 +123,19 @@ export function Header() {
               )}
               <Link
                 href="/dashboard"
-                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+                className={getLinkClass('/dashboard')}
               >
                 Dashboard
               </Link>
               <Link
                 href="/submit-review"
-                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+                className={getLinkClass('/submit-review')}
               >
                 Submit Review
               </Link>
               <Link
                 href="/account"
-                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+                className={getLinkClass('/account')}
               >
                 Account
               </Link>
@@ -185,14 +185,14 @@ export function Header() {
             <Link
               href="/builders"
               onClick={closeMobileMenu}
-              className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
+              className={getMobileLinkClass('/builders')}
             >
               Browse Builders
             </Link>
             <Link
               href="/guide"
               onClick={closeMobileMenu}
-              className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
+              className={getMobileLinkClass('/guide')}
             >
               Investment Guide
             </Link>
@@ -228,21 +228,21 @@ export function Header() {
                 <Link
                   href="/dashboard"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
+                  className={getMobileLinkClass('/dashboard')}
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/submit-review"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
+                  className={getMobileLinkClass('/submit-review')}
                 >
                   Submit Review
                 </Link>
                 <Link
                   href="/account"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
+                  className={getMobileLinkClass('/account')}
                 >
                   Account
                 </Link>
