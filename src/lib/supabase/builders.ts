@@ -134,6 +134,7 @@ export async function getBuilderStats() {
 
 // Filter options
 export const locations: Location[] = [
+  'Bali Wide',
   'Canggu',
   'Seminyak',
   'Ubud',

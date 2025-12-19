@@ -312,7 +312,7 @@ export default function AddBuilderPage() {
               {/* Review Text */}
               <div className="space-y-1.5 sm:space-y-2">
                 <label htmlFor="reviewText" className="text-sm font-medium">
-                  Your review <span className="font-normal text-muted-foreground">(optional but recommended)</span>
+                  Your review <span className="font-normal text-muted-foreground">(please leave a review - it helps everyone)</span>
                 </label>
                 <Textarea
                   id="reviewText"
