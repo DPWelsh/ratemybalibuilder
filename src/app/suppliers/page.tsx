@@ -7,8 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import {
   SearchIcon,
   StarIcon,
-  PhoneIcon,
-  MapPinIcon,
   FilterIcon,
   LockIcon,
   CrownIcon,
