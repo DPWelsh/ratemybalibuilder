@@ -16,13 +16,13 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Invest in Bali Guide | Complete Villa Investment Handbook',
+  title: 'Bali Investment Guide | RateMyBaliBuilder',
   description:
-    'The definitive 85-page guide to investing in Bali real estate. Learn about land ownership, ROI calculations, finding builders, and 67+ trusted supplier contacts.',
+    'The complete guide to investing in Bali real estate. Learn about land ownership, ROI calculations, finding builders, and trusted supplier contacts.',
   openGraph: {
-    title: 'Invest in Bali Guide | Complete Villa Investment Handbook',
+    title: 'Bali Investment Guide | RateMyBaliBuilder',
     description:
-      'The definitive 85-page guide to investing in Bali real estate. Learn about land ownership, ROI calculations, finding builders, and 67+ trusted supplier contacts.',
+      'The complete guide to investing in Bali real estate. Learn about land ownership, ROI calculations, finding builders, and trusted supplier contacts.',
     url: 'https://ratemybalibuilder.com/guide',
   },
 };
@@ -232,14 +232,19 @@ export default function GuidePage() {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Book',
-            name: 'Invest in Bali Guide',
+            name: 'Bali Investment Guide',
             description:
               'The complete guide to investing in Bali real estate - land ownership, ROI calculations, finding builders, and supplier contacts.',
             author: {
               '@type': 'Organization',
               name: 'RateMyBaliBuilder',
+              url: 'https://ratemybalibuilder.com',
             },
-            numberOfPages: 85,
+            publisher: {
+              '@type': 'Organization',
+              name: 'RateMyBaliBuilder',
+              url: 'https://ratemybalibuilder.com',
+            },
             inLanguage: 'en',
             genre: 'Business & Investing',
             about: [

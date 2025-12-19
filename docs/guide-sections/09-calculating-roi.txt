@@ -1,436 +1,258 @@
+## Calculating Return on Investment (ROI)
 
---- PAGE 36 ---
+Before committing to any villa project, you must understand your expected Return on Investment (ROI). This chapter walks you through calculating realistic returns for a Bali rental property.
 
-CREATING THE DESIGN
-Once you figure out the style and have
-your mood board ready, it’s time to find
-a designer. Unless you’re a professional
-interior designer yourself, hiring a
-designer is a must. When you talk to a
-designer, your Pinterest photos will
-come in handy. It’s always better to
-show than explain what you mean. 
-Keep in mind that some designs might
-work very well in one region but make
-no sense in another. Sometimes the
-designer can offer to slightly modify the
-design and adjust it to the harsh
-climate in Bali. 
-For example, we recommend always
-adding overhanging to the roof to
-create shade inside the building. With
-larger overhanging, it won’t be
-overwhelmingly bright and hot inside
-the villa, which will make living much
-more comfortable and decrease the
-usage of the Air Conditioner which can
-be expensive. We have been told by a
-lot of our guests that they love other
-villas with large windows but it gets
-way too hot inside and is not
-comfortable to live in. You have to find
-a balance between what will look good
-in photos and what will work in reality.
-34
-Larger overhangs will also help keep
-the rain away from your foundation and
-will help prevent water from damaging
-and getting into the villa walls which
-creates mold. Another advantage of
-overhangs in Bali is that it helps to keep
-bats’ and birds’ droppings away from
-your walls and windows. This can cause
-quite a mess and you will not want to
-see any of these droppings on your
-freshly painted white walls. 
+## Why ROI Calculations Matter
 
+Accurate ROI projections help you:
+- Determine if an investment is worthwhile
+- Compare different opportunities
+- Set realistic expectations
+- Plan your financial future
+- Avoid costly mistakes
 
---- PAGE 37 ---
+## The ROI Formula
 
-Rain: Bali is a tropical destination
-and can get a lot of rain during the
-rainy season. You will have to design
-your project with an efficient
-drainage system so that the heavy
-rains don’t flood your property. We
-recommend installing multiple
-drainage pipes in your garden and
-under your deck if you have one. We
-also recommend using a rain gutter
-system around your roof and to use
-the best possible roofing materials
-to reduce the chances of water
-damage. We recommend having
-your builder install a waterproof
-membrane under your walls and
-floors to help prevent groundwater
-from entering your walls (see p. 37).
-Parking Size: Make sure that even
-at full capacity, your property can
-provide a parking space for every
-guest. Many villas in Canggu only
-allow for scooter parking. However,
-you should ensure there is enough
-space for car parking as it’s essential
-for many guests with families and
-guests from Jakarta. 
-We have created a list of design
-considerations below that you should
-keep in mind for your villa project or if
-you are purchasing a villa in Bali:
-35
-Storage: Cleaning staff and
-gardeners need to keep their
-supplies somewhere at the villa but
-many investors forget to arrange
-this. Your guests might also want to
-use it to keep their suitcases
-somewhere between stays and you
-will need to have an area to keep
-additional bedding and towels for
-the guests. In addition, if you are
-going to be using the villa part-time,
-we recommend putting your most
-valuable items in locked storage
-when you are not staying at the villa.
-Laundry: There are a lot of laundry
-services in Bali. However, if you want
-to keep your guests from the stress
-of getting their clothes ruined by an
-external laundry service, we
-recommend having a washing
-machine in the villa. You can
-dedicate a room to it or you can
-place it in the storage to save space.
+The basic ROI calculation is:
 
+```
+Annual ROI (%) = (Annual Net Income / Total Investment) × 100
+```
 
---- PAGE 38 ---
+For investment payback period:
 
-Enclosed or Open Concept Living
-Room & Kitchen: This is a hot topic
-for most villa owners in Bali. Open
-concept means that the living room
-and kitchen don’t have walls or
-enclosed doors and you are open to
-the elements. Most of the previously
-built villas in Bali are open concept
-as you don’t need to pay for
-additional air conditioning and this
-allows for nice ventilation in the
-humid climate. The open concept
-design gives you a better feeling of
-the holiday as you’re closer to
-nature. However, your guests will
-have to deal with wildlife of the
-island such as spiders, bats, snakes,
-frogs, and many mosquitos at night.
-The enclosed concept design is
-what we prefer going forward in
-Bali. We have found that open
-concept designs are having a more
-difficult time on the rental and
-resale market. The open concept
-design is becoming a thing of the
-past as it’s not livable for the long
-term. You can always twist the
-design and get the vibe for your
-place that you want. For example, to
-provide a holiday feeling, we put
-large window walls with sliding
-glass doors. The guests have the
-option of having a fully enclosed
-living room and kitchen whenever
-they want and they can close the
-doors at night, when the mosquitos
-are the worst, or during the hottest
-parts of the day.  
-36
-Covered Outdoor Area: We
-recommend designing in some sort
-of covered outdoor area. In our
-experience, we have found that any
-outdoor area that is not covered will
-get damaged by the harsh sun as
-well as bird and bat droppings. It’s
-also nice to have a covered outdoor
-area where you can be outside but
-escape from the harsh tropical Bali
-sun. 
-Air Conditioner. It's important to
-keep a comfortable temperature in
-the house so we choose to have air
-conditioners in every room except
-the bathrooms. Sometimes, however,
-ACs can make your living
-uncomfortable and negatively
-impact your interior. To help you
-avoid this, we've got some tips for
-you. First of all, try to place AC over
-the doorway so it won't be the first
-thing you see when entering the
-room. You can also partly hide the
-AC inside the ceiling so it's less
-noticeable in the room. When
-installing AC in the bedroom, make
-sure it's not right above the bed.
-Otherwise, the cool air will blow right
-on you all night and condensation
-may drop on your bed. 
+```
+Payback Period = Total Investment / Annual Net Income
+```
 
+## Step 1: Calculate Your Total Investment
 
---- PAGE 39 ---
+Your total investment includes:
 
-37
-Material for the Tropics: When
-choosing construction material for
-your villa, you want to make sure
-that they will last. We have been
-complimented on the large steel
-doors and windows in our villas that
-are made from galvanized steel.
-However, we have noticed on other
-projects, where builders have used
-standard steel doors and windows,
-and they have started rusting almost
-immediately after being installed.
-We recommend using slightly more
-expensive materials that are
-designed for the climate. It will save
-you in the long run from high
-maintenance costs as well as taking
-your rental villa off the market to
-make repairs. Materials that we use
-for our villas:
-Ironwood. It is the most water
-and sun-resistant wood you can
-find in Bali. We use it for a pool
-deck.
-Recycled teakwood. This
-material is not cheap but it
-keeps its qualities and looks like
-new for a very long time. To
-prolong the colour for even
-longer, we cover the surface with
-a water-based seal. You will also
-have an option to use wax for
-coating. However, keep in mind
-that wax will have to be renewed
-every 6 months and, also, it
-makes wood a little bit darker.
-We use teakwood for ceilings,
-furniture, and doors.
-Limestone. This is one of the
-most favourite materials in Bali
-for many. We used limestone to
-decorate a wall of the outside
-lounge and it looks fantastic. The
-only issue with the limestone you
-might have is mould. Our outside
-lounge has a glass roof that
-prevents rainwater to wet the
-wall. Of course, even with the
-roof, Bali humidity will do its job
-and the mould might form on
-the limestone, turning it from
-light beige to brown colour.
-Make sure to spay the wall with
-anti-mould liquid once or twice a
-year and your limestone will
-keep its beautiful colour for a
-long time.
-The process of building the limestone wall
+### Land Costs
+- Purchase price or lease payments
+- Legal fees and notary costs
+- Land survey costs
+- Due diligence expenses
 
+### Construction Costs
+- Builder contract (per square meter × total area)
+- Architectural design fees
+- PBG permit costs
+- Geological survey
+- Utility connections (PLN electricity, water)
 
---- PAGE 40 ---
+### Finishing Costs
+- Interior design and decoration
+- Furniture and fixtures
+- Pool equipment
+- Landscaping
+- Kitchen appliances
 
-38
-Greenstone. We use greenstone
-tiles for our swimming pools. It
-gives the water a beautiful
-turquoise colour. Sometimes,
-greenstone tiles can turn brown
-when in contact with pool water.
-We had to replace a few tiles
-because of this issue. To make
-sure that replaced tiles won't
-turn brown as well, put the tiles
-in the pool water overnight and,
-if they keep their blue colour, use
-them as the replacement. We
-assume this issue takes place
-because of some chemicals that
-are being added to the water by
-the pool cleaner.
-Galvanised steel. This is one of
-the most expensive materials but
-considering the Bali humidity
-and harsh rainy seasons, we can't
-compromise the quality here. All
-our doors and windows are
-made of galvanized steel. It
-doesn't rust, change volume or
-shape. Our sliding doors open
-and close smoothly and never
-gave us any trouble within years.
-Terrazzo. Beautiful material that
-will give a unique look to your
-villa. We use terrazzo plant pots
-and bathroom countertops in
-our villas in Canggu. We are also
-planning to build a terrazzo
-swimming pool in one of our
-villas in Bingin. If you would like
-to use this material for your villa,
-make sure to use a trusted
-supplier because if the quality of
-terrazzo is not good, it can crack
-and chip easily. If this happens,
-you will probably not be able to
-fix it, only replace it. When
-choosing terrazzo, take a look at
-the amount and size of stones in
-it. If there are only bigger stones,
-the material will most probably
-crack. When the bigger stones
-are mixed with a lot of small
-stones, the material is stronger
-and less likely to crack.
-Greenstone tiles turned brown
-Polishing greenstone tiles after the
-replacement
+### Additional Costs
+- Contingency fund (10-15% recommended)
+- Project management fees
+- Insurance during construction
 
+### Example Total Investment
 
---- PAGE 41 ---
+| Category | Cost (USD) |
+|----------|------------|
+| Land (25-year lease) | $80,000 |
+| Construction (150m² × $800/m²) | $120,000 |
+| Interior and furniture | $30,000 |
+| Permits and legal | $10,000 |
+| Contingency (10%) | $20,000 |
+| **Total Investment** | **$260,000** |
 
-Privacy:  With the cost of land
-increasing every year in Bali, people
-have been trying to maximize the
-building area. You may currently
-have land or a villa that has a great
-view of rice paddies, but if you don’t
-own the adjacent rice paddies, then
-you should plan on losing this view
-to a new villa project. We had a
-neighbor that had a beautiful villa
-with a rice paddy view until the
-neighbor built an ugly 3 story guest-
-house directly on their property line.
-They lost their view and they were
-stuck with an unsightly building
-next to them that could view
-directly into their property. A view
-can be amazing but be prepared to
-future proof your villa for buildings
-that will pop up around yours. On
-our projects, we have the villas all
-facing a common access road and
-we keep all villas one story high. By
-doing this, we ensure that there are
-no visible site lines from other villas
-on the other side of the road. It
-allows for more natural light to
-enter the villas and gives the whole
-project a more open feeling. Again,
-less is more so don’t try to build on
-every square meter of your land and
-allow for additional open green
-space.
-39
-Polished Cement. This material,
-if done right, can save you quite
-a bit of money and, also, it looks
-amazing on the interior. We love
-using cement for sunken lounges
-in our villas. It is also popular to
-use cement for showers and
-floors. However, you should be
-ready for it to get cracked and
-change colour in some places.
-For this reason, we would not
-recommend using cement for
-big surfaces. It's important for us
-to keep sunken lounges
-photogenic and to avoid the
-problem of colour change, we
-paint them in the same colour as
-cement. 
-Painted cement sunken lounge in our new
-villa. This time we chose to use grey ceramic
-tiles instead of cement tiles.
+## Step 2: Calculate Monthly Costs
 
+Operating a rental villa involves ongoing expenses:
 
---- PAGE 42 ---
+### Fixed Monthly Costs
+- Staff salaries (cleaning, gardening, security)
+- Villa management fees
+- Internet service
+- Pool maintenance
+- Garden maintenance
+- Insurance (monthly portion)
 
-40
-Soundproofing:  We recommend
-soundproofing the ceilings of your
-bedrooms if you are building a
-classic peaked-roof-designed villa.
-Putting soundproofing above the
-gypsum ceiling will cut down on
-sound coming from roosters, busy
-roads, heavy rains, and other villas.
-This soundproofing is also a great
-isolator and will help you save on air
-conditioning costs going forward.
-We also recommend putting your
-pool pump and pump used to
-pressurize your showers and taps far
-away from bedrooms and within an
-underground room to reduce the
-noise that comes from these pumps.
-Waterproofing: It is crucial to
-waterproof every wall in your villa,
-especially if you build in a humid
-Bali climate. Waterproofing is
-something that you want to invest
-money in and do it properly during
-your villa build. We call it an
-investment because, in the future,
-you will be able to save a lot of
-money and time on frequent mold
-removals and maintenance of the
-aesthetic look of the walls. Based on
-our building experience and
-monitoring of the other villas build,
-we realized that what most
-investors do in terms of
-waterproofing, is not enough.
-Because most of the moisture is
-coming up from the ground, there is
-a high chance that you will start
-noticing mold from the bottom of
-the wall.
-Termites control measures: Before
-waterproofing the floor and putting
-a plastic liner, make sure your
-builder evenly spread a special
-granola that will protect your
-building from termites. This simple
-step is not in common practice
-among builders in Bali but it will
-help you to prevent termite
-problems in the future.
-We put waterproofing coating from the
-middle of the wall all the way down to
-the floor, in the corner, and 30 cm from
-the wall on the floor surface. For extra
-waterproofing, we install a special
-membrane between the wall and the
-floor. Make sure your builder sets the
-membrane before they start building
-the walls and properly coat the areas
-we described above.
-You can often see the mold starts forming on
-the bottom of the wall in cheaper constructions
+### Variable Costs
+- Electricity (PLN)
+- Water
+- Guest supplies
+- Repairs and maintenance
+- Marketing costs
 
+### Shared Costs
+If you have multiple properties nearby, you can share:
+- Security personnel
+- Gardening services
+- Pool maintenance
+- Cleaning staff
 
---- PAGE 43 ---
+### Example Monthly Costs
 
-41
-Plastic Liner Below Cement Floor 
-Red waterproofing membrane
-under walls to reduce damp from
-entering walls
-Bitumen membrane on the top of
-our cement roof
+| Expense | Cost (USD) |
+|---------|------------|
+| Staff (shared) | $150 |
+| Pool maintenance | $50 |
+| Internet | $40 |
+| Electricity | $100 |
+| Management fees | $100 |
+| Maintenance reserve | $50 |
+| **Total Monthly Costs** | **$490** |
+
+## Step 3: Determine Your Daily Rate
+
+Research the market to set competitive pricing:
+
+### How to Research Rates
+1. Search Airbnb for similar properties in your area
+2. Compare villas with similar:
+   - Bedroom count
+   - Location
+   - Amenities
+   - Design quality
+3. Note both high and low season rates
+4. Check occupancy indicators (calendar availability)
+
+### Rate Considerations
+- Is your villa newer than competitors?
+- Better location? Adjust rates accordingly
+- Unique features that justify premium pricing?
+- Consider both conservative and optimistic estimates
+
+### Example Daily Rates
+
+| Season | Daily Rate (USD) |
+|--------|------------------|
+| Low season | $170 |
+| High season | $220 |
+| Average | $195 |
+
+## Step 4: Estimate Occupancy Rate
+
+Be realistic about occupancy:
+
+### Typical Occupancy Rates
+- **Strong market (established property):** 75-85%
+- **Average market:** 60-70%
+- **New property (year 1):** 50-60%
+- **Conservative estimate:** 50-60%
+
+### Factors Affecting Occupancy
+- Location and accessibility
+- Competition in the area
+- Marketing effectiveness
+- Guest reviews and ratings
+- Seasonal demand
+
+**Recommendation:** Use conservative estimates (60-70%) for financial planning. Higher occupancy is a bonus, not a guarantee.
+
+## Step 5: Calculate Revenue
+
+Monthly revenue calculation:
+
+```
+Monthly Revenue = Days × Daily Rate × Occupancy Rate
+30.4 days × $195 × 70% = $4,149
+```
+
+### Revenue Scenarios
+
+| Scenario | Occupancy | Daily Rate | Monthly Revenue |
+|----------|-----------|------------|-----------------|
+| Conservative | 60% | $170 | $3,101 |
+| Moderate | 70% | $195 | $4,149 |
+| Optimistic | 80% | $220 | $5,350 |
+
+## Step 6: Calculate Net Income
+
+Subtract costs from revenue:
+
+```
+Monthly Net Income = Monthly Revenue - Monthly Costs
+$4,149 - $490 = $3,659
+```
+
+Annual net income:
+
+```
+Annual Net Income = Monthly Net Income × 12
+$3,659 × 12 = $43,908
+```
+
+## Step 7: Calculate ROI
+
+Using our example figures:
+
+```
+Annual ROI = ($43,908 / $260,000) × 100 = 16.9%
+```
+
+Payback period:
+
+```
+Payback = $260,000 / $43,908 = 5.9 years
+```
+
+### ROI Range Analysis
+
+| Scenario | Annual Income | ROI | Payback |
+|----------|---------------|-----|---------|
+| Conservative | $31,332 | 12% | 8.3 years |
+| Moderate | $43,908 | 16.9% | 5.9 years |
+| Optimistic | $58,320 | 22.4% | 4.5 years |
+
+## Additional ROI Considerations
+
+### Marketing Fees
+If using a marketing service, factor in:
+- 10-15% of revenue for professional marketing
+- Airbnb service fees (typically 3%)
+- Payment processing fees
+
+### Capital Appreciation
+Your property may appreciate in value:
+- Land values in popular areas have increased significantly
+- Building improvements add value
+- Consider resale potential in your calculations
+
+### Lease Depreciation
+For leasehold properties:
+- Value decreases as lease term shortens
+- Factor lease extension costs
+- Plan for end-of-lease scenarios
+
+## Creating Your Own ROI Spreadsheet
+
+Track these key figures:
+
+1. **Investment costs** (itemized)
+2. **Monthly operating costs** (itemized)
+3. **Daily rates** (low, average, high)
+4. **Occupancy estimates** (conservative to optimistic)
+5. **Revenue calculations** (multiple scenarios)
+6. **Net income projections**
+7. **ROI and payback calculations**
+
+## Red Flags in ROI Claims
+
+Be skeptical of:
+- Promised returns over 25% annually
+- Assumptions of 90%+ occupancy
+- Ignored operating costs
+- No consideration for vacancies or maintenance
+- Unrealistic daily rates
+
+## Key Takeaways
+
+1. **Calculate conservatively**—better to be pleasantly surprised than disappointed
+2. **Include all costs**—hidden expenses destroy projected returns
+3. **Research the market**—base rates and occupancy on real data
+4. **Plan for scenarios**—understand best and worst case outcomes
+5. **Factor in your time**—managing a property has value
+6. **Update projections**—recalculate as market conditions change
+
+Thorough ROI analysis is the foundation of a successful investment. Take the time to run the numbers before committing your capital.

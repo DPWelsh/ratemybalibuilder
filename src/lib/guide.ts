@@ -1,6 +1,13 @@
 import chaptersData from '@/data/chapters.json';
+import { marked } from 'marked';
 
 export type AccessLevel = 'free' | 'teaser' | 'gated' | 'lead-magnet' | 'premium';
+
+// Configure marked for safe HTML output
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+});
 
 export interface Chapter {
   id: string;
@@ -62,46 +69,9 @@ export function getTeaserContent(content: string, percentage: number = 30): stri
 }
 
 export function formatContentToHtml(content: string): string {
-  // Convert plain text to basic HTML paragraphs
-  const paragraphs = content.split('\n\n').filter(p => p.trim());
-
-  return paragraphs.map(p => {
-    const trimmed = p.trim();
-
-    // Check if it's a spaced-out heading like "Y O U R  O P P O R T U N I T Y"
-    // These have single letters separated by spaces
-    if (/^([A-Z]\s)+[A-Z]?$/i.test(trimmed.replace(/\s{2,}/g, ' '))) {
-      // Remove all spaces to get the actual word(s)
-      const heading = trimmed.replace(/\s+/g, '');
-      // Add spaces back between words (look for capital letters that start new words)
-      const formatted = heading.replace(/([a-z])([A-Z])/g, '$1 $2');
-      return `<h2 class="text-3xl font-bold mt-10 mb-6 text-primary">${formatted}</h2>`;
-    }
-
-    // Check if it's all caps heading (like "WHY BALI" or "CHALLENGES")
-    if (/^[A-Z\s&]+$/.test(trimmed) && trimmed.length < 60 && trimmed.length > 2) {
-      return `<h2 class="text-2xl font-bold mt-10 mb-4">${trimmed}</h2>`;
-    }
-
-    // Check if it's a subheading with colon (like "Rain:" or "Storage:")
-    if (trimmed.includes(':') && trimmed.indexOf(':') < 40) {
-      const colonIndex = trimmed.indexOf(':');
-      const heading = trimmed.slice(0, colonIndex);
-      const rest = trimmed.slice(colonIndex + 1).trim();
-
-      if (heading.length < 40 && /^[A-Z]/.test(heading)) {
-        return `<h3 class="text-lg font-semibold mt-6 mb-2">${heading}</h3>\n<p class="mb-4 leading-relaxed text-muted-foreground">${rest}</p>`;
-      }
-    }
-
-    // Check if it's a short subheading (starts with caps, no period, under 80 chars)
-    if (trimmed.length < 80 && /^[A-Z]/.test(trimmed) && !trimmed.includes('.') && trimmed.split(' ').length < 8) {
-      return `<h3 class="text-xl font-semibold mt-8 mb-3">${trimmed}</h3>`;
-    }
-
-    // Regular paragraph
-    return `<p class="mb-4 leading-relaxed text-foreground/90">${trimmed}</p>`;
-  }).join('\n');
+  // Use marked to parse Markdown content
+  const html = marked.parse(content) as string;
+  return html;
 }
 
 // Check if user has access to a chapter based on membership

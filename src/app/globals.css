@@ -224,3 +224,196 @@ button, [role="button"], .btn {
 button:active:not(:disabled), [role="button"]:active:not(:disabled) {
   transform: scale(0.98);
 }
+
+/* Guide Content Prose Styles */
+.guide-content {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--foreground);
+}
+
+.guide-content > * + * {
+  margin-top: 1.5em;
+}
+
+.guide-content h2 {
+  font-family: 'Acid Grotesk', system-ui, sans-serif;
+  font-size: 1.875rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  color: var(--foreground);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.guide-content h2:first-child {
+  margin-top: 0;
+}
+
+.guide-content h3 {
+  font-family: 'Acid Grotesk', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+}
+
+.guide-content h4 {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--foreground);
+}
+
+.guide-content p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  color: var(--foreground);
+  opacity: 0.9;
+}
+
+.guide-content strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.guide-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.guide-content a:hover {
+  color: var(--foreground);
+}
+
+.guide-content ul,
+.guide-content ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.5em;
+}
+
+.guide-content ul {
+  list-style-type: disc;
+}
+
+.guide-content ol {
+  list-style-type: decimal;
+}
+
+.guide-content li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding-left: 0.5em;
+}
+
+.guide-content li::marker {
+  color: var(--muted-foreground);
+}
+
+.guide-content li > ul,
+.guide-content li > ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.guide-content blockquote {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  padding-left: 1.25em;
+  border-left: 4px solid var(--accent);
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+
+.guide-content hr {
+  margin-top: 3em;
+  margin-bottom: 3em;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.guide-content code {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  background-color: var(--muted);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  color: var(--foreground);
+}
+
+.guide-content pre {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  padding: 1.25rem;
+  background-color: var(--foreground);
+  color: var(--background);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.guide-content pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.guide-content table {
+  width: 100%;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.guide-content thead {
+  border-bottom: 2px solid var(--border);
+}
+
+.guide-content th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  background-color: var(--muted);
+}
+
+.guide-content td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.guide-content tbody tr:hover {
+  background-color: var(--muted);
+}
+
+.guide-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+/* Warning/Note boxes */
+.guide-content p strong:first-child {
+  color: var(--destructive);
+}
+
+/* Checklist style for lists with checkboxes */
+.guide-content ul li input[type="checkbox"] {
+  margin-right: 0.5em;
+}

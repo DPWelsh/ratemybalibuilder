@@ -170,7 +170,7 @@ export default async function ChapterPage({ params }: PageProps) {
                 {/* Free chapters - show full content */}
                 {isFreeAccess && (
                   <article
-                    className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-p:text-foreground/80 prose-p:leading-relaxed dark:prose-invert"
+                    className="guide-content"
                     dangerouslySetInnerHTML={{ __html: formatContentToHtml(content) }}
                   />
                 )}
@@ -188,7 +188,7 @@ export default async function ChapterPage({ params }: PageProps) {
                 {isTeaser && (
                   <>
                     <article
-                      className="prose prose-lg max-w-none prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-p:text-foreground/80 prose-p:leading-relaxed dark:prose-invert"
+                      className="guide-content"
                       dangerouslySetInnerHTML={{
                         __html: formatContentToHtml(teaserContent),
                       }}

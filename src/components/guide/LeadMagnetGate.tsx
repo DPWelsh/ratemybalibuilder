@@ -89,7 +89,7 @@ export function LeadMagnetGate({ chapterTitle, chapterSlug, formattedContent }: 
 
         {/* Full content */}
         <article
-          className="prose prose-lg max-w-none dark:prose-invert"
+          className="guide-content"
           dangerouslySetInnerHTML={{ __html: formattedContent }}
         />
       </div>

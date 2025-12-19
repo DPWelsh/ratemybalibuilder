@@ -1,45 +1,236 @@
+## Contract with Your Builder
 
---- PAGE 61 ---
+A well-structured contract protects your investment and sets clear expectations. This chapter covers what to include, how to structure payments, and how to protect yourself throughout the construction process.
 
-59
-MARKETING
-Website. Create a one-page
-website and put all the necessary
-information about your villa. We
-suggest including: 
-A short description with the
-price (fully or unfurnished) and
-location.
-Naming your villa. Come up with a
-name that is easy to remember,
-reflects your villa style, and is easy to
-pronounce. We don’t recommend
-using the Indonesian name as it's
-not easy to remember and
-sometimes very hard to read. People
-might not be able to find you on
-Google or social media if your
-project name is in Indonesian and it
-makes it harder to market your
-brand internationally. 
-NON-PAID MARKETING
-TECHNIQUES
-Marketing is a major tool that is used to
-attract potential buyers. There are
-several paid and free marketing
-activities that we use.
+## What to Clarify Before Signing
 
+### Scope of Work
 
---- PAGE 62 ---
+Before signing any contract, clarify exactly what is included:
 
-60
-Property details with the number of rooms, land and building size, style,
-UVP, leasehold (remaining years and terms) or freehold, and more.
-Remember that you’re selling the property to people who would like to
-invest. Thus, adding rental yield information is an essential step that will
-make your villa more desirable to the buyer.
-It’s important to add a payment schedule so it’s easier for the buyer to
-understand whether this investment is affordable or not. This also gives the
-buyer some base from where he or she can start the negotiation from. We,
-normally, provide some flexibility with the payment schedule and opened to
-negotiation.
+**Basic Construction:**
+- Foundation and structural work
+- Walls, floors, and roofing
+- Basic electrical and plumbing
+- Standard finishes
+
+**Items Often NOT Included:**
+- Custom kitchen build-out
+- Built-in closets and wardrobes
+- Custom furniture
+- Wall niches and sunken lounges
+- Premium fixtures and fittings
+- Landscaping
+- Pool equipment
+
+**Get specific answers:** If your design includes custom elements like wall niches or sunken lounges, confirm whether they're included in the quoted price or will cost extra.
+
+### Material Specifications
+
+Specify the quality of materials in your contract:
+
+**Fixtures:**
+- Bathroom fixtures (brand and model)
+- Kitchen fixtures
+- Door and window hardware
+
+**Finishes:**
+- Tile quality and source
+- Paint quality and brand
+- Flooring materials
+
+**Structural:**
+- Concrete mix specifications
+- Rebar grade and sizing
+- Waterproofing materials
+
+**Pro Tip:** Consider shopping for tiles, bathroom fixtures, and kitchen fittings yourself. This ensures you get exactly the quality you want and can sometimes save money.
+
+## Critical Contract Elements
+
+### Foundation Requirements
+
+Foundations are crucial in Bali due to soil conditions and earthquake risk:
+
+**Require in your contract:**
+- Geological survey completion before foundation design
+- Foundation depth based on survey results
+- Deep cement column foundations
+- Large rebar-reinforced cement footings
+- Foundation design appropriate for building height
+
+### Roofing and Waterproofing
+
+Bali's heavy rainfall makes roofing critical:
+
+**For cement roofs, require:**
+- Double waterproofing technique:
+  1. First layer: Cement waterproofing material
+  2. Second layer: Bitumen sheets sealed with heat gun
+
+**Warning:** Most builders only apply the first layer. Insist on double waterproofing—it's worth the extra cost.
+
+**Also specify:**
+- Rain gutter installation
+- Proper drainage from roof
+- Quality roofing materials
+- Wall waterproofing from mid-height to floor
+- Membrane between walls and floor
+
+## Payment Structure
+
+### Recommended Payment Schedule
+
+Structure payments based on construction milestones:
+
+| Milestone | Payment |
+|-----------|---------|
+| Contract signing | 25-30% |
+| Foundation complete | 15-20% |
+| Walls and roof complete | 15-20% |
+| Interior work complete | 15-20% |
+| Final completion | 10-15% |
+| After punch list | 5-10% |
+
+### Key Payment Principles
+
+1. **Don't overpay upfront** - Limit initial payment to 25-30%
+2. **Tie payments to milestones** - Pay when work is verified complete
+3. **Hold back final payment** - Reserve 10-20% until 100% complete
+4. **Verify before paying** - Inspect work before releasing funds
+
+### Retention for Completion
+
+Include a clause that:
+- Final 10-20% is not paid until the project is 100% complete
+- A punch list is created and all items are addressed
+- You have reasonable time to inspect completed work
+
+## Timeline and Penalties
+
+### Realistic Timeline
+
+Work with your builder to establish:
+- Clear start date
+- Milestone dates for each phase
+- Realistic completion date
+- Buffer time for weather or unexpected issues
+
+### Completion Penalty Clause
+
+Include a penalty statement:
+- If not completed on time, builder forfeits 5-10% of build cost
+- This amount is deducted from final payment
+- Clearly define what "completion" means
+
+This gives the builder incentive to meet deadlines and protects you from endless delays.
+
+### Delay Provisions
+
+Also address:
+- What happens if you cause delays (design changes, payment delays)
+- How weather delays are handled
+- Process for extending timeline if needed
+
+## Warranty Requirements
+
+### One-Year Warranty
+
+Require a written warranty that includes:
+- Return to fix superficial wall cracks (normal in first year as building settles)
+- Repair of any construction defects
+- Replacement of faulty materials
+- Response time for warranty claims
+
+### What the Warranty Should Cover
+
+**Structural:**
+- Foundation issues
+- Wall cracks beyond cosmetic
+- Roof leaks
+
+**Systems:**
+- Plumbing problems
+- Electrical issues
+- Drainage failures
+
+**Finishes:**
+- Paint peeling due to poor application
+- Tile cracking due to improper installation
+- Door and window operation issues
+
+### Document Everything
+
+- Get warranty terms in writing
+- Photograph the property at completion
+- Keep records of any issues reported
+- Document all warranty work performed
+
+## Additional Contract Provisions
+
+### Change Order Process
+
+Define how changes are handled:
+- Written change orders required for any modifications
+- Pricing for changes agreed before work begins
+- Impact on timeline documented
+- Both parties must sign off on changes
+
+### Dispute Resolution
+
+Include provisions for:
+- How disputes will be resolved
+- Mediation or arbitration clauses
+- Jurisdiction for legal matters
+
+### Insurance Requirements
+
+Require the builder to have:
+- Worker's compensation coverage
+- Liability insurance
+- Coverage for damage during construction
+
+### Site Access and Security
+
+Specify:
+- Who has access to the construction site
+- Security during construction
+- Storage of materials
+- Cleanup requirements
+
+## Before Signing
+
+### Review Checklist
+
+Before signing your contract, verify:
+
+- [ ] Scope of work is clearly defined
+- [ ] All custom elements are specifically included or excluded
+- [ ] Material specifications are detailed
+- [ ] Foundation requirements are specified
+- [ ] Waterproofing requirements are included
+- [ ] Payment schedule is milestone-based
+- [ ] Completion penalty clause is included
+- [ ] One-year warranty is documented
+- [ ] Change order process is defined
+- [ ] Both parties' obligations are clear
+
+### Get Professional Review
+
+Consider having your contract reviewed by:
+- A lawyer familiar with Indonesian construction law
+- An experienced project manager
+- A building consultant
+
+## Key Takeaways
+
+1. **Define scope clearly** - Know exactly what's included
+2. **Specify materials** - Don't leave quality to chance
+3. **Require proper foundations** - Based on geological survey
+4. **Insist on waterproofing** - Double-layer for roofs
+5. **Structure payments** - Based on verified milestones
+6. **Include penalties** - For missed deadlines
+7. **Get warranty in writing** - At least one year
+8. **Review before signing** - Consider professional review
+
+A thorough contract protects both you and your builder. Take the time to get it right before construction begins.
