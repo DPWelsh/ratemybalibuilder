@@ -84,7 +84,7 @@ function isValidPhone(phone: string): boolean {
 export function AddBuilderClient() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [tradeType, setTradeType] = useState('');
+  const [tradeTypes, setTradeTypes] = useState<string[]>([]);
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState<BuilderStatus | null>(null);
   const [rating, setRating] = useState(0);
@@ -105,7 +105,7 @@ export function AddBuilderClient() {
   useEffect(() => {
     if (error) setError('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, phone, tradeType, location, status, rating]);
+  }, [name, phone, tradeTypes, location, status, rating]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,8 +120,8 @@ export function AddBuilderClient() {
       setError('Please enter a valid phone number');
       return;
     }
-    if (!tradeType) {
-      setError('Please select a trade type');
+    if (tradeTypes.length === 0) {
+      setError('Please select at least one trade');
       return;
     }
     if (!location) {
@@ -146,7 +146,7 @@ export function AddBuilderClient() {
         body: JSON.stringify({
           name: name.trim(),
           phone,
-          trade_type: tradeType,
+          trade_type: tradeTypes.join(', '),
           location: location,
           status,
           rating,
@@ -175,6 +175,21 @@ export function AddBuilderClient() {
     }
   };
 
+  const resetForm = () => {
+    setName('');
+    setPhone('');
+    setTradeTypes([]);
+    setLocation('');
+    setStatus(null);
+    setRating(0);
+    setHoverRating(0);
+    setReviewText('');
+    setError('');
+    setSuccess(false);
+    setCreatedBuilderId(null);
+    setIsLoading(false);
+  };
+
   if (success) {
     return (
       <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-0">
@@ -187,8 +202,11 @@ export function AddBuilderClient() {
             Thank you for contributing. Your submission will be reviewed by our team.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center">
+            <Button size="lg" onClick={resetForm}>
+              Add Another
+            </Button>
             {createdBuilderId && (
-              <Button asChild size="lg">
+              <Button asChild variant="outline" size="lg">
                 <Link href={`/builder/${createdBuilderId}`}>
                   View Builder
                 </Link>
@@ -271,7 +289,7 @@ export function AddBuilderClient() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Trade</label>
-                  <TradeCombobox value={tradeType} onValueChange={setTradeType} />
+                  <TradeCombobox value={tradeTypes} onValueChange={setTradeTypes} multi />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Location</label>

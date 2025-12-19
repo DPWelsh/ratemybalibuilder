@@ -5,7 +5,14 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { MaskedPhone } from '@/components/MaskedPhone';
 import { StarRating } from '@/components/StarRating';
 import { searchBuilders } from '@/lib/supabase/builders-server';
-import { ArrowRightIcon, SearchXIcon, PlusCircleIcon } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
+import { ArrowRightIcon, SearchXIcon, PlusCircleIcon, LockIcon } from 'lucide-react';
+
+// Mask text to show only first N chars
+function maskText(text: string, visibleChars: number = 5): string {
+  if (text.length <= visibleChars) return text;
+  return text.slice(0, visibleChars) + '...';
+}
 
 interface SearchPageProps {
   searchParams: Promise<{ name?: string; phone?: string }>;
@@ -14,6 +21,11 @@ interface SearchPageProps {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const { name, phone } = params;
+
+  // Check if user is logged in
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isLoggedIn = !!user;
 
   // Perform search against Supabase
   const results = await searchBuilders(name, phone);
@@ -49,9 +61,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-1">
                           <h2 className="text-lg font-medium text-foreground sm:text-xl">
-                            {builder.name}
+                            {isLoggedIn ? builder.name : maskText(builder.name)}
                           </h2>
-                          <p className="font-mono text-sm text-muted-foreground">{builder.phone}</p>
+                          <p className="font-mono text-sm text-muted-foreground">
+                            {isLoggedIn ? builder.phone : maskText(builder.phone)}
+                          </p>
                         </div>
                         <StatusBadge status={builder.status} size="md" />
                       </div>
@@ -67,12 +81,21 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       </div>
 
                       <div className="mt-4 sm:mt-6">
-                        <Button asChild className="h-11 w-full sm:h-auto sm:w-auto">
-                          <Link href={`/builder/${builder.id}`}>
-                            View Details
-                            <ArrowRightIcon className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
+                        {isLoggedIn ? (
+                          <Button asChild className="h-11 w-full sm:h-auto sm:w-auto">
+                            <Link href={`/builder/${builder.id}`}>
+                              View Details
+                              <ArrowRightIcon className="ml-2 h-4 w-4" />
+                            </Link>
+                          </Button>
+                        ) : (
+                          <Button asChild variant="outline" className="h-11 w-full sm:h-auto sm:w-auto">
+                            <Link href="/login">
+                              <LockIcon className="mr-2 h-4 w-4" />
+                              Sign in to view
+                            </Link>
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
