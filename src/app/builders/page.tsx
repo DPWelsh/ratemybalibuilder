@@ -14,7 +14,7 @@ import { getBuilders, getBuilderStats, BuilderWithStats, BuilderStatus, Location
 import { createClient } from '@/lib/supabase/client';
 import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, CheckIcon, PencilIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { formatPhone } from '@/lib/utils';
+import { formatPhone, phonesMatch } from '@/lib/utils';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -324,16 +324,27 @@ function BuildersPageContent() {
   // Prepare and filter row data
   const rowData = useMemo<BuilderRow[]>(() => {
     const query = searchQuery.toLowerCase().trim();
+    // Check if query looks like a phone number (mostly digits)
+    const queryDigits = searchQuery.replace(/[^\d]/g, '');
+    const isPhoneQuery = queryDigits.length >= 6;
+
     return builders
       .filter((builder) => {
+        // Phone number search - use smart matching
+        if (isPhoneQuery) {
+          const phoneMatch = phonesMatch(builder.phone, searchQuery);
+          if (phoneMatch) return true;
+        }
+
         // Text search across all relevant fields
         const searchMatch = !query ||
           builder.name.toLowerCase().includes(query) ||
-          builder.phone?.toLowerCase().includes(query) ||
           builder.company_name?.toLowerCase().includes(query) ||
           builder.location?.toLowerCase().includes(query) ||
           builder.trade_type?.toLowerCase().includes(query) ||
-          builder.status?.toLowerCase().includes(query);
+          builder.status?.toLowerCase().includes(query) ||
+          // Also do simple phone includes for partial matches
+          builder.phone?.toLowerCase().includes(query);
 
         const locationMatch = selectedLocation === 'all' || builder.location === selectedLocation;
         const tradeMatch = selectedTradeType === 'all' || builder.trade_type === selectedTradeType;
