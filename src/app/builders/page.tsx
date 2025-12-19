@@ -614,9 +614,14 @@ function BuildersPageContent() {
                   <>No builders match the current filters</>
                 )}
               </p>
-              <Button variant="outline" size="sm" className="mt-3" onClick={clearFilters}>
-                Clear filters
-              </Button>
+              <div className="mt-4 flex gap-3">
+                <Button variant="outline" size="sm" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+                <Button asChild size="sm">
+                  <Link href="/add-builder">Add this builder</Link>
+                </Button>
+              </div>
             </div>
           )}
         </div>
