@@ -15,23 +15,28 @@ export default async function AdminDashboard() {
   // Get stats
   const [
     { count: pendingReviews },
+    { count: pendingBuilders },
     { count: totalBuilders },
     { count: totalUsers },
     { data: recentTransactions },
   ] = await Promise.all([
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabase.from('builders').select('*', { count: 'exact', head: true }).eq('is_published', false),
     supabase.from('builders').select('*', { count: 'exact', head: true }),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('transactions').select('*').order('created_at', { ascending: false }).limit(5),
   ]);
 
+  const totalPending = (pendingReviews || 0) + (pendingBuilders || 0);
+
   const stats = [
     {
-      label: 'Pending Reviews',
-      value: pendingReviews || 0,
+      label: 'Pending Approval',
+      value: totalPending,
       icon: ClipboardListIcon,
-      href: '/admin/reviews',
-      urgent: (pendingReviews || 0) > 0,
+      href: '/admin/builders',
+      urgent: totalPending > 0,
+      subtext: `${pendingBuilders || 0} builders, ${pendingReviews || 0} reviews`,
     },
     {
       label: 'Total Builders',
