@@ -83,7 +83,7 @@ export function TradeCombobox({ value, onValueChange }: TradeComboboxProps) {
                       onValueChange(currentValue === value ? '' : currentValue);
                       setOpen(false);
                     }}
-                    className="cursor-pointer"
+                    className="cursor-pointer data-[selected=true]:bg-secondary data-[selected=true]:text-foreground"
                   >
                     <Check
                       className={cn(
