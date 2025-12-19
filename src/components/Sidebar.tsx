@@ -32,6 +32,7 @@ const adminItems = [
   { href: '/admin', label: 'Admin Dashboard', icon: ShieldIcon },
   { href: '/admin/reviews', label: 'Pending Reviews', icon: StarIcon },
   { href: '/admin/builders', label: 'Manage Builders', icon: UsersIcon },
+  { href: '/admin/users', label: 'Manage Users', icon: UserIcon },
 ];
 
 export function Sidebar({ isAdmin }: SidebarProps) {

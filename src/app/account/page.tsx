@@ -21,6 +21,8 @@ import {
   CrownIcon,
   BookOpenIcon,
   UsersIcon,
+  GiftIcon,
+  PlusCircleIcon,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { User } from '@supabase/supabase-js';
@@ -30,6 +32,10 @@ interface Profile {
   is_admin: boolean;
   created_at: string;
   membership_tier: string | null;
+  has_free_guide_access: boolean;
+  approved_builders_count: number;
+  approved_reviews_count: number;
+  pending_contributions_count: number;
 }
 
 interface Membership {
@@ -65,7 +71,7 @@ export default function AccountPage() {
 
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('credit_balance, is_admin, created_at, membership_tier')
+        .select('credit_balance, is_admin, created_at, membership_tier, has_free_guide_access, approved_builders_count, approved_reviews_count, pending_contributions_count')
         .eq('id', user.id)
         .single();
 
@@ -270,7 +276,7 @@ export default function AccountPage() {
               </div>
             </div>
 
-            {profile?.membership_tier && profile.membership_tier !== 'free' ? (
+            {profile?.membership_tier === 'investor' || profile?.has_free_guide_access ? (
               <div className="space-y-4">
                 <div className="rounded-lg border bg-secondary/50 p-4">
                   <div className="flex items-center justify-between">
@@ -283,6 +289,8 @@ export default function AccountPage() {
                           ? 'Annual plan'
                           : membership?.plan === 'investor_monthly'
                           ? 'Monthly plan'
+                          : profile.has_free_guide_access && profile.membership_tier !== 'investor'
+                          ? 'Earned via contributions'
                           : 'Lifetime access'}
                       </p>
                     </div>
@@ -309,35 +317,56 @@ export default function AccountPage() {
                       Read the Guide
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="flex-1">
-                    <Link href="/suppliers">
-                      <UsersIcon className="mr-2 h-4 w-4" />
-                      Supplier Directory
-                    </Link>
-                  </Button>
+                  {profile.membership_tier === 'investor' && (
+                    <Button asChild variant="outline" className="flex-1">
+                      <Link href="/suppliers">
+                        <UsersIcon className="mr-2 h-4 w-4" />
+                        Supplier Directory
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
+                {/* Contribution Progress */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <GiftIcon className="h-4 w-4 text-[var(--color-energy)]" />
+                    <span className="text-sm font-medium">Earn Free Guide</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {(profile?.approved_builders_count || 0) + (profile?.approved_reviews_count || 0)}/5
+                  </span>
+                </div>
+                <div className="h-2 rounded-full bg-secondary overflow-hidden">
+                  <div
+                    className="h-full bg-[var(--status-recommended)] transition-all"
+                    style={{
+                      width: `${Math.min(((profile?.approved_builders_count || 0) + (profile?.approved_reviews_count || 0)) / 5 * 100, 100)}%`
+                    }}
+                  />
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  Upgrade to get full access to the Bali Investment Guide and exclusive supplier contacts.
+                  Submit 5 builders or reviews to unlock.
+                  {(profile?.pending_contributions_count || 0) > 0 && (
+                    <span className="text-amber-500"> ({profile?.pending_contributions_count} pending)</span>
+                  )}
                 </p>
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Button asChild className="flex-1">
-                    <Link href="/pricing">
-                      <CrownIcon className="mr-2 h-4 w-4" />
-                      View Plans
-                    </Link>
+                <div className="flex gap-2">
+                  <Button asChild variant="outline" size="sm" className="flex-1">
+                    <Link href="/add-builder">Add Builder</Link>
                   </Button>
-                  <Button asChild variant="outline" className="flex-1">
-                    <Link href="/add-builder">
-                      Get Free Access
-                    </Link>
+                  <Button asChild variant="outline" size="sm" className="flex-1">
+                    <Link href="/submit-review">Add Review</Link>
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Add a builder or review to unlock free access
-                </p>
+                <Button asChild className="w-full">
+                  <Link href="/pricing">
+                    <CrownIcon className="mr-2 h-4 w-4" />
+                    View Pricing
+                  </Link>
+                </Button>
               </div>
             )}
           </CardContent>

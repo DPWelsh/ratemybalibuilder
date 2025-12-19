@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef, ICellRendererParams, ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   SearchIcon,
   CrownIcon,
   BookOpenIcon,
-  GiftIcon,
   CheckIcon,
   Loader2Icon,
-  UserIcon,
 } from 'lucide-react';
+
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface User {
   id: string;
@@ -20,7 +21,58 @@ interface User {
   created_at: string;
   membership_tier: string | null;
   has_free_guide_access: boolean;
-  credit_balance: number;
+  contributions: {
+    builders: number;
+    reviews: number;
+    pending: number;
+  };
+}
+
+interface UserRow {
+  id: string;
+  email: string;
+  joined: string;
+  builders: number;
+  reviews: number;
+  pending: number;
+  hasGuide: boolean;
+  isInvestor: boolean;
+}
+
+// Cell renderer for counts
+function CountCellRenderer(params: ICellRendererParams<UserRow>) {
+  const count = params.value as number;
+  if (count === 0) return <span className="text-muted-foreground">-</span>;
+  return <span className="font-medium">{count}</span>;
+}
+
+// Cell renderer for pending with amber color
+function PendingCellRenderer(params: ICellRendererParams<UserRow>) {
+  const pending = params.value as number;
+  if (pending === 0) return <span className="text-muted-foreground">-</span>;
+  return <span className="text-amber-500 font-medium">{pending}</span>;
+}
+
+// Cell renderer for guide access
+function GuideAccessCellRenderer(params: ICellRendererParams<UserRow>) {
+  const hasGuide = params.value as boolean;
+  if (!hasGuide) return <span className="text-muted-foreground">-</span>;
+  return (
+    <span className="inline-flex items-center gap-1 text-[var(--status-recommended)]">
+      <CheckIcon className="h-4 w-4" />
+    </span>
+  );
+}
+
+// Cell renderer for investor status
+function InvestorCellRenderer(params: ICellRendererParams<UserRow>) {
+  const isInvestor = params.value as boolean;
+  if (!isInvestor) return <span className="text-muted-foreground">-</span>;
+  return (
+    <span className="inline-flex items-center gap-1 text-[var(--color-energy)]">
+      <CrownIcon className="h-4 w-4" />
+    </span>
+  );
 }
 
 export default function AdminUsersPage() {
@@ -64,11 +116,120 @@ export default function AdminUsersPage() {
     }
   };
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.email?.toLowerCase().includes(search.toLowerCase()) ||
-      u.id.toLowerCase().includes(search.toLowerCase())
-  );
+  // Actions cell renderer
+  const ActionsCellRenderer = useCallback((params: ICellRendererParams<UserRow>) => {
+    if (!params.data) return null;
+    const { id, hasGuide, isInvestor } = params.data;
+
+    return (
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => grantAccess(id, 'guide')}
+          disabled={actionLoading !== null || hasGuide}
+          className="h-7 text-xs"
+        >
+          {actionLoading === `${id}-guide` ? (
+            <Loader2Icon className="h-3 w-3 animate-spin" />
+          ) : hasGuide ? (
+            <CheckIcon className="h-3 w-3" />
+          ) : (
+            <BookOpenIcon className="h-3 w-3" />
+          )}
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => grantAccess(id, 'investor')}
+          disabled={actionLoading !== null || isInvestor}
+          className={`h-7 text-xs ${!isInvestor ? 'border-[var(--color-energy)] text-[var(--color-energy)]' : ''}`}
+        >
+          {actionLoading === `${id}-investor` ? (
+            <Loader2Icon className="h-3 w-3 animate-spin" />
+          ) : isInvestor ? (
+            <CheckIcon className="h-3 w-3" />
+          ) : (
+            <CrownIcon className="h-3 w-3" />
+          )}
+        </Button>
+      </div>
+    );
+  }, [actionLoading]);
+
+  const rowData = useMemo<UserRow[]>(() => {
+    return users
+      .filter((u) =>
+        u.email?.toLowerCase().includes(search.toLowerCase()) ||
+        u.id.toLowerCase().includes(search.toLowerCase())
+      )
+      .map((u) => ({
+        id: u.id,
+        email: u.email || 'No email',
+        joined: new Date(u.created_at).toLocaleDateString(),
+        builders: u.contributions.builders,
+        reviews: u.contributions.reviews,
+        pending: u.contributions.pending,
+        hasGuide: u.has_free_guide_access,
+        isInvestor: u.membership_tier === 'investor',
+      }));
+  }, [users, search]);
+
+  const columnDefs = useMemo<ColDef<UserRow>[]>(() => [
+    {
+      field: 'email',
+      headerName: 'Email',
+      flex: 2,
+      minWidth: 220,
+    },
+    {
+      field: 'joined',
+      headerName: 'Joined',
+      width: 110,
+    },
+    {
+      field: 'builders',
+      headerName: 'Builders',
+      width: 100,
+      cellRenderer: CountCellRenderer,
+    },
+    {
+      field: 'reviews',
+      headerName: 'Reviews',
+      width: 100,
+      cellRenderer: CountCellRenderer,
+    },
+    {
+      field: 'pending',
+      headerName: 'Pending',
+      width: 100,
+      cellRenderer: PendingCellRenderer,
+    },
+    {
+      field: 'hasGuide',
+      headerName: 'Guide',
+      width: 80,
+      cellRenderer: GuideAccessCellRenderer,
+    },
+    {
+      field: 'isInvestor',
+      headerName: 'Investor',
+      width: 90,
+      cellRenderer: InvestorCellRenderer,
+    },
+    {
+      headerName: 'Actions',
+      width: 120,
+      sortable: false,
+      cellRenderer: ActionsCellRenderer,
+    },
+  ], [ActionsCellRenderer]);
+
+  const defaultColDef = useMemo<ColDef>(() => ({
+    sortable: true,
+    resizable: true,
+    cellStyle: { display: 'flex', alignItems: 'center' },
+  }), []);
 
   if (loading) {
     return (
@@ -82,7 +243,9 @@ export default function AdminUsersPage() {
     <div className="px-4 py-6 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl">
         <h1 className="text-2xl font-medium text-foreground sm:text-3xl">Users</h1>
-        <p className="mt-2 text-muted-foreground">Manage users and grant access.</p>
+        <p className="mt-2 text-muted-foreground">
+          {users.length} users registered. Grant guide or investor access below.
+        </p>
 
         {/* Search */}
         <div className="relative mt-6">
@@ -95,94 +258,36 @@ export default function AdminUsersPage() {
           />
         </div>
 
-        {/* Users List */}
-        <div className="mt-6 space-y-3">
-          {filteredUsers.length === 0 ? (
-            <p className="py-8 text-center text-muted-foreground">No users found</p>
-          ) : (
-            filteredUsers.map((user) => (
-              <Card key={user.id} className="border-0">
-                <CardContent className="p-4">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
-                        <UserIcon className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{user.email || 'No email'}</p>
-                        <p className="text-xs text-muted-foreground">
-                          Joined {new Date(user.created_at).toLocaleDateString()}
-                        </p>
-                        <div className="mt-1 flex flex-wrap gap-2">
-                          {user.membership_tier && user.membership_tier !== 'free' && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-energy)]/10 px-2 py-0.5 text-xs font-medium text-[var(--color-energy)]">
-                              <CrownIcon className="h-3 w-3" />
-                              {user.membership_tier}
-                            </span>
-                          )}
-                          {user.has_free_guide_access && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--status-recommended)]/10 px-2 py-0.5 text-xs font-medium text-[var(--status-recommended)]">
-                              <GiftIcon className="h-3 w-3" />
-                              Free Guide
-                            </span>
-                          )}
-                          {user.credit_balance > 0 && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium">
-                              {user.credit_balance} credits
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => grantAccess(user.id, 'guide')}
-                        disabled={actionLoading !== null || user.has_free_guide_access}
-                      >
-                        {actionLoading === `${user.id}-guide` ? (
-                          <Loader2Icon className="h-4 w-4 animate-spin" />
-                        ) : user.has_free_guide_access ? (
-                          <>
-                            <CheckIcon className="mr-1.5 h-3.5 w-3.5" />
-                            Has Guide
-                          </>
-                        ) : (
-                          <>
-                            <BookOpenIcon className="mr-1.5 h-3.5 w-3.5" />
-                            Grant Guide
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => grantAccess(user.id, 'investor')}
-                        disabled={actionLoading !== null || user.membership_tier === 'investor'}
-                        className={user.membership_tier === 'investor' ? '' : 'border-[var(--color-energy)] text-[var(--color-energy)]'}
-                      >
-                        {actionLoading === `${user.id}-investor` ? (
-                          <Loader2Icon className="h-4 w-4 animate-spin" />
-                        ) : user.membership_tier === 'investor' ? (
-                          <>
-                            <CheckIcon className="mr-1.5 h-3.5 w-3.5" />
-                            Investor
-                          </>
-                        ) : (
-                          <>
-                            <CrownIcon className="mr-1.5 h-3.5 w-3.5" />
-                            Grant Investor
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
+        {/* AG Grid */}
+        <div
+          className="mt-6 rounded-lg overflow-hidden shadow-md"
+          style={{
+            height: 'calc(100vh - 300px)',
+            minHeight: '400px',
+          }}
+        >
+          <AgGridReact<UserRow>
+            rowData={rowData}
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            theme={themeQuartz.withParams({
+              backgroundColor: 'var(--card)',
+              headerBackgroundColor: 'var(--secondary)',
+              oddRowBackgroundColor: 'var(--background)',
+              rowHoverColor: 'var(--secondary)',
+              borderColor: 'var(--border)',
+              headerTextColor: 'var(--foreground)',
+              foregroundColor: 'var(--foreground)',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              fontSize: 14,
+              rowHeight: 48,
+              headerHeight: 44,
+            })}
+            animateRows={true}
+            pagination={false}
+            domLayout="normal"
+            suppressCellFocus={true}
+          />
         </div>
       </div>
     </div>

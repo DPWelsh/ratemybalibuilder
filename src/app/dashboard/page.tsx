@@ -17,6 +17,7 @@ import {
   XIcon,
   UserPlusIcon,
   ShieldCheckIcon,
+  GiftIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -43,8 +44,17 @@ interface SavedBuilder {
   saved_at: string;
 }
 
+interface Profile {
+  has_free_guide_access: boolean;
+  membership_tier: string | null;
+  approved_builders_count: number;
+  approved_reviews_count: number;
+  pending_contributions_count: number;
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [tradeType, setTradeType] = useState<string>('');
@@ -64,6 +74,17 @@ export default function DashboardPage() {
       }
 
       setUser(user);
+
+      // Fetch profile with contribution counts
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('has_free_guide_access, membership_tier, approved_builders_count, approved_reviews_count, pending_contributions_count')
+        .eq('id', user.id)
+        .single();
+
+      if (profileData) {
+        setProfile(profileData);
+      }
 
       // Fetch builders added by this user
       const { data: addedData } = await supabase
@@ -164,6 +185,35 @@ export default function DashboardPage() {
             Welcome back{user?.email ? `, ${user.email.split('@')[0]}` : ''}
           </p>
         </div>
+
+        {/* Contributions */}
+        {profile && (
+          <Card className="mb-6 border-0 shadow-md sm:mb-8">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-3">
+                <span className="font-medium">Your Contributions</span>
+                <span className="text-sm text-muted-foreground">
+                  {(profile.approved_builders_count || 0) + (profile.approved_reviews_count || 0)} approved
+                </span>
+              </div>
+              <div className="flex gap-4 text-sm mb-3">
+                <span>{profile.approved_builders_count || 0} builders</span>
+                <span>{profile.approved_reviews_count || 0} reviews</span>
+                {(profile.pending_contributions_count || 0) > 0 && (
+                  <span className="text-amber-500">{profile.pending_contributions_count} pending</span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button asChild size="sm" variant="outline" className="flex-1">
+                  <Link href="/add-builder">Add Builder</Link>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="flex-1">
+                  <Link href="/submit-review">Add Review</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Quick Search */}
         <Card className="mb-6 border-0 shadow-md sm:mb-8">
