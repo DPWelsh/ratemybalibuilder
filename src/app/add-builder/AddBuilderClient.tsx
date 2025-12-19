@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2Icon, UserPlusIcon, CheckIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon, StarIcon } from 'lucide-react';
+import { Loader2Icon, UserPlusIcon, CheckIcon, CheckCircleIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon, StarIcon } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { TradeCombobox } from '@/components/TradeCombobox';
 import { LocationCombobox } from '@/components/LocationCombobox';
@@ -90,6 +90,7 @@ export function AddBuilderClient() {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
+  const [showPublicly, setShowPublicly] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -136,6 +137,10 @@ export function AddBuilderClient() {
       setError('Please rate the builder');
       return;
     }
+    if (reviewText.trim().length < 50) {
+      setError('Please write at least 50 characters about your experience');
+      return;
+    }
 
     setIsLoading(true);
 
@@ -151,6 +156,7 @@ export function AddBuilderClient() {
           status,
           rating,
           review_text: reviewText.trim(),
+          is_anonymous: !showPublicly,
         }),
       });
 
@@ -184,6 +190,7 @@ export function AddBuilderClient() {
     setRating(0);
     setHoverRating(0);
     setReviewText('');
+    setShowPublicly(true);
     setError('');
     setSuccess(false);
     setCreatedBuilderId(null);
@@ -351,18 +358,48 @@ export function AddBuilderClient() {
               </div>
 
               {/* Review Text */}
-              <div>
-                <label htmlFor="reviewText" className="mb-1.5 block text-sm font-medium">
-                  Review <span className="font-normal text-muted-foreground">(optional)</span>
+              <div className="space-y-1.5">
+                <label htmlFor="reviewText" className="block text-sm font-medium">
+                  Your Review
                 </label>
                 <Textarea
                   id="reviewText"
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Share your experience..."
-                  rows={3}
+                  placeholder="Share your experience... What work did they do? How was the quality?"
+                  rows={4}
                   className="resize-none"
                 />
+                <p className="text-xs text-muted-foreground">
+                  {reviewText.length}/50 characters minimum
+                  {reviewText.length >= 50 && (
+                    <span className="ml-2 text-[var(--status-recommended)]">
+                      <CheckCircleIcon className="inline h-3 w-3" />
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              {/* Anonymous Toggle */}
+              <div className="flex items-start gap-3 rounded-lg border border-border p-3">
+                <input
+                  type="checkbox"
+                  id="anonymous"
+                  checked={!showPublicly}
+                  onChange={(e) => setShowPublicly(!e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-input"
+                />
+                <div>
+                  <label htmlFor="anonymous" className="text-sm font-medium cursor-pointer">
+                    Keep my review anonymous
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    {showPublicly
+                      ? "Your review will appear on the builder's profile"
+                      : "Only your star rating will show publicly. Your written review stays private."
+                    }
+                  </p>
+                </div>
               </div>
 
               {/* Submit */}

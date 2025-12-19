@@ -53,13 +53,14 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     const body = await request.json();
-    const { builderId: providedBuilderId, builderName, builderPhone, rating, reviewText, photos } = body as {
+    const { builderId: providedBuilderId, builderName, builderPhone, rating, reviewText, photos, isAnonymous } = body as {
       builderId?: string;
       builderName: string;
       builderPhone: string;
       rating: number;
       reviewText: string;
       photos: string[];
+      isAnonymous?: boolean;
     };
 
     // Validate input
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 });
     }
 
+    // Always require review text for verification
     if (!reviewText || reviewText.length < 50) {
       return NextResponse.json({ error: 'Review must be at least 50 characters' }, { status: 400 });
     }
@@ -122,9 +124,10 @@ export async function POST(request: NextRequest) {
         builder_id: builderId,
         user_id: user?.id || null,
         rating,
-        review_text: reviewText,
+        review_text: reviewText || null,
         photos: photos || [],
         status: 'pending',
+        is_anonymous: isAnonymous || false,
       })
       .select('id')
       .single();

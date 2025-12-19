@@ -29,6 +29,7 @@ function SubmitReviewContent() {
   const [selectedBuilder, setSelectedBuilder] = useState<BuilderOption | null>(null);
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
+  const [showPublicly, setShowPublicly] = useState(true);
   const [photos, setPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -117,6 +118,7 @@ function SubmitReviewContent() {
           rating,
           reviewText,
           photos,
+          isAnonymous: !showPublicly,
         }),
       });
 
@@ -134,6 +136,7 @@ function SubmitReviewContent() {
     }
   };
 
+  // Always require written review for verification
   const isValid = selectedBuilder && rating > 0 && reviewText.trim().length >= 50;
 
   if (isSubmitted) {
@@ -298,7 +301,6 @@ function SubmitReviewContent() {
                   onChange={(e) => setReviewText(e.target.value)}
                   placeholder="Share your experience... What work did they do? How was the quality? Were they on time and on budget? Any issues?"
                   className="min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:text-sm"
-                  required
                 />
                 <p className="text-xs text-muted-foreground">
                   {reviewText.length}/50 characters minimum
@@ -308,6 +310,28 @@ function SubmitReviewContent() {
                     </span>
                   )}
                 </p>
+              </div>
+
+              {/* Anonymous Toggle */}
+              <div className="flex items-start gap-3 rounded-lg border border-border p-3">
+                <input
+                  type="checkbox"
+                  id="anonymous"
+                  checked={!showPublicly}
+                  onChange={(e) => setShowPublicly(!e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-input"
+                />
+                <div>
+                  <label htmlFor="anonymous" className="text-sm font-medium cursor-pointer">
+                    Keep my review anonymous
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    {showPublicly
+                      ? "Your review will appear on the builder's profile"
+                      : "Only your star rating will show publicly. Your written review stays private."
+                    }
+                  </p>
+                </div>
               </div>
 
               {/* Photo Upload */}
