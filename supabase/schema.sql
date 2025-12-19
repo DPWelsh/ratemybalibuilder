@@ -18,6 +18,7 @@ CREATE TABLE public.builders (
   website text,
   google_reviews_url text,
   phones jsonb DEFAULT '[]'::jsonb,
+  is_published boolean DEFAULT true,
   CONSTRAINT builders_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.profiles (
@@ -33,7 +34,7 @@ CREATE TABLE public.profiles (
 CREATE TABLE public.reviews (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
   builder_id uuid NOT NULL,
-  user_id uuid NOT NULL,
+  user_id uuid,
   rating integer NOT NULL CHECK (rating >= 1 AND rating <= 5),
   review_text text NOT NULL,
   photos ARRAY DEFAULT '{}'::text[],
