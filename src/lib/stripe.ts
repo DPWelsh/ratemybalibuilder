@@ -28,3 +28,52 @@ export const CREDIT_PACKS = {
 } as const;
 
 export type CreditPackId = keyof typeof CREDIT_PACKS;
+
+// Membership plans for Bali Investment Guide
+export const MEMBERSHIP_PLANS = {
+  guide_only: {
+    name: 'Bali Investment Guide',
+    description: 'Full access to all 19 chapters (web + PDF)',
+    priceInCents: 4900, // $49 USD
+    currency: 'usd',
+    mode: 'payment' as const, // One-time payment
+    features: [
+      'All 19 chapters',
+      'Downloadable PDF',
+      'Lifetime access',
+    ],
+  },
+  investor_monthly: {
+    name: 'Investor Membership',
+    description: 'Full guide + supplier contacts + priority verification',
+    priceInCents: 1900, // $19 USD/month
+    currency: 'usd',
+    mode: 'subscription' as const,
+    interval: 'month' as const,
+    features: [
+      'All 19 chapters',
+      'Downloadable PDF',
+      '67+ trusted supplier contacts',
+      'Priority builder verification',
+      'ROI calculator tool',
+    ],
+  },
+  investor_yearly: {
+    name: 'Investor Membership (Annual)',
+    description: 'Full guide + supplier contacts + priority verification - Save 35%',
+    priceInCents: 14900, // $149 USD/year
+    currency: 'usd',
+    mode: 'subscription' as const,
+    interval: 'year' as const,
+    features: [
+      'All 19 chapters',
+      'Downloadable PDF',
+      '67+ trusted supplier contacts',
+      'Priority builder verification',
+      'ROI calculator tool',
+      'Save 35% vs monthly',
+    ],
+  },
+} as const;
+
+export type MembershipPlanId = keyof typeof MEMBERSHIP_PLANS;

@@ -18,6 +18,8 @@ import {
   KeyIcon,
   CheckCircleIcon,
   AlertCircleIcon,
+  CrownIcon,
+  BookOpenIcon,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { User } from '@supabase/supabase-js';
@@ -26,11 +28,19 @@ interface Profile {
   credit_balance: number;
   is_admin: boolean;
   created_at: string;
+  membership_tier: string | null;
+}
+
+interface Membership {
+  plan: string;
+  status: string;
+  current_period_end: string | null;
 }
 
 export default function AccountPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [membership, setMembership] = useState<Membership | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -54,12 +64,24 @@ export default function AccountPage() {
 
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('credit_balance, is_admin, created_at')
+        .select('credit_balance, is_admin, created_at, membership_tier')
         .eq('id', user.id)
         .single();
 
       if (profileData) {
         setProfile(profileData);
+      }
+
+      // Fetch active membership
+      const { data: membershipData } = await supabase
+        .from('memberships')
+        .select('plan, status, current_period_end')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .single();
+
+      if (membershipData) {
+        setMembership(membershipData);
       }
 
       setIsLoading(false);
@@ -221,6 +243,94 @@ export default function AccountPage() {
                 {profile?.is_admin ? 'Administrator' : 'Standard User'}
               </span>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Membership Status */}
+        <Card className="mb-6 border-0 shadow-md">
+          <CardContent className="p-4 sm:p-6">
+            <div className="mb-4 flex items-center gap-3">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                profile?.membership_tier && profile.membership_tier !== 'free'
+                  ? 'bg-[var(--color-energy)]/10'
+                  : 'bg-secondary'
+              }`}>
+                {profile?.membership_tier === 'investor' ? (
+                  <CrownIcon className="h-5 w-5 text-[var(--color-energy)]" />
+                ) : profile?.membership_tier === 'guide' ? (
+                  <BookOpenIcon className="h-5 w-5 text-[var(--color-prompt)]" />
+                ) : (
+                  <CrownIcon className="h-5 w-5 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Membership</p>
+                <p className="text-sm text-muted-foreground">Your guide access level</p>
+              </div>
+            </div>
+
+            {profile?.membership_tier && profile.membership_tier !== 'free' ? (
+              <div className="space-y-4">
+                <div className="rounded-lg border bg-secondary/50 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">
+                        {profile.membership_tier === 'investor' ? 'Investor Membership' : 'Guide Access'}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {membership?.plan === 'investor_yearly'
+                          ? 'Annual plan'
+                          : membership?.plan === 'investor_monthly'
+                          ? 'Monthly plan'
+                          : 'Lifetime access'}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-[var(--status-recommended)]/10 px-3 py-1 text-sm font-medium text-[var(--status-recommended)]">
+                      Active
+                    </span>
+                  </div>
+                  {membership?.current_period_end && (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {membership.plan?.includes('investor')
+                        ? `Renews ${new Date(membership.current_period_end).toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}`
+                        : ''}
+                    </p>
+                  )}
+                </div>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/guide">
+                    <BookOpenIcon className="mr-2 h-4 w-4" />
+                    Read the Guide
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Upgrade to get full access to the Bali Investment Guide and exclusive supplier contacts.
+                </p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button asChild className="flex-1">
+                    <Link href="/pricing">
+                      <CrownIcon className="mr-2 h-4 w-4" />
+                      View Plans
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link href="/add-builder">
+                      Get Free Access
+                    </Link>
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Add a builder or review to unlock free access
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

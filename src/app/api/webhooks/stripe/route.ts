@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { stripe, MembershipPlanId } from '@/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
@@ -8,6 +8,205 @@ const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
+
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.userId;
+  const planId = session.metadata?.planId as MembershipPlanId | undefined;
+  const credits = parseInt(session.metadata?.credits || '0', 10);
+
+  // Handle credit purchase
+  if (credits > 0 && userId) {
+    console.log(`Processing credit purchase for user ${userId}: +${credits} credits`);
+
+    const { error: creditError } = await supabaseAdmin.rpc('add_credits', {
+      p_user_id: userId,
+      p_amount: credits,
+      p_type: 'credit_purchase',
+      p_payment_reference: session.id,
+    });
+
+    if (creditError) {
+      console.error('Failed to add credits:', creditError);
+      throw new Error('Failed to add credits');
+    }
+
+    console.log(`Successfully added ${credits} credits to user ${userId}`);
+    return;
+  }
+
+  // Handle one-time guide purchase
+  if (planId === 'guide_only' && userId) {
+    console.log(`Processing guide purchase for user ${userId}`);
+
+    // Create membership record
+    const { error: membershipError } = await supabaseAdmin
+      .from('memberships')
+      .insert({
+        user_id: userId,
+        plan: 'guide_only',
+        status: 'active',
+        stripe_customer_id: session.customer as string,
+        current_period_start: new Date().toISOString(),
+        current_period_end: null, // Lifetime access
+      });
+
+    if (membershipError) {
+      console.error('Failed to create membership:', membershipError);
+      throw new Error('Failed to create membership');
+    }
+
+    // Update profile membership tier
+    await supabaseAdmin
+      .from('profiles')
+      .update({ membership_tier: 'guide' })
+      .eq('id', userId);
+
+    console.log(`Successfully activated guide access for user ${userId}`);
+    return;
+  }
+
+  // For subscriptions, the subscription webhook handles it
+  if (session.mode === 'subscription') {
+    console.log('Subscription checkout completed, waiting for subscription webhook');
+    return;
+  }
+
+  console.log('Checkout completed but no action taken:', session.id);
+}
+
+async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
+  const userId = subscription.metadata?.userId;
+  const planId = subscription.metadata?.planId as MembershipPlanId;
+
+  if (!userId || !planId) {
+    console.error('Missing metadata in subscription:', subscription.id);
+    return;
+  }
+
+  console.log(`Processing subscription for user ${userId}, plan: ${planId}`);
+
+  // Create or update membership record
+  const { error: membershipError } = await supabaseAdmin
+    .from('memberships')
+    .upsert({
+      user_id: userId,
+      plan: planId,
+      status: 'active',
+      stripe_subscription_id: subscription.id,
+      stripe_customer_id: subscription.customer as string,
+      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+    }, {
+      onConflict: 'user_id',
+    });
+
+  if (membershipError) {
+    console.error('Failed to create/update membership:', membershipError);
+    throw new Error('Failed to create/update membership');
+  }
+
+  // Update profile membership tier
+  await supabaseAdmin
+    .from('profiles')
+    .update({ membership_tier: 'investor' })
+    .eq('id', userId);
+
+  console.log(`Successfully activated investor membership for user ${userId}`);
+}
+
+async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+  const userId = subscription.metadata?.userId;
+
+  if (!userId) {
+    // Try to find user by subscription ID
+    const { data: membership } = await supabaseAdmin
+      .from('memberships')
+      .select('user_id')
+      .eq('stripe_subscription_id', subscription.id)
+      .single();
+
+    if (!membership) {
+      console.error('Could not find user for subscription:', subscription.id);
+      return;
+    }
+
+    // Map Stripe status to our status
+    let status: 'active' | 'cancelled' | 'expired' | 'past_due' = 'active';
+    if (subscription.status === 'canceled') status = 'cancelled';
+    else if (subscription.status === 'past_due') status = 'past_due';
+    else if (subscription.status === 'unpaid') status = 'expired';
+
+    await supabaseAdmin
+      .from('memberships')
+      .update({
+        status,
+        current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+        cancelled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+      })
+      .eq('stripe_subscription_id', subscription.id);
+
+    // Update profile tier if cancelled
+    if (status === 'cancelled' || status === 'expired') {
+      await supabaseAdmin
+        .from('profiles')
+        .update({ membership_tier: 'free' })
+        .eq('id', membership.user_id);
+    }
+
+    return;
+  }
+
+  // Map Stripe status to our status
+  let status: 'active' | 'cancelled' | 'expired' | 'past_due' = 'active';
+  if (subscription.status === 'canceled') status = 'cancelled';
+  else if (subscription.status === 'past_due') status = 'past_due';
+  else if (subscription.status === 'unpaid') status = 'expired';
+
+  await supabaseAdmin
+    .from('memberships')
+    .update({
+      status,
+      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      cancelled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+    })
+    .eq('user_id', userId);
+
+  // Update profile tier if cancelled
+  if (status === 'cancelled' || status === 'expired') {
+    await supabaseAdmin
+      .from('profiles')
+      .update({ membership_tier: 'free' })
+      .eq('id', userId);
+  }
+
+  console.log(`Updated subscription status for user ${userId}: ${status}`);
+}
+
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  console.log('Subscription deleted:', subscription.id);
+
+  // Update membership to cancelled
+  const { data: membership } = await supabaseAdmin
+    .from('memberships')
+    .update({
+      status: 'cancelled',
+      cancelled_at: new Date().toISOString(),
+    })
+    .eq('stripe_subscription_id', subscription.id)
+    .select('user_id')
+    .single();
+
+  if (membership) {
+    await supabaseAdmin
+      .from('profiles')
+      .update({ membership_tier: 'free' })
+      .eq('id', membership.user_id);
+
+    console.log(`Revoked membership for user ${membership.user_id}`);
+  }
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -30,34 +229,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  // Handle the checkout.session.completed event
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
+  console.log('Received Stripe event:', event.type);
 
-    const userId = session.metadata?.userId;
-    const credits = parseInt(session.metadata?.credits || '0', 10);
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+        break;
 
-    if (!userId || !credits) {
-      console.error('Missing metadata in session:', session.id);
-      return NextResponse.json({ error: 'Missing metadata' }, { status: 400 });
+      case 'customer.subscription.created':
+        await handleSubscriptionCreated(event.data.object as Stripe.Subscription);
+        break;
+
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        break;
+
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        break;
+
+      case 'invoice.payment_failed':
+        const invoice = event.data.object as Stripe.Invoice;
+        console.log('Payment failed for invoice:', invoice.id);
+        // Could send email notification here
+        break;
+
+      default:
+        console.log('Unhandled event type:', event.type);
     }
-
-    console.log(`Processing payment for user ${userId}: +${credits} credits`);
-
-    // Add credits to user's account
-    const { error: creditError } = await supabaseAdmin.rpc('add_credits', {
-      p_user_id: userId,
-      p_amount: credits,
-      p_type: 'credit_purchase',
-      p_payment_reference: session.id,
-    });
-
-    if (creditError) {
-      console.error('Failed to add credits:', creditError);
-      return NextResponse.json({ error: 'Failed to add credits' }, { status: 500 });
-    }
-
-    console.log(`Successfully added ${credits} credits to user ${userId}`);
+  } catch (error) {
+    console.error('Error handling webhook:', error);
+    return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });
