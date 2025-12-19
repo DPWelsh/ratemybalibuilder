@@ -18,11 +18,11 @@ import {
   BookOpenIcon,
   CheckCircleIcon,
   ClockIcon,
-  MenuIcon,
 } from 'lucide-react';
 import { LeadMagnetGate } from '@/components/guide/LeadMagnetGate';
 import { PaywallCTA } from '@/components/guide/PaywallCTA';
 import { GuideSidebar } from '@/components/guide/GuideSidebar';
+import { MobileChapterNav } from '@/components/guide/MobileChapterNav';
 
 interface PageProps {
   params: Promise<{ chapter: string }>;
@@ -93,9 +93,11 @@ export default async function ChapterPage({ params }: PageProps) {
             <ArrowLeftIcon className="h-4 w-4" />
             Guide
           </Link>
-          <span className="text-sm font-medium">
-            Chapter {chapter.order} of {chapters.length}
-          </span>
+          <MobileChapterNav
+            currentChapter={chapter.slug}
+            totalChapters={chapters.length}
+            currentIndex={chapterIndex}
+          />
         </div>
       </div>
 
