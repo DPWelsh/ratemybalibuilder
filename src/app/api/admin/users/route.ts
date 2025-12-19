@@ -24,7 +24,7 @@ export async function GET() {
     // Get all users with their profiles
     const { data: users, error } = await supabase
       .from('profiles')
-      .select('id, email, created_at, membership_tier, has_free_guide_access, credit_balance')
+      .select('id, email, created_at, credit_balance, is_admin, has_free_guide_access, free_guide_granted_at')
       .order('created_at', { ascending: false })
       .limit(100);
 
@@ -33,7 +33,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
     }
 
-    return NextResponse.json({ users });
+    // Add default membership_tier (not in DB yet)
+    const usersWithDefaults = (users || []).map(u => ({
+      ...u,
+      membership_tier: u.has_free_guide_access ? 'guide' : null,
+    }));
+
+    return NextResponse.json({ users: usersWithDefaults });
   } catch (error) {
     console.error('Admin users error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
