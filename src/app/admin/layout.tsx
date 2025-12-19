@@ -48,6 +48,12 @@ export default async function AdminLayout({
               >
                 Builders
               </Link>
+              <Link
+                href="/admin/users"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Users
+              </Link>
             </div>
             <Link
               href="/dashboard"
