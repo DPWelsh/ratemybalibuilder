@@ -86,7 +86,7 @@ export default function Home() {
           {/* Promotion Banner */}
           <div className="mx-auto mt-6 max-w-md animate-pulse-subtle rounded-lg border border-[var(--status-recommended)]/30 bg-[var(--status-recommended)]/10 px-4 py-3 sm:mt-8">
             <p className="text-sm font-medium text-[var(--color-core)]">
-              100% Free — Search unlimited builders, no account required
+              100% Free - Search unlimited builders, no account required
             </p>
           </div>
 
