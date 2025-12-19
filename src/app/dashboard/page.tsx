@@ -18,6 +18,7 @@ import {
   UserPlusIcon,
   ShieldCheckIcon,
   GiftIcon,
+  CheckCircleIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -188,29 +189,69 @@ export default function DashboardPage() {
 
         {/* Contributions */}
         {profile && (
-          <Card className="mb-6 border-0 shadow-md sm:mb-8">
+          <Card className={`mb-6 border-0 shadow-md sm:mb-8 overflow-hidden ${
+            profile.has_free_guide_access || profile.membership_tier === 'investor'
+              ? 'bg-gradient-to-br from-[var(--status-recommended)]/5 to-[var(--color-energy)]/5'
+              : ''
+          }`}>
             <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-medium">Your Contributions</span>
-                <span className="text-sm text-muted-foreground">
-                  {(profile.approved_builders_count || 0) + (profile.approved_reviews_count || 0)} approved
-                </span>
-              </div>
-              <div className="flex gap-4 text-sm mb-3">
-                <span>{profile.approved_builders_count || 0} builders</span>
-                <span>{profile.approved_reviews_count || 0} reviews</span>
-                {(profile.pending_contributions_count || 0) > 0 && (
-                  <span className="text-amber-500">{profile.pending_contributions_count} pending</span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button asChild size="sm" variant="outline" className="flex-1">
-                  <Link href="/add-builder">Add Builder</Link>
-                </Button>
-                <Button asChild size="sm" variant="outline" className="flex-1">
-                  <Link href="/submit-review">Add Review</Link>
-                </Button>
-              </div>
+              {profile.has_free_guide_access || profile.membership_tier === 'investor' ? (
+                <>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
+                      <CheckCircleIcon className="h-5 w-5 text-[var(--status-recommended)]" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">Guide Unlocked</p>
+                      <p className="text-sm text-muted-foreground">
+                        {profile.approved_builders_count || 0} builders · {profile.approved_reviews_count || 0} reviews contributed
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button asChild size="sm" className="flex-1">
+                      <Link href="/guide">Read Guide</Link>
+                    </Button>
+                    <Button asChild size="sm" variant="outline" className="flex-1">
+                      <Link href="/add-builder">Add Builder</Link>
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <GiftIcon className="h-5 w-5 text-[var(--color-energy)]" />
+                      <span className="font-medium">Earn Free Guide</span>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {(profile.approved_builders_count || 0) + (profile.approved_reviews_count || 0)}/5
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-secondary overflow-hidden mb-3">
+                    <div
+                      className="h-full bg-[var(--status-recommended)] transition-all"
+                      style={{
+                        width: `${Math.min(((profile.approved_builders_count || 0) + (profile.approved_reviews_count || 0)) / 5 * 100, 100)}%`
+                      }}
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Submit 5 builders or reviews to unlock.
+                    {(profile.pending_contributions_count || 0) > 0 && (
+                      <span className="text-amber-500"> ({profile.pending_contributions_count} pending)</span>
+                    )}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button asChild size="sm" variant="outline" className="flex-1">
+                      <Link href="/add-builder">Add Builder</Link>
+                    </Button>
+                    <Button asChild size="sm" variant="outline" className="flex-1">
+                      <Link href="/submit-review">Add Review</Link>
+                    </Button>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         )}
