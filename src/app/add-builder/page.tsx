@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 import { AddBuilderClient } from './AddBuilderClient';
 
 export const metadata: Metadata = {
@@ -18,6 +20,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AddBuilderPage() {
+export default async function AddBuilderPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login?redirect=/add-builder');
+  }
+
   return <AddBuilderClient />;
 }
