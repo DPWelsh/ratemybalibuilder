@@ -85,6 +85,11 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
   console.log(`Processing subscription for user ${userId}, plan: ${planId}`);
 
+  // Get period info from subscription items (Clover API structure)
+  const subAny = subscription as unknown as Record<string, unknown>;
+  const periodStart = subAny.current_period_start as number | undefined;
+  const periodEnd = subAny.current_period_end as number | undefined;
+
   // Create or update membership record
   const { error: membershipError } = await supabaseAdmin
     .from('memberships')
@@ -94,8 +99,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       status: 'active',
       stripe_subscription_id: subscription.id,
       stripe_customer_id: subscription.customer as string,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : new Date().toISOString(),
+      current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
     }, {
       onConflict: 'user_id',
     });
@@ -117,6 +122,25 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
 
+  // Get period info from subscription (Clover API structure)
+  const subAny = subscription as unknown as Record<string, unknown>;
+  const periodStart = subAny.current_period_start as number | undefined;
+  const periodEnd = subAny.current_period_end as number | undefined;
+  const canceledAt = subAny.canceled_at as number | undefined;
+
+  // Map Stripe status to our status
+  let status: 'active' | 'cancelled' | 'expired' | 'past_due' = 'active';
+  if (subscription.status === 'canceled') status = 'cancelled';
+  else if (subscription.status === 'past_due') status = 'past_due';
+  else if (subscription.status === 'unpaid') status = 'expired';
+
+  const updateData = {
+    status,
+    current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : undefined,
+    current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : undefined,
+    cancelled_at: canceledAt ? new Date(canceledAt * 1000).toISOString() : null,
+  };
+
   if (!userId) {
     // Try to find user by subscription ID
     const { data: membership } = await supabaseAdmin
@@ -130,20 +154,9 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       return;
     }
 
-    // Map Stripe status to our status
-    let status: 'active' | 'cancelled' | 'expired' | 'past_due' = 'active';
-    if (subscription.status === 'canceled') status = 'cancelled';
-    else if (subscription.status === 'past_due') status = 'past_due';
-    else if (subscription.status === 'unpaid') status = 'expired';
-
     await supabaseAdmin
       .from('memberships')
-      .update({
-        status,
-        current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-        cancelled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-      })
+      .update(updateData)
       .eq('stripe_subscription_id', subscription.id);
 
     // Update profile tier if cancelled
@@ -157,20 +170,9 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     return;
   }
 
-  // Map Stripe status to our status
-  let status: 'active' | 'cancelled' | 'expired' | 'past_due' = 'active';
-  if (subscription.status === 'canceled') status = 'cancelled';
-  else if (subscription.status === 'past_due') status = 'past_due';
-  else if (subscription.status === 'unpaid') status = 'expired';
-
   await supabaseAdmin
     .from('memberships')
-    .update({
-      status,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      cancelled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-    })
+    .update(updateData)
     .eq('user_id', userId);
 
   // Update profile tier if cancelled
