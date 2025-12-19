@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,7 @@ const statusOptions: {
   {
     value: 'recommended',
     label: 'Recommended',
-    description: 'Had a good experience',
+    description: 'Good experience',
     icon: ThumbsUpIcon,
     color: 'text-[var(--status-recommended)]',
     bgColor: 'bg-[var(--status-recommended)]/10',
@@ -37,7 +37,7 @@ const statusOptions: {
   {
     value: 'unknown',
     label: 'Neutral',
-    description: 'No experience yet',
+    description: 'No experience',
     icon: HelpCircleIcon,
     color: 'text-muted-foreground',
     bgColor: 'bg-secondary',
@@ -46,7 +46,7 @@ const statusOptions: {
   {
     value: 'blacklisted',
     label: 'Flagged',
-    description: 'Bad experience, avoid',
+    description: 'Avoid',
     icon: AlertTriangleIcon,
     color: 'text-[var(--status-blacklisted)]',
     bgColor: 'bg-[var(--status-blacklisted)]/10',
@@ -54,23 +54,86 @@ const statusOptions: {
   },
 ];
 
+// Format phone number as user types: +62 812-3456-7890
+function formatPhoneInput(value: string): string {
+  // Remove all non-digits
+  let digits = value.replace(/\D/g, '');
+
+  // Handle common Indonesian formats
+  if (digits.startsWith('0')) {
+    digits = '62' + digits.substring(1);
+  } else if (digits.startsWith('8') && digits.length <= 12) {
+    digits = '62' + digits;
+  }
+
+  if (!digits) return '';
+
+  // Format as +62 xxx-xxxx-xxxx
+  if (digits.length <= 2) {
+    return '+' + digits;
+  } else if (digits.length <= 5) {
+    return '+' + digits.slice(0, 2) + ' ' + digits.slice(2);
+  } else if (digits.length <= 9) {
+    return '+' + digits.slice(0, 2) + ' ' + digits.slice(2, 5) + '-' + digits.slice(5);
+  } else {
+    return '+' + digits.slice(0, 2) + ' ' + digits.slice(2, 5) + '-' + digits.slice(5, 9) + '-' + digits.slice(9, 13);
+  }
+}
+
+// Check if phone looks valid (has enough digits)
+function isValidPhone(phone: string): boolean {
+  const digits = phone.replace(/\D/g, '');
+  return digits.length >= 10 && digits.length <= 15;
+}
+
 export default function AddBuilderPage() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [tradeType, setTradeType] = useState('General Contractor');
-  const [location, setLocation] = useState('Other');
+  const [tradeType, setTradeType] = useState('');
+  const [location, setLocation] = useState('');
   const [status, setStatus] = useState<BuilderStatus | null>(null);
-  const [companyName, setCompanyName] = useState('');
   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [createdBuilderId, setCreatedBuilderId] = useState<string | null>(null);
 
+  // Auto-format phone as user types
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneInput(e.target.value);
+    setPhone(formatted);
+  };
+
+  // Clear error when user makes changes
+  useEffect(() => {
+    if (error) setError('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, phone, tradeType, location, status, rating]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Client-side validation
+    if (!name.trim()) {
+      setError('Please enter the builder name');
+      return;
+    }
+    if (!isValidPhone(phone)) {
+      setError('Please enter a valid phone number');
+      return;
+    }
+    if (!status) {
+      setError('Please select your experience');
+      return;
+    }
+    if (rating === 0) {
+      setError('Please rate the builder');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -78,14 +141,13 @@ export default function AddBuilderPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
+          name: name.trim(),
           phone,
-          trade_type: tradeType,
-          location,
-          status: status || 'unknown',
-          company_name: companyName || null,
+          trade_type: tradeType || 'General Contractor',
+          location: location || 'Other',
+          status,
           rating,
-          review_text: reviewText,
+          review_text: reviewText.trim(),
         }),
       });
 
@@ -93,7 +155,7 @@ export default function AddBuilderPage() {
 
       if (!response.ok) {
         if (data.existingId) {
-          setError(`${data.error}. View their profile instead.`);
+          setError(`This builder already exists`);
           setCreatedBuilderId(data.existingId);
         } else {
           setError(data.error || 'Failed to add builder');
@@ -119,7 +181,7 @@ export default function AddBuilderPage() {
           </div>
           <h1 className="text-xl text-foreground sm:text-2xl">Submission received!</h1>
           <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
-            Thank you for contributing. Your builder and review will be reviewed by our team before going live.
+            Thank you for contributing. Your submission will be reviewed by our team.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center">
             {createdBuilderId && (
@@ -141,74 +203,74 @@ export default function AddBuilderPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-0">
-      <div className="w-full max-w-md">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-prompt)]/10 sm:mb-6 sm:h-16 sm:w-16">
-          <UserPlusIcon className="h-7 w-7 text-[var(--color-prompt)] sm:h-8 sm:w-8" />
+    <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8 sm:min-h-[calc(100vh-73px)] sm:px-6 sm:py-12">
+      <div className="w-full max-w-lg">
+        <div className="mb-6 text-center sm:mb-8">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-prompt)]/10 sm:mb-4 sm:h-14 sm:w-14">
+            <UserPlusIcon className="h-6 w-6 text-[var(--color-prompt)] sm:h-7 sm:w-7" />
+          </div>
+          <h1 className="text-2xl text-foreground sm:text-3xl">Add a Builder</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground sm:mt-2">
+            Help others find reliable builders in Bali
+          </p>
         </div>
 
-        <h1 className="text-center text-2xl text-foreground sm:text-3xl">
-          Add a builder
-        </h1>
-        <p className="mt-2 text-center text-sm text-muted-foreground sm:mt-3 sm:text-base">
-          Know a builder in Bali? Add them to help others.
-        </p>
-
-        <Card className="mt-6 border-0 shadow-lg sm:mt-8">
-          <CardContent className="p-5 sm:p-8">
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-5 sm:p-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive sm:p-4">
-                  {error}
+                <div className="flex items-center gap-3 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                  <AlertTriangleIcon className="h-4 w-4 shrink-0" />
+                  <span>{error}</span>
                   {createdBuilderId && (
                     <Link
                       href={`/builder/${createdBuilderId}`}
-                      className="ml-2 underline"
+                      className="ml-auto shrink-0 underline"
                     >
-                      View profile
+                      View
                     </Link>
                   )}
                 </div>
               )}
 
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="name" className="text-sm font-medium">
-                  Builder / Company Name *
+              {/* Builder Name */}
+              <div>
+                <label htmlFor="name" className="mb-1.5 block text-sm font-medium">
+                  Builder Name
                 </label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Pak Made Construction"
-                  required
-                  className="h-11 sm:h-12"
+                  placeholder="e.g. Pak Made, CV Bali Builds"
+                  className="h-12"
+                  autoComplete="off"
                 />
               </div>
 
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium">
-                  Phone / WhatsApp *
+              {/* Phone */}
+              <div>
+                <label htmlFor="phone" className="mb-1.5 block text-sm font-medium">
+                  WhatsApp / Phone
                 </label>
                 <Input
                   id="phone"
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+62 812 XXX XXXX"
-                  required
-                  className="h-11 sm:h-12"
+                  onChange={handlePhoneChange}
+                  placeholder="0812 3456 7890"
+                  className="h-12 font-mono"
+                  autoComplete="off"
                 />
-                <p className="text-xs text-muted-foreground">Must start with +62</p>
               </div>
 
+              {/* Trade & Location side by side */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5 sm:space-y-2">
-                  <label className="text-sm font-medium">
-                    Trade Type
-                  </label>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">Trade</label>
                   <Select value={tradeType} onValueChange={setTradeType}>
-                    <SelectTrigger className="h-11 sm:h-12">
-                      <SelectValue />
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
                       {tradeTypes.map((trade) => (
@@ -219,14 +281,11 @@ export default function AddBuilderPage() {
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="space-y-1.5 sm:space-y-2">
-                  <label className="text-sm font-medium">
-                    Location
-                  </label>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">Location</label>
                   <Select value={location} onValueChange={setLocation}>
-                    <SelectTrigger className="h-11 sm:h-12">
-                      <SelectValue />
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
                       {locations.map((loc) => (
@@ -239,11 +298,10 @@ export default function AddBuilderPage() {
                 </div>
               </div>
 
-              <div className="space-y-2 sm:space-y-3">
-                <label className="text-sm font-medium">
-                  Your experience with this builder *
-                </label>
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {/* Experience Status */}
+              <div>
+                <label className="mb-2 block text-sm font-medium">Your Experience</label>
+                <div className="grid grid-cols-3 gap-2">
                   {statusOptions.map((opt) => {
                     const Icon = opt.icon;
                     const isSelected = status === opt.value;
@@ -252,18 +310,15 @@ export default function AddBuilderPage() {
                         key={opt.value}
                         type="button"
                         onClick={() => setStatus(opt.value)}
-                        className={`flex flex-col items-center gap-1.5 rounded-lg border-2 p-3 transition-all sm:gap-2 sm:p-4 ${
+                        className={`flex flex-col items-center gap-1 rounded-xl border-2 p-3 transition-all ${
                           isSelected
                             ? `${opt.borderColor} ${opt.bgColor}`
-                            : 'border-transparent bg-secondary/50 hover:bg-secondary'
+                            : 'border-border bg-secondary/30 hover:bg-secondary/60'
                         }`}
                       >
-                        <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${isSelected ? opt.color : 'text-muted-foreground'}`} />
-                        <span className={`text-xs font-medium sm:text-sm ${isSelected ? opt.color : 'text-foreground'}`}>
+                        <Icon className={`h-5 w-5 ${isSelected ? opt.color : 'text-muted-foreground'}`} />
+                        <span className={`text-xs font-medium ${isSelected ? opt.color : 'text-foreground'}`}>
                           {opt.label}
-                        </span>
-                        <span className="hidden text-[10px] text-muted-foreground sm:block">
-                          {opt.description}
                         </span>
                       </button>
                     );
@@ -271,37 +326,24 @@ export default function AddBuilderPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="companyName" className="text-sm font-medium">
-                  Company Name (optional)
-                </label>
-                <Input
-                  id="companyName"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  placeholder="If different from builder name"
-                  className="h-11 sm:h-12"
-                />
-              </div>
-
-              {/* Rating */}
-              <div className="space-y-2 sm:space-y-3">
-                <label className="text-sm font-medium">
-                  Rate this builder *
-                </label>
-                <div className="flex gap-1">
+              {/* Rating - larger touch targets */}
+              <div>
+                <label className="mb-2 block text-sm font-medium">Rating</label>
+                <div className="flex justify-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       type="button"
                       onClick={() => setRating(star)}
-                      className="p-1 transition-transform hover:scale-110"
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      className="rounded-lg p-1.5 transition-transform hover:scale-110 active:scale-95"
                     >
                       <StarIcon
-                        className={`h-8 w-8 sm:h-10 sm:w-10 ${
-                          star <= rating
+                        className={`h-9 w-9 sm:h-10 sm:w-10 transition-colors ${
+                          star <= (hoverRating || rating)
                             ? 'fill-[var(--color-energy)] text-[var(--color-energy)]'
-                            : 'text-muted-foreground/30'
+                            : 'text-muted-foreground/25'
                         }`}
                       />
                     </button>
@@ -310,30 +352,26 @@ export default function AddBuilderPage() {
               </div>
 
               {/* Review Text */}
-              <div className="space-y-1.5 sm:space-y-2">
-                <label htmlFor="reviewText" className="text-sm font-medium">
-                  Your review <span className="font-normal text-muted-foreground">(please leave a review - it helps everyone)</span>
+              <div>
+                <label htmlFor="reviewText" className="mb-1.5 block text-sm font-medium">
+                  Review <span className="font-normal text-muted-foreground">(optional)</span>
                 </label>
                 <Textarea
                   id="reviewText"
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Share your experience with this builder"
-                  rows={4}
+                  placeholder="Share your experience..."
+                  rows={3}
                   className="resize-none"
                 />
-                {reviewText.length > 0 && reviewText.length < 20 && (
-                  <p className="text-xs text-amber-600">
-                    Consider writing at least 20 characters for a helpful review
-                  </p>
-                )}
               </div>
 
+              {/* Submit */}
               <Button
                 type="submit"
                 size="lg"
-                className="h-11 w-full sm:h-12"
-                disabled={isLoading || !status || rating === 0}
+                className="h-12 w-full text-base"
+                disabled={isLoading}
               >
                 {isLoading ? (
                   <>
@@ -341,25 +379,17 @@ export default function AddBuilderPage() {
                     Submitting...
                   </>
                 ) : (
-                  'Submit Builder & Review'
+                  'Submit'
                 )}
               </Button>
-
-              {(!status || rating === 0) && (
-                <p className="text-center text-xs text-muted-foreground">
-                  {!status
-                    ? 'Please select your experience with this builder'
-                    : 'Please rate this builder'}
-                </p>
-              )}
             </form>
           </CardContent>
         </Card>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground sm:mt-6">
-          Have a review to share?{' '}
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Already listed?{' '}
           <Link href="/submit-review" className="text-[var(--color-prompt)] hover:underline">
-            Submit a review instead
+            Submit a review
           </Link>
         </p>
       </div>

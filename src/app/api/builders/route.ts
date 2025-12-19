@@ -1,17 +1,24 @@
 import { createAdminClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
-// Format phone number with dashes: +62 812-3456-7890
+// Normalize and format phone number: +62 812-3456-7890
 function formatPhone(phone: string): string {
-  // Remove all non-digits except leading +
-  let digits = phone.replace(/[^\d+]/g, '');
+  // Remove all non-digits
+  let digits = phone.replace(/\D/g, '');
 
-  // Ensure starts with +62
-  if (digits.startsWith('62')) digits = '+' + digits;
-  if (!digits.startsWith('+62')) return phone;
+  // Handle common Indonesian formats
+  if (digits.startsWith('0')) {
+    digits = '62' + digits.substring(1);
+  } else if (digits.startsWith('8') && digits.length >= 9 && digits.length <= 12) {
+    // Starts with 8, likely missing country code
+    digits = '62' + digits;
+  }
 
-  // Get the number part after +62
-  const numberPart = digits.substring(3);
+  // Must have enough digits
+  if (digits.length < 10) return phone;
+
+  // Get the number part after 62
+  const numberPart = digits.startsWith('62') ? digits.substring(2) : digits;
 
   // Format: +62 xxx-xxxx-xxxx
   if (numberPart.length >= 10) {
@@ -20,7 +27,7 @@ function formatPhone(phone: string): string {
     return '+62 ' + numberPart.substring(0, 3) + '-' + numberPart.substring(3, 7) + (numberPart.length > 7 ? '-' + numberPart.substring(7) : '');
   }
 
-  return phone;
+  return '+62 ' + numberPart;
 }
 
 export async function POST(request: Request) {
@@ -36,9 +43,11 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!phone || !phone.startsWith('+62')) {
+    // Validate phone has enough digits
+    const phoneDigits = phone?.replace(/\D/g, '') || '';
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
       return NextResponse.json(
-        { error: 'Phone must be an Indonesian number starting with +62' },
+        { error: 'Please enter a valid phone number' },
         { status: 400 }
       );
     }
