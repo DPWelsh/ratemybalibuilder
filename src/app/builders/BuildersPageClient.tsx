@@ -16,6 +16,34 @@ import { UsersIcon, Loader2Icon, GlobeIcon, StarIcon, SearchIcon, CheckIcon, Pen
 import { Input } from '@/components/ui/input';
 import { formatPhone, phonesMatch } from '@/lib/utils';
 
+// Mask name for non-logged-in users - show first word only
+function maskName(name: string): string {
+  if (!name) return '';
+  const firstWord = name.split(' ')[0];
+  // If first word is short (like "CV" or "PT"), include second word
+  if (firstWord.length <= 3 && name.split(' ').length > 1) {
+    return name.split(' ').slice(0, 2).join(' ') + ' ***';
+  }
+  return firstWord + ' ***';
+}
+
+// Mask phone for non-logged-in users - show country code + first 3 digits
+function maskPhone(phone: string): string {
+  if (!phone) return '';
+  // Extract digits
+  const digits = phone.replace(/\D/g, '');
+  // Get the 3 digits after country code (62)
+  let firstThree = '8XX';
+  if (digits.startsWith('62') && digits.length > 4) {
+    firstThree = digits.slice(2, 5);
+  } else if (digits.startsWith('0') && digits.length > 3) {
+    firstThree = digits.slice(1, 4);
+  } else if (digits.length >= 3) {
+    firstThree = digits.slice(0, 3);
+  }
+  return `+62 ${firstThree}-XXXX-XXXX`;
+}
+
 // Register AG Grid modules
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -362,8 +390,8 @@ function BuildersPageContent() {
       })
       .map((builder) => ({
         id: builder.id,
-        name: builder.name,
-        phone: builder.phone || '',
+        name: isSignedIn ? builder.name : maskName(builder.name),
+        phone: isSignedIn ? (builder.phone || '') : maskPhone(builder.phone),
         website: builder.website,
         googleReviews: builder.google_reviews_url,
         status: builder.status,
@@ -372,7 +400,7 @@ function BuildersPageContent() {
         avgRating: builder.avg_rating,
         reviewCount: builder.review_count,
       }));
-  }, [builders, searchQuery, selectedLocation, selectedTradeType, selectedStatus]);
+  }, [builders, searchQuery, selectedLocation, selectedTradeType, selectedStatus, isSignedIn]);
 
   // Column definitions
   const columnDefs = useMemo<ColDef<BuilderRow>[]>(() => [

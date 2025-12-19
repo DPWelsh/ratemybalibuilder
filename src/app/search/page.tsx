@@ -8,10 +8,29 @@ import { searchBuilders } from '@/lib/supabase/builders-server';
 import { createClient } from '@/lib/supabase/server';
 import { ArrowRightIcon, SearchXIcon, PlusCircleIcon, LockIcon } from 'lucide-react';
 
-// Mask text to show only first N chars
-function maskText(text: string, visibleChars: number = 5): string {
-  if (text.length <= visibleChars) return text;
-  return text.slice(0, visibleChars) + '...';
+// Mask name for non-logged-in users - show first word only
+function maskName(name: string): string {
+  if (!name) return '';
+  const firstWord = name.split(' ')[0];
+  if (firstWord.length <= 3 && name.split(' ').length > 1) {
+    return name.split(' ').slice(0, 2).join(' ') + ' ***';
+  }
+  return firstWord + ' ***';
+}
+
+// Mask phone for non-logged-in users - show country code + first 3 digits
+function maskPhone(phone: string): string {
+  if (!phone) return '';
+  const digits = phone.replace(/\D/g, '');
+  let firstThree = '8XX';
+  if (digits.startsWith('62') && digits.length > 4) {
+    firstThree = digits.slice(2, 5);
+  } else if (digits.startsWith('0') && digits.length > 3) {
+    firstThree = digits.slice(1, 4);
+  } else if (digits.length >= 3) {
+    firstThree = digits.slice(0, 3);
+  }
+  return `+62 ${firstThree}-XXXX-XXXX`;
 }
 
 interface SearchPageProps {
@@ -61,10 +80,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-1">
                           <h2 className="text-lg font-medium text-foreground sm:text-xl">
-                            {isLoggedIn ? builder.name : maskText(builder.name)}
+                            {isLoggedIn ? builder.name : maskName(builder.name)}
                           </h2>
                           <p className="font-mono text-sm text-muted-foreground">
-                            {isLoggedIn ? builder.phone : maskText(builder.phone)}
+                            {isLoggedIn ? builder.phone : maskPhone(builder.phone)}
                           </p>
                         </div>
                         <StatusBadge status={builder.status} size="md" />
