@@ -37,7 +37,7 @@ export const MEMBERSHIP_PLANS = {
     features: [
       'Complete Bali Investment Guide (19 chapters)',
       'Downloadable PDF',
-      'Searchable Supplier Directory (50+ contacts)',
+      'Searchable Supplier Directory (100+ contacts)',
       'Priority builder verification',
       'ROI calculator tool',
     ],
@@ -52,7 +52,7 @@ export const MEMBERSHIP_PLANS = {
     features: [
       'Complete Bali Investment Guide (19 chapters)',
       'Downloadable PDF',
-      'Searchable Supplier Directory (50+ contacts)',
+      'Searchable Supplier Directory (100+ contacts)',
       'Priority builder verification',
       'ROI calculator tool',
     ],

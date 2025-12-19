@@ -78,7 +78,7 @@ export function PaywallCTA({
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <CheckIcon className="h-4 w-4 text-green-500" />
-                <span>67+ trusted supplier contacts</span>
+                <span>100+ verified supplier contacts</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <CheckIcon className="h-4 w-4 text-green-500" />

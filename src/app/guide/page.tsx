@@ -108,8 +108,8 @@ export default function GuidePage() {
               <div className="text-sm text-muted-foreground">Words</div>
             </div>
             <div className="rounded-lg border bg-card p-4">
-              <div className="text-2xl font-bold">67+</div>
-              <div className="text-sm text-muted-foreground">Suppliers</div>
+              <div className="text-2xl font-bold">100+</div>
+              <div className="text-sm text-muted-foreground">Contacts</div>
             </div>
           </div>
         </div>

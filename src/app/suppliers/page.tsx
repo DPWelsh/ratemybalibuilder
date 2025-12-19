@@ -171,7 +171,7 @@ export default function SuppliersPage() {
           </div>
           <h1 className="text-3xl font-bold">Supplier Directory</h1>
           <p className="mt-4 text-muted-foreground">
-            Access our verified database of 67+ trusted suppliers with direct WhatsApp contacts.
+            Access our verified database of 100+ trusted contacts with direct WhatsApp links.
           </p>
           <Button asChild className="mt-8 bg-[var(--color-energy)]">
             <Link href="/pricing">
@@ -191,7 +191,7 @@ export default function SuppliersPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Trusted Supplier Directory</h1>
           <p className="mt-2 text-muted-foreground">
-            67+ verified contacts from the Bali expat community
+            50+ premium contacts from the Bali expat community
           </p>
         </div>
 
