@@ -19,7 +19,9 @@ CREATE TABLE public.builders (
   google_reviews_url text,
   phones jsonb DEFAULT '[]'::jsonb,
   is_published boolean DEFAULT true,
-  CONSTRAINT builders_pkey PRIMARY KEY (id)
+  submitted_by uuid,
+  CONSTRAINT builders_pkey PRIMARY KEY (id),
+  CONSTRAINT builders_submitted_by_fkey FOREIGN KEY (submitted_by) REFERENCES auth.users(id)
 );
 CREATE TABLE public.contributions (
   id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -41,6 +43,10 @@ CREATE TABLE public.profiles (
   updated_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
   has_free_guide_access boolean DEFAULT false,
   free_guide_granted_at timestamp with time zone,
+  membership_tier text DEFAULT 'free'::text,
+  approved_builders_count integer DEFAULT 0,
+  approved_reviews_count integer DEFAULT 0,
+  pending_contributions_count integer DEFAULT 0,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
@@ -54,6 +60,7 @@ CREATE TABLE public.reviews (
   status USER-DEFINED NOT NULL DEFAULT 'pending'::review_status,
   admin_notes text,
   created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  is_anonymous boolean DEFAULT false,
   CONSTRAINT reviews_pkey PRIMARY KEY (id),
   CONSTRAINT reviews_builder_id_fkey FOREIGN KEY (builder_id) REFERENCES public.builders(id),
   CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
