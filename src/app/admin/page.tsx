@@ -31,12 +31,20 @@ export default async function AdminDashboard() {
 
   const stats = [
     {
-      label: 'Pending Approval',
-      value: totalPending,
+      label: 'Pending Builders',
+      value: pendingBuilders || 0,
+      icon: UsersIcon,
+      href: '/admin/builders?filter=pending',
+      urgent: (pendingBuilders || 0) > 0,
+      subtext: 'Awaiting approval',
+    },
+    {
+      label: 'Pending Reviews',
+      value: pendingReviews || 0,
       icon: ClipboardListIcon,
-      href: '/admin/builders',
-      urgent: totalPending > 0,
-      subtext: `${pendingBuilders || 0} builders, ${pendingReviews || 0} reviews`,
+      href: '/admin/reviews',
+      urgent: (pendingReviews || 0) > 0,
+      subtext: 'Awaiting approval',
     },
     {
       label: 'Total Builders',
@@ -49,12 +57,6 @@ export default async function AdminDashboard() {
       value: totalUsers || 0,
       icon: UsersIcon,
       href: '/admin/users',
-    },
-    {
-      label: 'Recent Transactions',
-      value: recentTransactions?.length || 0,
-      icon: CreditCardIcon,
-      href: '#',
     },
   ];
 

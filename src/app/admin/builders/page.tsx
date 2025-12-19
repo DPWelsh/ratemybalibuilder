@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ICellRendererParams, ModuleRegistry, AllCommunityModule, themeQuartz } from 'ag-grid-community';
 import { createClient } from '@/lib/supabase/client';
@@ -78,10 +79,14 @@ function PublishedCellRenderer(params: ICellRendererParams<BuilderRow>) {
 }
 
 export default function AdminBuildersPage() {
+  const searchParams = useSearchParams();
+  const initialFilter = searchParams.get('filter') === 'pending' ? 'pending' : 'all';
+
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [publishedFilter, setPublishedFilter] = useState<'all' | 'pending' | 'published'>(initialFilter);
 
   const fetchBuilders = async () => {
     setIsLoading(true);
@@ -229,13 +234,18 @@ export default function AdminBuildersPage() {
 
   const rowData = useMemo<BuilderRow[]>(() => {
     return builders
-      .filter((b) =>
-        b.name.toLowerCase().includes(search.toLowerCase()) ||
-        b.phone.includes(search) ||
-        b.location.toLowerCase().includes(search.toLowerCase()) ||
-        b.trade_type.toLowerCase().includes(search.toLowerCase()) ||
-        (b.submitted_by_email?.toLowerCase().includes(search.toLowerCase()))
-      )
+      .filter((b) => {
+        // Apply published filter
+        if (publishedFilter === 'pending' && b.is_published) return false;
+        if (publishedFilter === 'published' && !b.is_published) return false;
+
+        // Apply search filter
+        return b.name.toLowerCase().includes(search.toLowerCase()) ||
+          b.phone.includes(search) ||
+          b.location.toLowerCase().includes(search.toLowerCase()) ||
+          b.trade_type.toLowerCase().includes(search.toLowerCase()) ||
+          (b.submitted_by_email?.toLowerCase().includes(search.toLowerCase()));
+      })
       .map((b) => ({
         id: b.id,
         name: b.name,
@@ -246,7 +256,7 @@ export default function AdminBuildersPage() {
         is_published: b.is_published,
         submitted_by: b.submitted_by_email || '-',
       }));
-  }, [builders, search]);
+  }, [builders, search, publishedFilter]);
 
   const columnDefs = useMemo<ColDef<BuilderRow>[]>(() => [
     {
@@ -332,15 +342,41 @@ export default function AdminBuildersPage() {
           </Button>
         </div>
 
-        {/* Search */}
-        <div className="mt-6 relative">
-          <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, phone, location, or trade..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
+        {/* Filters */}
+        <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by name, phone, location, or trade..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={publishedFilter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPublishedFilter('all')}
+            >
+              All ({builders.length})
+            </Button>
+            <Button
+              variant={publishedFilter === 'pending' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPublishedFilter('pending')}
+              className={pendingCount > 0 ? 'ring-2 ring-amber-500' : ''}
+            >
+              Pending ({pendingCount})
+            </Button>
+            <Button
+              variant={publishedFilter === 'published' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPublishedFilter('published')}
+            >
+              Published ({publishedCount})
+            </Button>
+          </div>
         </div>
 
         {/* AG Grid */}
