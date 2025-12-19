@@ -7,14 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2Icon, UserPlusIcon, CheckIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon, StarIcon } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { tradeTypes, locations, BuilderStatus } from '@/lib/supabase/builders';
+import { TradeCombobox } from '@/components/TradeCombobox';
+import { LocationCombobox } from '@/components/LocationCombobox';
+import { BuilderStatus } from '@/lib/supabase/builders';
 
 const statusOptions: {
   value: BuilderStatus;
@@ -268,33 +263,11 @@ export default function AddBuilderPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Trade</label>
-                  <Select value={tradeType} onValueChange={setTradeType}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {tradeTypes.map((trade) => (
-                        <SelectItem key={trade} value={trade}>
-                          {trade}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <TradeCombobox value={tradeType} onValueChange={setTradeType} />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Location</label>
-                  <Select value={location} onValueChange={setLocation}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {locations.map((loc) => (
-                        <SelectItem key={loc} value={loc}>
-                          {loc}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <LocationCombobox value={location} onValueChange={setLocation} />
                 </div>
               </div>
 
