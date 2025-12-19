@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { CreditBalance } from './CreditBalance';
 import { Button } from '@/components/ui/button';
@@ -10,11 +11,37 @@ import { MenuIcon, XIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 
 export function Header() {
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [creditBalance, setCreditBalance] = useState<number>(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Helper to check if a link is active
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    return pathname.startsWith(href);
+  };
+
+  // Get link class based on active state
+  const getLinkClass = (href: string, baseClass: string = '') => {
+    const active = isActive(href);
+    return `text-sm transition-colors ${baseClass} ${
+      active
+        ? 'text-[var(--color-prompt)] font-medium'
+        : 'text-[var(--color-cloud)]/70 hover:text-[var(--color-prompt)]'
+    }`;
+  };
+
+  const getMobileLinkClass = (href: string) => {
+    const active = isActive(href);
+    return `rounded-lg px-3 py-3 transition-colors ${
+      active
+        ? 'bg-[var(--color-prompt)]/10 text-[var(--color-prompt)] font-medium'
+        : 'text-[var(--color-cloud)]/70 hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]'
+    }`;
+  };
 
   useEffect(() => {
     const supabase = createClient();
@@ -69,13 +96,13 @@ export function Header() {
         <nav className="hidden items-center gap-6 md:flex">
           <Link
             href="/builders"
-            className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+            className={getLinkClass('/builders')}
           >
             Browse Builders
           </Link>
           <Link
             href="/guide"
-            className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+            className={getLinkClass('/guide')}
           >
             Investment Guide
           </Link>
