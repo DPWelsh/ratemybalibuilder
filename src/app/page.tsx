@@ -51,6 +51,15 @@ export default function Home() {
   };
   return (
     <div className="flex min-h-[calc(100vh-57px)] flex-col sm:min-h-[calc(100vh-73px)]">
+      {/* Investment Guide Banner */}
+      <div className="border-b bg-[var(--color-energy)] px-4 py-3 text-center">
+        <Link href="/guide" className="inline-flex flex-wrap items-center justify-center gap-2 text-sm font-medium text-white hover:underline sm:text-base">
+          <BookOpenIcon className="h-4 w-4" />
+          <span>Get our Bali Investment Guide FREE when you add a builder or review</span>
+          <ArrowRightIcon className="h-4 w-4" />
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <section className="relative flex flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6 sm:py-24">
         {/* Animated gradient background - organic flowing shapes */}
@@ -293,10 +302,14 @@ export default function Home() {
       {/* Contribute CTA */}
       <section className="border-t px-4 py-12 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl">Help build the database</h2>
+          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-energy)]/10 px-4 py-2 text-sm font-medium text-[var(--color-energy)]">
+            <BookOpenIcon className="h-4 w-4" />
+            Get the Investment Guide FREE
+          </div>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl">Contribute & get rewarded</h2>
           <p className="mt-4 text-sm text-muted-foreground sm:mt-6 sm:text-lg">
-            Know a builder in Bali? Add them to our database and help others make informed decisions.
-            Every contribution makes this community stronger.
+            Add a builder or submit a review and get <strong>free access</strong> to our complete Bali Investment Guide —
+            19 chapters on land ownership, ROI calculations, and trusted supplier contacts.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
             <Button asChild size="lg" className="w-full sm:w-auto">
@@ -311,6 +324,9 @@ export default function Home() {
               </Link>
             </Button>
           </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Verified contributions unlock premium access instantly
+          </p>
         </div>
       </section>
 
