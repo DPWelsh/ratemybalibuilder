@@ -88,6 +88,18 @@ export default function AdminBuildersPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [publishedFilter, setPublishedFilter] = useState<'all' | 'pending' | 'published'>(initialFilter);
 
+  // Edit modal state
+  const [editingBuilder, setEditingBuilder] = useState<Builder | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    phone: '',
+    location: '',
+    trade_type: '',
+    company_name: '',
+    website: '',
+  });
+  const [editLoading, setEditLoading] = useState(false);
+
   const fetchBuilders = async () => {
     setIsLoading(true);
     try {
@@ -155,14 +167,67 @@ export default function AdminBuildersPage() {
     setActionLoading(null);
   };
 
+  const openEditModal = (builder: Builder) => {
+    setEditingBuilder(builder);
+    setEditForm({
+      name: builder.name,
+      phone: builder.phone,
+      location: builder.location,
+      trade_type: builder.trade_type,
+      company_name: builder.company_name || '',
+      website: builder.website || '',
+    });
+  };
+
+  const saveEdit = async () => {
+    if (!editingBuilder) return;
+
+    setEditLoading(true);
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from('builders')
+      .update({
+        name: editForm.name.trim(),
+        phone: editForm.phone.trim(),
+        location: editForm.location,
+        trade_type: editForm.trade_type,
+        company_name: editForm.company_name.trim() || null,
+        website: editForm.website.trim() || null,
+      })
+      .eq('id', editingBuilder.id);
+
+    if (!error) {
+      setBuilders(builders.map(b =>
+        b.id === editingBuilder.id
+          ? { ...b, ...editForm, company_name: editForm.company_name || null, website: editForm.website || null }
+          : b
+      ));
+      setEditingBuilder(null);
+    }
+    setEditLoading(false);
+  };
+
   // Actions cell renderer
   const ActionsCellRenderer = useCallback((params: ICellRendererParams<BuilderRow>) => {
     if (!params.data) return null;
     const { id, name, status, is_published } = params.data;
     const isLoading = actionLoading === id;
+    const fullBuilder = builders.find(b => b.id === id);
 
     return (
       <div className="flex items-center gap-1.5">
+        {/* Edit */}
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => fullBuilder && openEditModal(fullBuilder)}
+          disabled={isLoading}
+          className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+          title="Edit"
+        >
+          <PencilIcon className="h-3.5 w-3.5" />
+        </Button>
         {/* Publish/Unpublish - most important action */}
         <Button
           size="sm"
@@ -416,6 +481,83 @@ export default function AdminBuildersPage() {
             }}
           />
         </div>
+
+        {/* Edit Modal */}
+        {editingBuilder && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="w-full max-w-md rounded-lg bg-card p-6 shadow-xl mx-4">
+              <h2 className="text-lg font-medium text-foreground">Edit Builder</h2>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Name</label>
+                  <Input
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Phone</label>
+                  <Input
+                    value={editForm.phone}
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Location</label>
+                    <select
+                      value={editForm.location}
+                      onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                      className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    >
+                      <option value="Bali Wide">Bali Wide</option>
+                      <option value="Canggu">Canggu</option>
+                      <option value="Seminyak">Seminyak</option>
+                      <option value="Ubud">Ubud</option>
+                      <option value="Uluwatu">Uluwatu</option>
+                      <option value="Sanur">Sanur</option>
+                      <option value="Denpasar">Denpasar</option>
+                      <option value="Tabanan">Tabanan</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Trade</label>
+                    <Input
+                      value={editForm.trade_type}
+                      onChange={(e) => setEditForm({ ...editForm, trade_type: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Company Name</label>
+                  <Input
+                    value={editForm.company_name}
+                    onChange={(e) => setEditForm({ ...editForm, company_name: e.target.value })}
+                    placeholder="Optional"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Website</label>
+                  <Input
+                    value={editForm.website}
+                    onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setEditingBuilder(null)} disabled={editLoading}>
+                  Cancel
+                </Button>
+                <Button onClick={saveEdit} disabled={editLoading}>
+                  {editLoading ? <Loader2Icon className="h-4 w-4 animate-spin mr-2" /> : null}
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
