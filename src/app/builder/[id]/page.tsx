@@ -260,7 +260,7 @@ export default function BuilderPage() {
                 </div>
               ) : (
                 <div className="mt-6 border-t border-border pt-6 relative">
-                  <div className="flex items-center gap-6 blur-sm select-none pointer-events-none" aria-hidden="true">
+                  <div className="flex items-center gap-6 blur-sm select-none pointer-events-none opacity-40" aria-hidden="true">
                     <div className="flex items-center gap-2">
                       <StarRating rating={5} size="md" />
                       <span className="font-medium">5.0</span>
@@ -268,6 +268,11 @@ export default function BuilderPage() {
                     <div className="text-sm text-muted-foreground">
                       2 reviews
                     </div>
+                  </div>
+                  <div className="absolute inset-0 flex items-center">
+                    <Link href={`/login?redirect=${encodeURIComponent(`/builder/${builderId}`)}`} className="text-sm font-medium text-[var(--color-prompt)] hover:underline">
+                      Sign in to view ratings
+                    </Link>
                   </div>
                 </div>
               )}
@@ -364,7 +369,7 @@ export default function BuilderPage() {
                 {/* Login overlay */}
                 <div className="absolute inset-0 flex items-center justify-center bg-background/30">
                   <Button asChild size="sm">
-                    <Link href="/login">Sign in to read reviews</Link>
+                    <Link href={`/login?redirect=${encodeURIComponent(`/builder/${builderId}`)}`}>Sign in to read reviews</Link>
                   </Button>
                 </div>
               </div>

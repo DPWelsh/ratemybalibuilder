@@ -11,33 +11,26 @@ import {
   SearchIcon,
   PlusCircleIcon,
   ArrowRightIcon,
-  HistoryIcon,
+  SettingsIcon,
   Loader2Icon,
   HeartIcon,
   XIcon,
-  UnlockIcon,
-  WrenchIcon,
+  UserPlusIcon,
+  ShieldCheckIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
-import { PRICING, formatPrice } from '@/lib/pricing';
 import { StatusBadge } from '@/components/StatusBadge';
-import { BuilderStatus, tradeTypes } from '@/lib/supabase/builders';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { BuilderStatus } from '@/lib/supabase/builders';
+import { TradeCombobox } from '@/components/TradeCombobox';
 
-interface UnlockedBuilder {
+interface AddedBuilder {
   id: string;
   name: string;
   company_name: string | null;
   status: BuilderStatus;
   location: string;
   trade_type: string;
-  unlocked_at: string;
+  added_at: string;
 }
 
 interface SavedBuilder {
@@ -52,12 +45,11 @@ interface SavedBuilder {
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [creditBalance, setCreditBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [tradeType, setTradeType] = useState<string>('');
   const [savedBuilders, setSavedBuilders] = useState<SavedBuilder[]>([]);
-  const [unlockedBuilders, setUnlockedBuilders] = useState<UnlockedBuilder[]>([]);
+  const [addedBuilders, setAddedBuilders] = useState<AddedBuilder[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -73,42 +65,27 @@ export default function DashboardPage() {
 
       setUser(user);
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('credit_balance')
-        .eq('id', user.id)
-        .single();
-
-      if (profile) {
-        setCreditBalance(profile.credit_balance);
-      }
-
-      // Fetch unlocked builders
-      const { data: searches } = await supabase
-        .from('searches')
+      // Fetch builders added by this user
+      const { data: addedData } = await supabase
+        .from('builders')
         .select(`
-          created_at,
-          builders (
-            id,
-            name,
-            company_name,
-            status,
-            location,
-            trade_type
-          )
+          id,
+          name,
+          company_name,
+          status,
+          location,
+          trade_type,
+          created_at
         `)
-        .eq('user_id', user.id)
-        .eq('level', 'full')
+        .eq('created_by', user.id)
         .order('created_at', { ascending: false });
 
-      if (searches) {
-        const unlocked = searches
-          .filter((s) => s.builders)
-          .map((s) => ({
-            ...(s.builders as unknown as Omit<UnlockedBuilder, 'unlocked_at'>),
-            unlocked_at: s.created_at,
-          }));
-        setUnlockedBuilders(unlocked);
+      if (addedData) {
+        const added = addedData.map((b) => ({
+          ...b,
+          added_at: b.created_at,
+        }));
+        setAddedBuilders(added as AddedBuilder[]);
       }
 
       // Fetch saved builders
@@ -148,18 +125,11 @@ export default function DashboardPage() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    // Determine if input looks like a phone number (mostly digits)
-    const digitsOnly = searchQuery.replace(/[^\d]/g, '');
-    const isPhone = digitsOnly.length >= 6;
-
+    // Navigate to builders page with search query (same as home page)
     const params = new URLSearchParams();
-    if (isPhone) {
-      params.set('phone', searchQuery);
-    } else {
-      params.set('name', searchQuery);
-    }
+    params.set('q', searchQuery);
     if (tradeType && tradeType !== 'any') params.set('trade', tradeType);
-    router.push(`/search?${params.toString()}`);
+    router.push(`/builders?${params.toString()}`);
   };
 
   const handleRemoveSavedBuilder = async (builderId: string) => {
@@ -198,10 +168,6 @@ export default function DashboardPage() {
         {/* Quick Search */}
         <Card className="mb-6 border-0 shadow-md sm:mb-8">
           <CardContent className="p-4 sm:p-6">
-            <div className="mb-4 flex items-center gap-2">
-              <SearchIcon className="h-5 w-5 text-muted-foreground" />
-              <h2 className="font-medium text-foreground">Search a Builder</h2>
-            </div>
             <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
                 <div className="relative flex-1">
@@ -212,33 +178,32 @@ export default function DashboardPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Name or phone..."
-                    className="h-11 pl-10"
+                    className="h-12 pl-10"
                   />
                 </div>
-                <Select value={tradeType} onValueChange={setTradeType}>
-                  <SelectTrigger className="h-11 w-full sm:w-[160px]">
-                    <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-                    <SelectValue placeholder="Select trade" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any trade</SelectItem>
-                    {tradeTypes.map((trade) => (
-                      <SelectItem key={trade} value={trade}>
-                        {trade}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="w-full sm:w-[200px]">
+                  <TradeCombobox
+                    value={tradeType}
+                    onValueChange={setTradeType}
+                  />
+                </div>
               </div>
               <Button
                 type="submit"
-                className="h-11 w-full sm:w-auto"
-                disabled={!searchQuery.trim()}
+                className="h-12 w-full"
+                disabled={!searchQuery.trim() || !tradeType}
               >
                 Search Builder
                 <ArrowRightIcon className="ml-2 h-4 w-4" />
               </Button>
             </form>
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              Free to search. Help us grow by adding builders you know.
+            </p>
+            <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+              <ShieldCheckIcon className="h-3.5 w-3.5" />
+              <span>Community-verified reviews</span>
+            </div>
           </CardContent>
         </Card>
 
@@ -267,34 +232,34 @@ export default function DashboardPage() {
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
-                  <HistoryIcon className="h-5 w-5 text-muted-foreground" />
+                  <SettingsIcon className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-medium text-foreground">Search History</h3>
-                  <p className="text-sm text-muted-foreground">View past searches</p>
+                  <h3 className="font-medium text-foreground">Account Settings</h3>
+                  <p className="text-sm text-muted-foreground">Manage your account</p>
                 </div>
               </div>
               <Button asChild variant="outline" className="mt-4 w-full">
                 <Link href="/account">
-                  View History
+                  View Settings
                 </Link>
               </Button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Unlocked Builders */}
-        {unlockedBuilders.length > 0 && (
+        {/* Builders You Added */}
+        {addedBuilders.length > 0 && (
           <Card className="mt-6 border-0 shadow-md sm:mt-8">
             <CardContent className="p-4 sm:p-6">
               <div className="mb-4 flex items-center gap-2">
-                <UnlockIcon className="h-5 w-5 text-[var(--status-recommended)]" />
+                <UserPlusIcon className="h-5 w-5 text-[var(--status-recommended)]" />
                 <h2 className="font-medium text-foreground">
-                  Unlocked Builders ({unlockedBuilders.length})
+                  Builders You Added ({addedBuilders.length})
                 </h2>
               </div>
               <div className="space-y-3">
-                {unlockedBuilders.map((builder) => (
+                {addedBuilders.map((builder) => (
                   <div
                     key={builder.id}
                     className="flex items-center justify-between rounded-lg bg-secondary/50 p-3"
@@ -308,7 +273,7 @@ export default function DashboardPage() {
                         {builder.location} · {builder.trade_type}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Unlocked {new Date(builder.unlocked_at).toLocaleDateString()}
+                        Added {new Date(builder.added_at).toLocaleDateString()}
                       </p>
                     </div>
                     <Button asChild variant="ghost" size="sm" className="ml-2 shrink-0">

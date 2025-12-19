@@ -16,7 +16,7 @@ import {
   PencilIcon,
   SaveIcon,
 } from 'lucide-react';
-import { formatPhone } from '@/lib/utils';
+import { formatPhone, phonesMatch } from '@/lib/utils';
 import { tradeTypes, locations } from '@/lib/supabase/builders';
 
 interface Builder {

@@ -166,13 +166,22 @@ function RatingCellRenderer(params: ICellRendererParams<BuilderRow>) {
 
 // Custom cell renderer for blurred rating (not signed in)
 function BlurredRatingCellRenderer() {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const currentPath = window.location.pathname + window.location.search;
+    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+  };
+
   return (
-    <Link href="/login" className="flex items-center gap-1.5 group" onClick={(e) => e.stopPropagation()}>
-      <div className="blur-sm select-none pointer-events-none">
+    <button onClick={handleClick} className="relative group cursor-pointer">
+      <div className="blur-sm select-none pointer-events-none opacity-40">
         <StarRating rating={4} size="sm" />
       </div>
-      <span className="text-xs text-muted-foreground group-hover:text-[var(--color-prompt)] group-hover:underline">Sign in</span>
-    </Link>
+      <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-[var(--color-prompt)] group-hover:underline">
+        Sign in
+      </span>
+    </button>
   );
 }
 

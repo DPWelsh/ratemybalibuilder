@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { StarIcon, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { PRICING, formatPrice } from '@/lib/pricing';
 import { useState } from 'react';
 
 interface ReviewPromptProps {
@@ -43,7 +42,7 @@ export function ReviewPrompt({
                   Worked with {builderName}?
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Leave a review and earn {formatPrice(PRICING.reviewCredit)} credit
+                  Help others find good builders
                 </p>
               </div>
             </div>
@@ -77,7 +76,7 @@ export function ReviewPrompt({
         <p className="text-sm">
           <span className="font-medium">Worked with {builderName}?</span>{' '}
           <span className="text-muted-foreground">
-            Leave a review and earn {formatPrice(PRICING.reviewCredit)} credit
+            Leave a review and help others find good builders
           </span>
         </p>
       </div>

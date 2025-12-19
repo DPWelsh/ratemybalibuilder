@@ -7,26 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrustStats } from '@/components/TrustStats';
-import { SearchIcon, ArrowRightIcon, ShieldCheckIcon, WrenchIcon, Loader2Icon, PhoneCallIcon, FileCheckIcon, UsersIcon } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { tradeTypes } from '@/lib/supabase/builders';
+import { SearchIcon, ArrowRightIcon, ShieldCheckIcon, Loader2Icon, PhoneCallIcon, FileCheckIcon, UsersIcon } from 'lucide-react';
+import { TradeCombobox } from '@/components/TradeCombobox';
 
 export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [tradeType, setTradeType] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
+  const [tradeError, setTradeError] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!searchQuery.trim()) return;
+
+    if (!tradeType) {
+      setTradeError(true);
+      return;
+    }
 
     setIsSearching(true);
 
@@ -47,11 +46,8 @@ export default function Home() {
       // Don't block search if logging fails
     });
 
-    // Navigate to builders page with search query
-    const params = new URLSearchParams();
-    params.set('q', searchQuery);
-    if (tradeType && tradeType !== 'any') params.set('trade', tradeType);
-    router.push(`/builders?${params.toString()}`);
+    // Navigate to builders page with search query (don't pass trade type - let users see all results first)
+    router.push(`/builders?q=${encodeURIComponent(searchQuery)}`);
   };
   return (
     <div className="flex min-h-[calc(100vh-57px)] flex-col sm:min-h-[calc(100vh-73px)]">
@@ -112,20 +108,19 @@ export default function Home() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </div>
-                    <Select value={tradeType} onValueChange={setTradeType}>
-                      <SelectTrigger className="h-12 w-full sm:w-[180px]" type="button">
-                        <WrenchIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-                        <SelectValue placeholder="Select trade" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="any">Any trade</SelectItem>
-                        {tradeTypes.map((trade) => (
-                          <SelectItem key={trade} value={trade}>
-                            {trade}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="relative w-full sm:w-[200px]">
+                      {tradeError && (
+                        <p className="absolute -top-5 left-0 text-xs text-destructive">Please select a trade</p>
+                      )}
+                      <TradeCombobox
+                        value={tradeType}
+                        onValueChange={(val) => {
+                          setTradeType(val);
+                          setTradeError(false);
+                        }}
+                        error={tradeError}
+                      />
+                    </div>
                   </div>
                   <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={!searchQuery.trim() || isSearching}>
                     {isSearching ? (

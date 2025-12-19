@@ -11,12 +11,15 @@ import {
   UserIcon,
   MailIcon,
   ShieldCheckIcon,
-  CoinsIcon,
   CalendarIcon,
   SettingsIcon,
   LogOutIcon,
   ChevronRightIcon,
+  KeyIcon,
+  CheckCircleIcon,
+  AlertCircleIcon,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import type { User } from '@supabase/supabase-js';
 
 interface Profile {
@@ -29,6 +32,11 @@ export default function AccountPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordUpdating, setPasswordUpdating] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -64,6 +72,60 @@ export default function AccountPage() {
     const supabase = createClient();
     await supabase.auth.signOut();
     window.location.href = '/';
+  };
+
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordMessage(null);
+
+    if (!currentPassword) {
+      setPasswordMessage({ type: 'error', text: 'Please enter your current password' });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: 'error', text: 'New password must be at least 6 characters' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'New passwords do not match' });
+      return;
+    }
+
+    setPasswordUpdating(true);
+
+    try {
+      const supabase = createClient();
+
+      // First verify the current password by re-authenticating
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        setPasswordMessage({ type: 'error', text: 'Current password is incorrect' });
+        setPasswordUpdating(false);
+        return;
+      }
+
+      // Now update to the new password
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+      if (error) {
+        setPasswordMessage({ type: 'error', text: error.message });
+      } else {
+        setPasswordMessage({ type: 'success', text: 'Password updated successfully' });
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      }
+    } catch {
+      setPasswordMessage({ type: 'error', text: 'Failed to update password' });
+    }
+
+    setPasswordUpdating(false);
   };
 
   if (isLoading) {
@@ -114,25 +176,6 @@ export default function AccountPage() {
         {/* Account Details */}
         <Card className="mb-6 border-0 shadow-md">
           <CardContent className="divide-y divide-border p-0">
-            {/* Credits */}
-            <div className="flex items-center justify-between p-4 sm:p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--status-recommended)]/10">
-                  <CoinsIcon className="h-5 w-5 text-[var(--status-recommended)]" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">Credit Balance</p>
-                  <p className="text-sm text-muted-foreground">Use credits to unlock builder details</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-semibold text-foreground">{profile?.credit_balance || 0}</p>
-                <Link href="/buy-credits" className="text-sm text-[var(--color-prompt)] hover:underline">
-                  Buy more
-                </Link>
-              </div>
-            </div>
-
             {/* Member Since */}
             <div className="flex items-center justify-between p-4 sm:p-6">
               <div className="flex items-center gap-3">
@@ -178,6 +221,93 @@ export default function AccountPage() {
                 {profile?.is_admin ? 'Administrator' : 'Standard User'}
               </span>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Change Password */}
+        <Card className="mb-6 border-0 shadow-md">
+          <CardContent className="p-4 sm:p-6">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+                <KeyIcon className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Change Password</p>
+                <p className="text-sm text-muted-foreground">Update your account password</p>
+              </div>
+            </div>
+
+            <form onSubmit={handlePasswordUpdate} className="space-y-4">
+              <div>
+                <label htmlFor="currentPassword" className="mb-1.5 block text-sm font-medium text-foreground">
+                  Current Password
+                </label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                  className="h-11"
+                />
+              </div>
+              <div>
+                <label htmlFor="newPassword" className="mb-1.5 block text-sm font-medium text-foreground">
+                  New Password
+                </label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  className="h-11"
+                />
+              </div>
+              <div>
+                <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-foreground">
+                  Confirm Password
+                </label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  className="h-11"
+                />
+              </div>
+
+              {passwordMessage && (
+                <div className={`flex items-center gap-2 rounded-lg p-3 text-sm ${
+                  passwordMessage.type === 'success'
+                    ? 'bg-[var(--status-recommended)]/10 text-[var(--status-recommended)]'
+                    : 'bg-destructive/10 text-destructive'
+                }`}>
+                  {passwordMessage.type === 'success' ? (
+                    <CheckCircleIcon className="h-4 w-4" />
+                  ) : (
+                    <AlertCircleIcon className="h-4 w-4" />
+                  )}
+                  {passwordMessage.text}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={passwordUpdating || !currentPassword || !newPassword || !confirmPassword}
+                className="w-full sm:w-auto"
+              >
+                {passwordUpdating ? (
+                  <>
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  'Update Password'
+                )}
+              </Button>
+            </form>
           </CardContent>
         </Card>
 

@@ -45,9 +45,10 @@ const tradeGroups = [
 interface TradeComboboxProps {
   value: string;
   onValueChange: (value: string) => void;
+  error?: boolean;
 }
 
-export function TradeCombobox({ value, onValueChange }: TradeComboboxProps) {
+export function TradeCombobox({ value, onValueChange, error }: TradeComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -57,7 +58,10 @@ export function TradeCombobox({ value, onValueChange }: TradeComboboxProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="h-12 w-full justify-between font-normal"
+          className={cn(
+            "h-12 w-full justify-between font-normal bg-secondary hover:bg-secondary hover:border-foreground",
+            error && "border-destructive border-2"
+          )}
         >
           {value || (
             <span className="text-muted-foreground">Select trade...</span>
@@ -83,7 +87,7 @@ export function TradeCombobox({ value, onValueChange }: TradeComboboxProps) {
                       onValueChange(currentValue === value ? '' : currentValue);
                       setOpen(false);
                     }}
-                    className="cursor-pointer data-[selected=true]:bg-secondary data-[selected=true]:text-foreground"
+                    className="cursor-pointer"
                   >
                     <Check
                       className={cn(
