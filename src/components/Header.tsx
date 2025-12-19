@@ -73,6 +73,12 @@ export function Header() {
           >
             Browse Builders
           </Link>
+          <Link
+            href="/guide"
+            className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+          >
+            Investment Guide
+          </Link>
           {isLoading ? (
             <div className="flex items-center gap-6">
               <div className="h-4 w-16 rounded bg-[var(--color-cloud)]/10 animate-pulse" />
@@ -155,6 +161,13 @@ export function Header() {
               className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
             >
               Browse Builders
+            </Link>
+            <Link
+              href="/guide"
+              onClick={closeMobileMenu}
+              className="rounded-lg px-3 py-3 text-[var(--color-cloud)]/70 transition-colors hover:bg-[var(--color-cloud)]/10 hover:text-[var(--color-prompt)]"
+            >
+              Investment Guide
             </Link>
             {isLoading ? (
               <div className="px-3 py-3">

@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { createAdminClient } from '@/lib/supabase/server';
 import { locations } from '@/lib/supabase/builders';
 import { trades } from '@/lib/trades';
+import { chapters } from '@/lib/guide';
 
 const BASE_URL = 'https://ratemybalibuilder.com';
 
@@ -92,5 +93,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  return [...staticPages, ...tradePages, ...locationPages, ...builderPages];
+  // Guide pages
+  const guidePages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/guide`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
+    ...chapters.map((chapter) => ({
+      url: `${BASE_URL}/guide/${chapter.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: chapter.accessLevel === 'free' ? 0.8 : 0.6,
+    })),
+  ];
+
+  return [...staticPages, ...tradePages, ...guidePages, ...locationPages, ...builderPages];
 }

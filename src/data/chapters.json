@@ -1,0 +1,206 @@
+{
+  "chapters": [
+    {
+      "id": "introduction",
+      "title": "Introduction - Your Opportunity in Bali",
+      "slug": "introduction",
+      "file": "01-introduction-why-bali-challenges.txt",
+      "order": 1,
+      "accessLevel": "free",
+      "description": "Discover why Bali is a prime real estate investment destination and the challenges you'll face.",
+      "wordCount": 531
+    },
+    {
+      "id": "disclaimer",
+      "title": "Legal Disclaimer",
+      "slug": "disclaimer",
+      "file": "02-disclaimer.txt",
+      "order": 2,
+      "accessLevel": "free",
+      "description": "Important legal information before proceeding with any investment decisions.",
+      "wordCount": 84
+    },
+    {
+      "id": "leasehold-land",
+      "title": "Understanding Leasehold Land",
+      "slug": "leasehold-land",
+      "file": "03-leasehold-land.txt",
+      "order": 3,
+      "accessLevel": "teaser",
+      "teaserPercentage": 30,
+      "description": "Learn how leasehold land works in Bali, typical terms, and what to negotiate.",
+      "wordCount": 1361
+    },
+    {
+      "id": "freehold-land",
+      "title": "Freehold Land Options",
+      "slug": "freehold-land",
+      "file": "04-freehold-land.txt",
+      "order": 4,
+      "accessLevel": "teaser",
+      "teaserPercentage": 30,
+      "description": "Explore freehold ownership structures and how foreigners can legally invest.",
+      "wordCount": 1818
+    },
+    {
+      "id": "selecting-land",
+      "title": "How to Select the Right Land",
+      "slug": "selecting-land",
+      "file": "05-selecting-land.txt",
+      "order": 5,
+      "accessLevel": "gated",
+      "description": "Expert criteria for evaluating land plots and avoiding common pitfalls.",
+      "wordCount": 1288
+    },
+    {
+      "id": "choosing-the-area",
+      "title": "Choosing the Right Area",
+      "slug": "choosing-the-area",
+      "file": "06-choosing-the-area.txt",
+      "order": 6,
+      "accessLevel": "free",
+      "description": "Compare Canggu, Ubud, Seminyak, Uluwatu and other areas for investment potential.",
+      "wordCount": 700
+    },
+    {
+      "id": "land-zoning",
+      "title": "Land Zoning Regulations",
+      "slug": "land-zoning",
+      "file": "07-land-zoning.txt",
+      "order": 7,
+      "accessLevel": "gated",
+      "description": "Understanding green, yellow, and orange zones and what you can build.",
+      "wordCount": 852
+    },
+    {
+      "id": "customer-audience-tax",
+      "title": "Target Audience & Tax Benefits",
+      "slug": "customer-audience-tax",
+      "file": "08-determining-customer-audience-tax-benefits.txt",
+      "order": 8,
+      "accessLevel": "gated",
+      "description": "Define your target rental market and understand Indonesian tax advantages.",
+      "wordCount": 700
+    },
+    {
+      "id": "calculating-roi",
+      "title": "Calculating Your ROI",
+      "slug": "calculating-roi",
+      "file": "09-calculating-roi.txt",
+      "order": 9,
+      "accessLevel": "lead-magnet",
+      "description": "Detailed ROI calculations, expected returns, and financial planning for Bali investments.",
+      "wordCount": 2380
+    },
+    {
+      "id": "design-process",
+      "title": "The Design Process",
+      "slug": "design-process",
+      "file": "10-design-process.txt",
+      "order": 10,
+      "accessLevel": "gated",
+      "description": "From mood boards to architectural plans - designing a villa for Bali's climate.",
+      "wordCount": 2926
+    },
+    {
+      "id": "building-permit",
+      "title": "PBG Building Permits",
+      "slug": "building-permit",
+      "file": "11-pbg-building-permit.txt",
+      "order": 11,
+      "accessLevel": "gated",
+      "description": "Navigate the Indonesian building permit process and required documents.",
+      "wordCount": 330
+    },
+    {
+      "id": "finding-builder",
+      "title": "Finding a Construction Company",
+      "slug": "finding-builder",
+      "file": "12-finding-construction-company.txt",
+      "order": 12,
+      "accessLevel": "teaser",
+      "teaserPercentage": 30,
+      "description": "How to vet builders, red flags to watch for, and questions to ask.",
+      "wordCount": 784
+    },
+    {
+      "id": "contracts",
+      "title": "Builder Contracts",
+      "slug": "contracts",
+      "file": "13-contract-with-builder.txt",
+      "order": 13,
+      "accessLevel": "gated",
+      "description": "Essential contract terms and payment schedules to protect your investment.",
+      "wordCount": 242
+    },
+    {
+      "id": "supervising-construction",
+      "title": "Supervising Construction",
+      "slug": "supervising-construction",
+      "file": "14-supervising-construction.txt",
+      "order": 14,
+      "accessLevel": "gated",
+      "description": "Quality control checkpoints and how to manage your build remotely.",
+      "wordCount": 500
+    },
+    {
+      "id": "interior-decorating",
+      "title": "Interior Decorating",
+      "slug": "interior-decorating",
+      "file": "15-interior-decorating.txt",
+      "order": 15,
+      "accessLevel": "gated",
+      "description": "Sourcing furniture, decor, and creating Instagram-worthy spaces on budget.",
+      "wordCount": 686
+    },
+    {
+      "id": "villa-management",
+      "title": "Villa Management",
+      "slug": "villa-management",
+      "file": "16-villa-management.txt",
+      "order": 16,
+      "accessLevel": "gated",
+      "description": "Self-manage vs hiring a management company - costs and considerations.",
+      "wordCount": 496
+    },
+    {
+      "id": "selling-your-project",
+      "title": "Selling Your Investment",
+      "slug": "selling-your-project",
+      "file": "17-selling-your-project.txt",
+      "order": 17,
+      "accessLevel": "gated",
+      "description": "Exit strategies, pricing, and finding buyers for your Bali property.",
+      "wordCount": 240
+    },
+    {
+      "id": "marketing",
+      "title": "Marketing Your Villa",
+      "slug": "marketing",
+      "file": "18-marketing.txt",
+      "order": 18,
+      "accessLevel": "gated",
+      "description": "Building your brand, photography, OTA listings, and social media strategy.",
+      "wordCount": 1996
+    },
+    {
+      "id": "suppliers",
+      "title": "Trusted Suppliers & Contacts",
+      "slug": "suppliers",
+      "file": "19-villa-rental-suppliers-contact.txt",
+      "order": 19,
+      "accessLevel": "premium",
+      "description": "Our exclusive list of 67+ verified suppliers with direct contacts and discounts.",
+      "wordCount": 1441
+    }
+  ],
+  "meta": {
+    "totalChapters": 19,
+    "totalWords": 19000,
+    "freeChapters": 3,
+    "teaserChapters": 3,
+    "gatedChapters": 11,
+    "leadMagnetChapter": "calculating-roi",
+    "premiumChapters": 1
+  }
+}
