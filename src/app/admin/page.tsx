@@ -78,6 +78,9 @@ export default async function AdminDashboard() {
                   </div>
                   <p className="mt-4 text-3xl font-medium text-foreground">{stat.value}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
+                  {stat.subtext && (
+                    <p className="mt-1 text-xs text-muted-foreground">{stat.subtext}</p>
+                  )}
                 </CardContent>
               </Card>
             </Link>
