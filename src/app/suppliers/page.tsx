@@ -191,7 +191,7 @@ export default function SuppliersPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Trusted Supplier Directory</h1>
           <p className="mt-2 text-muted-foreground">
-            50+ premium contacts from the Bali expat community
+            100+ verified contacts from the Bali expat community
           </p>
         </div>
 

@@ -210,7 +210,7 @@ export default function PricingPage() {
               <ShieldCheckIcon className="h-6 w-6 text-[var(--color-energy)]" />
               <h3 className="mt-3 font-medium">Trusted Supplier List</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                50+ premium contacts for furniture, interiors, pools, landscaping, and more.
+                100+ verified contacts for furniture, interiors, pools, landscaping, and more.
               </p>
             </div>
           </div>
