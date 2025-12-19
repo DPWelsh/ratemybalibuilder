@@ -1,8 +1,10 @@
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { chapters, guideMeta } from '@/lib/guide';
+import { createClient } from '@/lib/supabase/server';
 import {
   BookOpenIcon,
   CheckCircleIcon,
@@ -43,7 +45,23 @@ const accessLabels = {
   premium: 'Premium',
 };
 
-export default function GuidePage() {
+export default async function GuidePage() {
+  // Check if user has guide access - if so, redirect to introduction
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('has_free_guide_access, membership_tier')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.has_free_guide_access || profile?.membership_tier === 'investor') {
+      redirect('/guide/introduction');
+    }
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

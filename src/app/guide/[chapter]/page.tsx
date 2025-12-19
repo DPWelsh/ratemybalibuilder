@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +10,7 @@ import {
   getAllChapterSlugs,
 } from '@/lib/guide';
 import { getChapterContent } from '@/lib/guide-server';
+import { createClient } from '@/lib/supabase/server';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -59,18 +60,40 @@ export default async function ChapterPage({ params }: PageProps) {
     notFound();
   }
 
+  // Check authentication and access
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let hasFullAccess = false;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('has_free_guide_access, membership_tier')
+      .eq('id', user.id)
+      .single();
+
+    hasFullAccess = profile?.has_free_guide_access || profile?.membership_tier === 'investor';
+  }
+
   const content = await getChapterContent(chapter);
   const chapterIndex = chapters.findIndex((c) => c.id === chapter.id);
   const prevChapter = chapterIndex > 0 ? chapters[chapterIndex - 1] : null;
   const nextChapter =
     chapterIndex < chapters.length - 1 ? chapters[chapterIndex + 1] : null;
 
-  // Determine what to show based on access level
+  // Determine access level
   const isFreeAccess = chapter.accessLevel === 'free';
   const isLeadMagnet = chapter.accessLevel === 'lead-magnet';
   const isTeaser = chapter.accessLevel === 'teaser';
   const isGated = chapter.accessLevel === 'gated';
   const isPremium = chapter.accessLevel === 'premium';
+
+  // Access rules:
+  // - Free chapters: visible to everyone (even logged out)
+  // - Teaser chapters: preview visible to logged in users only, full content if paid
+  // - Lead magnet: gate for non-logged in, full content if logged in
+  // - Gated/Premium: paywall unless user has full access
 
   // For teaser chapters, get partial content
   const teaserContent = isTeaser
@@ -80,6 +103,33 @@ export default async function ChapterPage({ params }: PageProps) {
   // Calculate reading time
   const wordCount = content.split(/\s+/).length;
   const readingTime = Math.ceil(wordCount / 200);
+
+  // Determine what content to show
+  let showFullContent = false;
+  let showTeaser = false;
+  let showPaywall = false;
+  let showLoginPrompt = false;
+
+  if (isFreeAccess) {
+    // Free chapters visible to everyone
+    showFullContent = true;
+  } else if (hasFullAccess) {
+    // Paid users see everything
+    showFullContent = true;
+  } else if (!user) {
+    // Not logged in - show login prompt for non-free content
+    showLoginPrompt = true;
+  } else if (isTeaser) {
+    // Logged in but not paid - show teaser + paywall
+    showTeaser = true;
+    showPaywall = true;
+  } else if (isLeadMagnet) {
+    // Logged in users get lead magnet content
+    showFullContent = true;
+  } else {
+    // Gated/Premium - show paywall
+    showPaywall = true;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -144,22 +194,28 @@ export default async function ChapterPage({ params }: PageProps) {
                       Free Chapter
                     </span>
                   )}
-                  {isLeadMagnet && (
+                  {isLeadMagnet && !hasFullAccess && (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1.5 text-sm font-medium text-amber-600">
                       <MailIcon className="h-4 w-4" />
                       Free with Email
                     </span>
                   )}
-                  {isTeaser && (
+                  {isTeaser && !hasFullAccess && (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1.5 text-sm font-medium text-blue-600">
                       <BookOpenIcon className="h-4 w-4" />
                       Preview Available
                     </span>
                   )}
-                  {(isGated || isPremium) && (
+                  {(isGated || isPremium) && !hasFullAccess && (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground">
                       <LockIcon className="h-4 w-4" />
                       {isPremium ? 'Premium Members Only' : 'Members Only'}
+                    </span>
+                  )}
+                  {hasFullAccess && !isFreeAccess && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1.5 text-sm font-medium text-green-600">
+                      <CheckCircleIcon className="h-4 w-4" />
+                      Full Access
                     </span>
                   )}
                 </div>
@@ -169,25 +225,39 @@ export default async function ChapterPage({ params }: PageProps) {
             {/* Chapter content */}
             <div className="px-4 py-8 sm:px-8 lg:px-12">
               <div className="max-w-3xl">
-                {/* Free chapters - show full content */}
-                {isFreeAccess && (
+                {/* Login prompt for non-authenticated users on non-free content */}
+                {showLoginPrompt && (
+                  <div className="rounded-lg border bg-secondary/50 p-8 text-center">
+                    <LockIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                    <h2 className="mt-4 text-xl font-semibold">Sign in to continue reading</h2>
+                    <p className="mt-2 text-muted-foreground">
+                      Create a free account to access preview content, or subscribe for full access to all chapters.
+                    </p>
+                    <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                      <Button asChild>
+                        <Link href={`/login?redirect=/guide/${chapter.slug}`}>
+                          Sign In
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline">
+                        <Link href="/pricing">
+                          View Pricing
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Full content */}
+                {showFullContent && (
                   <article
                     className="guide-content"
                     dangerouslySetInnerHTML={{ __html: formatContentToHtml(content) }}
                   />
                 )}
 
-                {/* Lead magnet - show gate */}
-                {isLeadMagnet && (
-                  <LeadMagnetGate
-                    chapterTitle={chapter.title}
-                    chapterSlug={chapter.slug}
-                    formattedContent={formatContentToHtml(content)}
-                  />
-                )}
-
-                {/* Teaser - show partial content + paywall */}
-                {isTeaser && (
+                {/* Teaser content + paywall */}
+                {showTeaser && (
                   <>
                     <article
                       className="guide-content"
@@ -202,8 +272,8 @@ export default async function ChapterPage({ params }: PageProps) {
                   </>
                 )}
 
-                {/* Gated/Premium - show paywall only */}
-                {(isGated || isPremium) && (
+                {/* Paywall only (gated/premium for logged-in users without access) */}
+                {showPaywall && !showTeaser && (
                   <PaywallCTA chapter={chapter} isPremium={isPremium} />
                 )}
 

@@ -12,7 +12,8 @@ import {
   ShieldIcon,
   MenuIcon,
   XIcon,
-  UserIcon
+  UserIcon,
+  BookOpenIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
@@ -24,6 +25,7 @@ interface SidebarProps {
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboardIcon },
   { href: '/builders', label: 'Browse Builders', icon: UsersIcon },
+  { href: '/guide', label: 'Investment Guide', icon: BookOpenIcon },
   { href: '/submit-review', label: 'Submit Review', icon: StarIcon },
   { href: '/add-builder', label: 'Add Builder', icon: PlusCircleIcon },
 ];
