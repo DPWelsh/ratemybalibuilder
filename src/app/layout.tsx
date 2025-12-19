@@ -53,6 +53,46 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+// JSON-LD structured data for the site
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "RateMyBaliBuilder",
+      url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/logo.svg`,
+      },
+      description: "Community-driven platform for reviewing and vetting builders in Bali, Indonesia.",
+      areaServed: {
+        "@type": "Place",
+        name: "Bali, Indonesia",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "RateMyBaliBuilder",
+      description: "Search our database of Bali builders. See ratings, reviews, and red flags from real clients.",
+      publisher: {
+        "@id": `${siteUrl}/#organization`,
+      },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${siteUrl}/builders?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,6 +100,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="antialiased flex min-h-screen flex-col" suppressHydrationWarning>
         <AppLayout>
           <div className="flex-1">{children}</div>

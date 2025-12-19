@@ -1,0 +1,26 @@
+# Robots.txt for RateMyBaliBuilder
+# https://ratemybalibuilder.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin and auth pages from indexing
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/*
+Disallow: /auth/*
+
+# Allow search engines to crawl important pages
+Allow: /builders
+Allow: /builders/*
+Allow: /builder/*
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+
+# Sitemap location
+Sitemap: https://ratemybalibuilder.com/sitemap.xml
+
+# LLM content guide
+# https://ratemybalibuilder.com/llms.txt

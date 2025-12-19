@@ -1,0 +1,63 @@
+# RateMyBaliBuilder
+
+> RateMyBaliBuilder is a community-driven platform for finding and reviewing builders, contractors, and tradespeople in Bali, Indonesia. Search verified reviews to find trusted professionals and avoid scams before starting your construction project.
+
+RateMyBaliBuilder helps expats and locals make informed decisions about hiring construction professionals in Bali. Our database includes ratings, reviews, and scam warnings from real clients.
+
+## Main Pages
+
+- [Home](https://ratemybalibuilder.com/): Search for builders by name or phone number
+- [Browse Builders](https://ratemybalibuilder.com/builders): Complete database of all builders with filters
+- [Add a Builder](https://ratemybalibuilder.com/add-builder): Submit a new builder to the database
+- [Submit Review](https://ratemybalibuilder.com/submit-review): Share your experience with a builder
+- [About](https://ratemybalibuilder.com/about): Learn about our mission and verification process
+- [Contact](https://ratemybalibuilder.com/contact): Get in touch with our team
+
+## Find by Trade
+
+- [Find a General Contractor](https://ratemybalibuilder.com/find/general-contractor): Villa and home construction managers
+- [Find an Architect](https://ratemybalibuilder.com/find/architect): Tropical home design professionals
+- [Find an Interior Designer](https://ratemybalibuilder.com/find/interior-designer): Bali interior specialists
+- [Find a Pool Builder](https://ratemybalibuilder.com/find/pool-builder): Infinity pool and pool construction
+- [Find a Renovation Specialist](https://ratemybalibuilder.com/find/renovation-specialist): Villa renovation experts
+- [Find a Mason](https://ratemybalibuilder.com/find/mason): Stonework and brickwork craftsmen
+- [Find a Roofer](https://ratemybalibuilder.com/find/roofer): Thatch, tile, and metal roofing
+- [Find a Plumber](https://ratemybalibuilder.com/find/plumber): Water systems and septic installation
+- [Find an Electrician](https://ratemybalibuilder.com/find/electrician): Electrical and solar installation
+- [Find an HVAC Specialist](https://ratemybalibuilder.com/find/hvac): Air conditioning installation
+- [Find a Welder](https://ratemybalibuilder.com/find/welder): Gates, railings, and metalwork
+- [Find a Glass Specialist](https://ratemybalibuilder.com/find/glass-glazing): Windows and glass features
+- [Find a Painter](https://ratemybalibuilder.com/find/painter): Interior and exterior painting
+- [Find a Tiler](https://ratemybalibuilder.com/find/tiler): Floor and wall tile installation
+- [Find a Carpenter](https://ratemybalibuilder.com/find/carpenter): Custom woodwork and structures
+- [Find a Furniture Maker](https://ratemybalibuilder.com/find/furniture-maker): Custom Balinese furniture
+- [Find a Landscaper](https://ratemybalibuilder.com/find/landscaper): Tropical garden design
+
+## Find by Location
+
+- [Builders in Canggu](https://ratemybalibuilder.com/builders/canggu): Popular expat area
+- [Builders in Ubud](https://ratemybalibuilder.com/builders/ubud): Cultural heart of Bali
+- [Builders in Seminyak](https://ratemybalibuilder.com/builders/seminyak): Upscale beach area
+- [Builders in Uluwatu](https://ratemybalibuilder.com/builders/uluwatu): Clifftop properties
+- [Builders in Sanur](https://ratemybalibuilder.com/builders/sanur): Calm beach community
+- [Builders in Denpasar](https://ratemybalibuilder.com/builders/denpasar): Capital city
+
+## Key Information
+
+### How It Works
+1. Search for a builder by name or phone number
+2. See their status: Recommended, Unknown, or Flagged
+3. Read reviews from previous clients
+4. Make an informed decision before hiring
+
+### What We Verify
+- Builder contact information
+- Client review authenticity
+- Project completion claims
+- Red flags and scam reports
+
+### Common Bali Construction Questions
+- Building costs range from $600-1500 USD per square meter
+- Always check reviews before paying deposits
+- Get written contracts with payment schedules
+- Verify builder credentials and past projects

@@ -1,27 +1,8 @@
-'use client';
+import type { Metadata } from 'next';
+import { createAdminClient } from '@/lib/supabase/server';
+import { BuilderPageClient } from './BuilderPageClient';
 
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { StatusBadge } from '@/components/StatusBadge';
-import { StarRating } from '@/components/StarRating';
-import { ReviewCard } from '@/components/ReviewCard';
-import { ReviewPrompt } from '@/components/ReviewPrompt';
-import { SaveBuilderButton } from '@/components/SaveBuilderButton';
-import { createClient } from '@/lib/supabase/client';
-import {
-  MessageCircleIcon,
-  InstagramIcon,
-  AlertTriangleIcon,
-  ArrowLeftIcon,
-  Loader2Icon,
-  GlobeIcon,
-  StarIcon,
-  PhoneIcon,
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { formatPhone } from '@/lib/utils';
+const siteUrl = 'https://ratemybalibuilder.com';
 
 interface Builder {
   id: string;
@@ -39,344 +20,110 @@ interface Builder {
   is_published: boolean;
 }
 
-interface Review {
-  id: string;
-  rating: number;
-  review_text: string;
-  photos: string[];
-  created_at: string;
+interface PageProps {
+  params: Promise<{ id: string }>;
 }
 
-export default function BuilderPage() {
-  const params = useParams();
-  const builderId = params.id as string;
+async function getBuilder(id: string): Promise<Builder | null> {
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from('builders')
+    .select('*')
+    .eq('id', id)
+    .single();
+  return data;
+}
 
-  const [builder, setBuilder] = useState<Builder | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [avgRating, setAvgRating] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const builder = await getBuilder(id);
 
-  useEffect(() => {
-    async function fetchData() {
-      const supabase = createClient();
-
-      // Check auth status
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
-
-      // Fetch builder
-      const { data: builderData, error: builderError } = await supabase
-        .from('builders')
-        .select('*')
-        .eq('id', builderId)
-        .single();
-
-      if (builderError || !builderData) {
-        setIsLoading(false);
-        return;
-      }
-
-      setBuilder(builderData);
-
-      // Fetch approved reviews
-      const { data: reviewsData } = await supabase
-        .from('reviews')
-        .select('id, rating, review_text, photos, created_at')
-        .eq('builder_id', builderId)
-        .eq('status', 'approved')
-        .order('created_at', { ascending: false });
-
-      const approvedReviews = reviewsData || [];
-      setReviews(approvedReviews);
-
-      // Calculate average rating
-      if (approvedReviews.length > 0) {
-        const avg = approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length;
-        setAvgRating(Math.round(avg * 10) / 10);
-      }
-
-      setIsLoading(false);
-    }
-
-    fetchData();
-  }, [builderId]);
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[calc(100vh-57px)] items-center justify-center">
-        <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+  if (!builder || !builder.is_published) {
+    return {
+      title: 'Builder Not Found',
+      description: 'This builder could not be found in our database.',
+    };
   }
 
-  if (!builder) {
-    return (
-      <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 sm:min-h-[calc(100vh-73px)]">
-        <Card className="border-0 shadow-md">
-          <CardContent className="px-6 py-12 text-center">
-            <h1 className="text-xl font-medium">Builder not found</h1>
-            <p className="mt-2 text-muted-foreground">This builder doesn&apos;t exist in our database.</p>
-            <Button asChild className="mt-6">
-              <Link href="/">Back to Search</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const title = builder.company_name
+    ? `${builder.name} - ${builder.company_name}`
+    : builder.name;
 
-  // Show pending message for unpublished builders
-  if (!builder.is_published) {
-    return (
-      <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 sm:min-h-[calc(100vh-73px)]">
-        <Card className="border-0 shadow-md">
-          <CardContent className="px-6 py-12 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-energy)]/10">
-              <Loader2Icon className="h-7 w-7 text-[var(--color-energy)]" />
-            </div>
-            <h1 className="text-xl font-medium">Pending Review</h1>
-            <p className="mt-2 text-muted-foreground">
-              This builder is currently being reviewed by our team and will be published soon.
-            </p>
-            <Button asChild className="mt-6">
-              <Link href="/builders">Browse Builders</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const description = `View reviews and ratings for ${builder.name}${builder.company_name ? ` (${builder.company_name})` : ''} - ${builder.trade_type} in ${builder.location}, Bali. See what clients say before hiring.`;
 
-  const whatsappLink = `https://wa.me/${builder.phone.replace(/[\s\-\+]/g, '')}`;
-  const instagramLink = builder.instagram ? `https://instagram.com/${builder.instagram.replace('@', '')}` : null;
+  const statusText = builder.status === 'recommended'
+    ? 'Recommended'
+    : builder.status === 'blacklisted'
+      ? 'Flagged'
+      : 'Unknown';
 
-  // Generate red flags for blacklisted builders (based on low ratings)
-  const redFlags = builder.status === 'blacklisted' ? [
-    'Multiple negative reviews reported',
-    'Exercise caution when engaging',
-  ] : [];
+  return {
+    title,
+    description,
+    keywords: [
+      builder.name,
+      builder.company_name,
+      builder.trade_type,
+      builder.location,
+      'Bali builder',
+      'Bali contractor',
+      'builder reviews',
+      ...(builder.project_types || []),
+    ].filter(Boolean) as string[],
+    openGraph: {
+      title: `${title} | RateMyBaliBuilder`,
+      description,
+      url: `${siteUrl}/builder/${id}`,
+      type: 'profile',
+    },
+    twitter: {
+      card: 'summary',
+      title: `${title} | RateMyBaliBuilder`,
+      description,
+    },
+    other: {
+      'builder:status': statusText,
+      'builder:trade': builder.trade_type,
+      'builder:location': builder.location,
+    },
+  };
+}
+
+export default async function BuilderPage({ params }: PageProps) {
+  const { id } = await params;
+  const builder = await getBuilder(id);
+
+  // Generate JSON-LD for the builder
+  const jsonLd = builder && builder.is_published ? {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${siteUrl}/builder/${id}`,
+    name: builder.company_name || builder.name,
+    description: `${builder.trade_type} in ${builder.location}, Bali`,
+    url: `${siteUrl}/builder/${id}`,
+    telephone: builder.phone,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: builder.location,
+      addressRegion: "Bali",
+      addressCountry: "ID",
+    },
+    areaServed: {
+      "@type": "Place",
+      name: builder.location === "Bali Wide" ? "Bali, Indonesia" : `${builder.location}, Bali, Indonesia`,
+    },
+    ...(builder.website && { sameAs: [builder.website] }),
+  } : null;
 
   return (
-    <div className="min-h-[calc(100vh-57px)] sm:min-h-[calc(100vh-73px)]">
-      <div className="px-4 py-6 sm:px-6 sm:py-8">
-        <div className="mx-auto max-w-2xl">
-          {/* Back Button */}
-          <Button asChild variant="ghost" size="sm" className="mb-4 -ml-2">
-            <Link href="/builders">
-              <ArrowLeftIcon className="mr-1 h-4 w-4" />
-              Back to builders
-            </Link>
-          </Button>
-
-          {/* Builder Header */}
-          <Card className="border-0 shadow-md">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <h1 className="text-xl font-medium text-foreground sm:text-2xl">{builder.name}</h1>
-                  {builder.company_name && (
-                    <p className="mt-1 text-sm text-muted-foreground">{builder.company_name}</p>
-                  )}
-                  <p className="mt-1 text-sm text-muted-foreground">{builder.trade_type}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <SaveBuilderButton
-                    builderId={builder.id}
-                    builderName={builder.name}
-                    variant="icon"
-                  />
-                  <StatusBadge status={builder.status} size="lg" />
-                </div>
-              </div>
-
-              {/* Specialties */}
-              {builder.project_types && builder.project_types.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {builder.project_types.map((type) => (
-                    <span
-                      key={type}
-                      className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground"
-                    >
-                      {type}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Contact Info - Always visible */}
-              <div className="mt-6 space-y-3">
-                <div className="flex items-center gap-2 text-foreground">
-                  <PhoneIcon className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-mono">{formatPhone(builder.phone)}</span>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <Button asChild size="sm" className="gap-2">
-                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                      <MessageCircleIcon className="h-4 w-4" />
-                      WhatsApp
-                    </a>
-                  </Button>
-                  {instagramLink && (
-                    <Button asChild variant="outline" size="sm" className="gap-2">
-                      <a href={instagramLink} target="_blank" rel="noopener noreferrer">
-                        <InstagramIcon className="h-4 w-4" />
-                        {builder.instagram}
-                      </a>
-                    </Button>
-                  )}
-                  {builder.website && (
-                    <Button asChild variant="outline" size="sm" className="gap-2">
-                      <a href={builder.website.startsWith('http') ? builder.website : `https://${builder.website}`} target="_blank" rel="noopener noreferrer">
-                        <GlobeIcon className="h-4 w-4" />
-                        Website
-                      </a>
-                    </Button>
-                  )}
-                  {builder.google_reviews_url && (
-                    <Button asChild variant="outline" size="sm" className="gap-2">
-                      <a href={builder.google_reviews_url} target="_blank" rel="noopener noreferrer">
-                        <StarIcon className="h-4 w-4" />
-                        Google Reviews
-                      </a>
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              {/* Stats */}
-              {isLoggedIn ? (
-                <div className="mt-6 flex items-center gap-6 border-t border-border pt-6">
-                  {avgRating > 0 && (
-                    <div className="flex items-center gap-2">
-                      <StarRating rating={avgRating} size="md" />
-                      <span className="font-medium">{avgRating.toFixed(1)}</span>
-                    </div>
-                  )}
-                  <div className="text-sm text-muted-foreground">
-                    {reviews.length} review{reviews.length !== 1 ? 's' : ''}
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-6 border-t border-border pt-6 relative">
-                  <div className="flex items-center gap-6 blur-sm select-none pointer-events-none opacity-40" aria-hidden="true">
-                    <div className="flex items-center gap-2">
-                      <StarRating rating={5} size="md" />
-                      <span className="font-medium">5.0</span>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      2 reviews
-                    </div>
-                  </div>
-                  <div className="absolute inset-0 flex items-center">
-                    <Link href={`/login?redirect=${encodeURIComponent(`/builder/${builderId}`)}`} className="text-sm font-medium text-[var(--color-prompt)] hover:underline">
-                      Sign in to view ratings
-                    </Link>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Review Prompt */}
-          <div className="mt-4 sm:mt-6">
-            <ReviewPrompt
-              builderName={builder.name}
-              builderId={builder.id}
-              variant="banner"
-            />
-          </div>
-
-          {/* Red Flags Section - Only for blacklisted */}
-          {builder.status === 'blacklisted' && (
-            <Card className="mt-4 border-0 border-l-4 border-l-[var(--color-energy)] bg-[var(--color-energy)]/5 shadow-md sm:mt-6">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center gap-2 text-[var(--color-energy)]">
-                  <AlertTriangleIcon className="h-5 w-5" />
-                  <h2 className="font-medium">Warning - Flagged Builder</h2>
-                </div>
-                {builder.notes ? (
-                  <p className="mt-4 text-sm leading-relaxed">{builder.notes}</p>
-                ) : (
-                  <ul className="mt-4 space-y-2">
-                    {redFlags.map((flag, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm">
-                        <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--color-energy)]" />
-                        <span>{flag}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Reviews Section */}
-          <div className="mt-6 sm:mt-8">
-            <h2 className="mb-4 text-lg font-medium sm:text-xl">Reviews</h2>
-
-            {isLoggedIn ? (
-              reviews.length > 0 ? (
-                <div className="space-y-4">
-                  {reviews.map((review) => (
-                    <ReviewCard
-                      key={review.id}
-                      review={{
-                        id: review.id,
-                        builderId: builderId,
-                        rating: review.rating,
-                        text: review.review_text,
-                        photos: review.photos || [],
-                        createdAt: review.created_at,
-                      }}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <Card className="border-0 bg-secondary/30">
-                  <CardContent className="px-4 py-8 text-center">
-                    <p className="text-muted-foreground">No reviews yet for this builder.</p>
-                    <Button asChild className="mt-4">
-                      <Link href="/submit-review">Be the first to review</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              )
-            ) : (
-              <div className="relative">
-                {/* Blurred placeholder reviews */}
-                <div className="space-y-4 blur-sm select-none pointer-events-none" aria-hidden="true">
-                  <Card className="border-0 shadow-md">
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <StarRating rating={5} size="sm" />
-                        <span className="text-sm text-muted-foreground">Dec 17, 2025</span>
-                      </div>
-                      <p className="text-sm leading-relaxed">Great work on our villa project. Very professional and completed everything on time. Would definitely recommend to others looking for quality work in Bali.</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-0 shadow-md">
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <StarRating rating={5} size="sm" />
-                        <span className="text-sm text-muted-foreground">Dec 15, 2025</span>
-                      </div>
-                      <p className="text-sm leading-relaxed">Excellent craftsmanship and attention to detail. Communication was clear throughout the project. Highly recommend for any construction needs.</p>
-                    </CardContent>
-                  </Card>
-                </div>
-                {/* Login overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-background/30">
-                  <Button asChild size="sm">
-                    <Link href={`/login?redirect=${encodeURIComponent(`/builder/${builderId}`)}`}>Sign in to read reviews</Link>
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <BuilderPageClient builderId={id} initialBuilder={builder} />
+    </>
   );
 }

@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRightIcon, ShieldCheckIcon, UsersIcon, StarIcon } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about RateMyBaliBuilder - a community-driven platform helping you make informed decisions about construction in Bali. Find trusted builders and avoid costly mistakes.',
+  openGraph: {
+    title: 'About RateMyBaliBuilder',
+    description: 'Learn about RateMyBaliBuilder - a community-driven platform helping you make informed decisions about construction in Bali.',
+  },
+};
 
 export default function AboutPage() {
   return (
