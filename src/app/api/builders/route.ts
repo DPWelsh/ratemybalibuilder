@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/lib/supabase/server';
+import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // Normalize and format phone number: +62 812-3456-7890
@@ -34,6 +34,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, phone, trade_type, location, company_name, status, rating, review_text } = body;
+
+    // Get current user (optional - for tracking contributions)
+    const supabaseUser = await createClient();
+    const { data: { user } } = await supabaseUser.auth.getUser();
+    const userId = user?.id || null;
 
     // Validation
     if (!name || name.trim().length < 2) {
@@ -104,19 +109,42 @@ export async function POST(request: Request) {
     }
 
     // Create the review (pending approval) - text is optional
-    const { error: reviewError } = await supabase
+    const { data: review, error: reviewError } = await supabase
       .from('reviews')
       .insert({
         builder_id: builder.id,
         rating: rating,
         review_text: review_text?.trim() || null,
         status: 'pending', // Reviews need admin approval
-      });
+      })
+      .select('id')
+      .single();
 
     if (reviewError) {
       console.error('Error creating review:', reviewError);
       // Builder was created but review failed - still return success
       // The review can be submitted separately
+    }
+
+    // Track contributions for free guide access (anonymous - separate table)
+    if (userId) {
+      // Track builder submission
+      await supabase.from('contributions').insert({
+        user_id: userId,
+        contribution_type: 'builder',
+        reference_id: builder.id,
+        status: 'pending',
+      });
+
+      // Track review submission if created
+      if (review?.id) {
+        await supabase.from('contributions').insert({
+          user_id: userId,
+          contribution_type: 'review',
+          reference_id: review.id,
+          status: 'pending',
+        });
+      }
     }
 
     return NextResponse.json({ success: true, builder });

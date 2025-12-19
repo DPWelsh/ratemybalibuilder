@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -15,12 +15,32 @@ import {
   SparklesIcon,
   BookOpenIcon,
   XIcon,
+  GiftIcon,
 } from 'lucide-react';
+
+interface ContributionProgress {
+  approved_builders: number;
+  approved_reviews: number;
+  pending_builders: number;
+  pending_reviews: number;
+  has_free_guide_access: boolean;
+  total_approved: number;
+  progress: number;
+  target: number;
+}
 
 export default function PricingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<MembershipPlanId | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [contributions, setContributions] = useState<ContributionProgress | null>(null);
+
+  useEffect(() => {
+    fetch('/api/contributions')
+      .then((res) => res.json())
+      .then((data) => setContributions(data))
+      .catch(() => {});
+  }, []);
 
   const handleCheckout = async (planId: MembershipPlanId) => {
     setLoading(planId);
@@ -202,14 +222,44 @@ export default function PricingPage() {
         </div>
 
         {/* Free tier callout */}
-        <div className="mt-12 rounded-lg border border-[var(--status-recommended)]/30 bg-[var(--status-recommended)]/5 p-6 text-center">
+        <div className="mt-12 rounded-lg border border-[var(--status-recommended)]/30 bg-[var(--status-recommended)]/5 p-6">
           <div className="flex items-center justify-center gap-2 text-sm font-medium">
-            <ShieldCheckIcon className="h-5 w-5 text-[var(--status-recommended)]" />
-            <span>Or get free access</span>
+            <GiftIcon className="h-5 w-5 text-[var(--status-recommended)]" />
+            <span>Earn free guide access</span>
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Contribute a builder or review to unlock the guide for free.
+          <p className="mt-2 text-center text-sm text-muted-foreground">
+            Submit 5 builders or reviews to unlock the guide for free.
           </p>
+
+          {/* Progress bar */}
+          {contributions && (
+            <div className="mx-auto mt-4 max-w-xs">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+                <span>Your progress</span>
+                <span className="font-medium">
+                  {contributions.total_approved} / {contributions.target} approved
+                </span>
+              </div>
+              <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
+                <div
+                  className="h-full bg-[var(--status-recommended)] transition-all duration-500"
+                  style={{ width: `${contributions.progress * 100}%` }}
+                />
+              </div>
+              {(contributions.pending_builders > 0 || contributions.pending_reviews > 0) && (
+                <p className="mt-1.5 text-xs text-muted-foreground text-center">
+                  {contributions.pending_builders + contributions.pending_reviews} pending approval
+                </p>
+              )}
+              {contributions.has_free_guide_access && (
+                <div className="mt-3 flex items-center justify-center gap-1.5 text-sm font-medium text-[var(--status-recommended)]">
+                  <CheckIcon className="h-4 w-4" />
+                  Free guide unlocked!
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
             <Button asChild variant="outline" size="sm">
               <Link href="/add-builder">

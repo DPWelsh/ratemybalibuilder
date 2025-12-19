@@ -21,6 +21,17 @@ CREATE TABLE public.builders (
   is_published boolean DEFAULT true,
   CONSTRAINT builders_pkey PRIMARY KEY (id)
 );
+CREATE TABLE public.contributions (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  contribution_type text NOT NULL CHECK (contribution_type = ANY (ARRAY['builder'::text, 'review'::text])),
+  reference_id uuid NOT NULL,
+  status text NOT NULL DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])),
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  approved_at timestamp with time zone,
+  CONSTRAINT contributions_pkey PRIMARY KEY (id),
+  CONSTRAINT contributions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
 CREATE TABLE public.profiles (
   id uuid NOT NULL,
   email text,
@@ -28,6 +39,8 @@ CREATE TABLE public.profiles (
   is_admin boolean NOT NULL DEFAULT false,
   created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
   updated_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  has_free_guide_access boolean DEFAULT false,
+  free_guide_granted_at timestamp with time zone,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );

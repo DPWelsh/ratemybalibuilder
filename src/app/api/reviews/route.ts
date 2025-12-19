@@ -134,6 +134,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to submit review' }, { status: 500 });
     }
 
+    // Track contribution for free guide access (anonymous - separate table)
+    if (user?.id) {
+      await supabaseAdmin.from('contributions').insert({
+        user_id: user.id,
+        contribution_type: 'review',
+        reference_id: review.id,
+        status: 'pending',
+      });
+    }
+
     return NextResponse.json({
       success: true,
       reviewId: review.id,

@@ -6,6 +6,7 @@ import {
   UsersIcon,
   CreditCardIcon,
   AlertCircleIcon,
+  CrownIcon,
 } from 'lucide-react';
 
 export default async function AdminDashboard() {
@@ -42,7 +43,7 @@ export default async function AdminDashboard() {
       label: 'Total Users',
       value: totalUsers || 0,
       icon: UsersIcon,
-      href: '#',
+      href: '/admin/users',
     },
     {
       label: 'Recent Transactions',
@@ -100,6 +101,17 @@ export default async function AdminDashboard() {
                   <h3 className="mt-3 font-medium text-foreground">Manage Builders</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Add, edit, or update builder status
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/admin/users">
+              <Card className="border-0 transition-shadow hover:shadow-lg">
+                <CardContent className="p-5">
+                  <CrownIcon className="h-6 w-6 text-muted-foreground" />
+                  <h3 className="mt-3 font-medium text-foreground">Manage Users & Access</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Grant guide or investor access to users
                   </p>
                 </CardContent>
               </Card>
