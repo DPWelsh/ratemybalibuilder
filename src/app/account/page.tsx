@@ -20,6 +20,7 @@ import {
   AlertCircleIcon,
   CrownIcon,
   BookOpenIcon,
+  UsersIcon,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { User } from '@supabase/supabase-js';
@@ -301,12 +302,20 @@ export default function AccountPage() {
                     </p>
                   )}
                 </div>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/guide">
-                    <BookOpenIcon className="mr-2 h-4 w-4" />
-                    Read the Guide
-                  </Link>
-                </Button>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link href="/guide">
+                      <BookOpenIcon className="mr-2 h-4 w-4" />
+                      Read the Guide
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link href="/suppliers">
+                      <UsersIcon className="mr-2 h-4 w-4" />
+                      Supplier Directory
+                    </Link>
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">

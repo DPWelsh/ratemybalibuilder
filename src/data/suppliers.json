@@ -1,0 +1,919 @@
+{
+  "Home Service": {
+    "Cleaners": [
+      {
+        "name": "Ketut from Monopole -100k/hr",
+        "whatsapp": "6281805643157",
+        "service_rating": "5",
+        "price_rating": "5",
+        "area": "Canggu"
+      },
+      {
+        "name": "Putu from Bali Cleaning Company",
+        "whatsapp": "628123630304"
+      },
+      {
+        "name": "Kadek Cleaning Lady Ungasan",
+        "whatsapp": "628164745505",
+        "area": "Uluwatu",
+        "source": "Ulu Buy, Sell, Swap"
+      },
+      {
+        "name": "Rosa Cleaner / Pembantu",
+        "whatsapp": "6285398503687",
+        "area": "Uluwatu"
+      }
+    ],
+    "Handy Man": [
+      {
+        "name": "Nyoman Yuda",
+        "whatsapp": "6281353343278"
+      }
+    ],
+    "Builder/contractor": [
+      {
+        "name": "Ida Bagus",
+        "whatsapp": "6282144126627",
+        "source": "Brandy"
+      },
+      {
+        "name": "Kang Rian",
+        "whatsapp": "6282121444433",
+        "source": "Reynard"
+      },
+      {
+        "name": "Brian R",
+        "whatsapp": "6287862502798"
+      },
+      {
+        "name": "Suraji",
+        "whatsapp": "6281237925177",
+        "service_rating": "5",
+        "source": "johanna"
+      },
+      {
+        "name": "Brian Radigan"
+      },
+      {
+        "name": "Guntur",
+        "whatsapp": "6281236326966",
+        "service_rating": "5",
+        "source": "Blossom"
+      },
+      {
+        "name": "Pa Agus",
+        "whatsapp": "6287898139727"
+      }
+    ],
+    "Homeware": [
+      {
+        "name": "Home Wood Furniture",
+        "whatsapp": "628133753726"
+      },
+      {
+        "name": "Informa - furniture"
+      },
+      {
+        "name": "Handuk Towel Bed - Bedding Set",
+        "source": "Friend"
+      },
+      {
+        "name": "Bedcover And Friends Bali Duvet & Bed Sheets",
+        "whatsapp": "628993505819"
+      },
+      {
+        "name": "Sella Window Treatments Bali Custom Blackout Curtins",
+        "whatsapp": "62895329738024"
+      },
+      {
+        "name": "Kim soo",
+        "service_rating": "5",
+        "source": "johanna"
+      },
+      {
+        "name": "Cloth by Medina in ubud",
+        "service_rating": "5",
+        "source": "johanna"
+      },
+      {
+        "name": "Interior Tonic"
+      },
+      {
+        "name": "custom Vase and pots",
+        "service_rating": "5",
+        "source": "johanna"
+      },
+      {
+        "name": "alung antique (wholesale and retail)",
+        "service_rating": "5",
+        "source": "johanna"
+      },
+      {
+        "name": "barongbali_furnitures",
+        "website": "https://www.instagram.com/barongbali_furnitures",
+        "source": "ig"
+      },
+      {
+        "name": "Kadek Rugs And Baskets",
+        "whatsapp": "6282146016611",
+        "source": "Luke"
+      },
+      {
+        "name": "Roy from Lima",
+        "whatsapp": "6287777888177",
+        "notes": "Came across the sofas from this company while staying at Bohemian Villa in Canggu for a shoot - really comfy & high quality"
+      }
+    ],
+    "Property manager": [
+      {
+        "name": "Wantho Sannyas",
+        "whatsapp": "6282345199816",
+        "area": "Uluwatu",
+        "source": "Ulu Girls"
+      }
+    ],
+    "Electrician": [
+      {
+        "name": "Pak",
+        "whatsapp": "6282144426495",
+        "source": "Reynard"
+      },
+      {
+        "name": "Agus",
+        "whatsapp": "6282144632083",
+        "area": "Uluwatu",
+        "source": "Depiik"
+      }
+    ],
+    "Plumber": [
+      {
+        "name": "Khairul Anwar Pompa",
+        "whatsapp": "6281558090909",
+        "source": "Reynard"
+      }
+    ],
+    "Pool Guy": [
+      {
+        "name": "ariel - villa 10 samani",
+        "whatsapp": "6285333570600"
+      }
+    ],
+    "Tiles Shop": [
+      {
+        "name": "Sadus Tiles",
+        "whatsapp": "6282340774073",
+        "source": "Ulu Buy, Sell, Swap"
+      }
+    ],
+    "Gardener": [
+      {
+        "name": "na",
+        "whatsapp": "6281334527472",
+        "area": "Uluwatu",
+        "source": "Ulu Buy, Sell, Swap"
+      },
+      {
+        "name": "Jack",
+        "whatsapp": "6281237897352",
+        "notes": "\"Hey girls. I wanted to share the details of a beautiful family who just did the gardening at our villa.   Jack is so sweet and did the most amazing job of our garden. If anyone is in need please reach out and help support this beautiful family. He speaks really good English and is in need of some work\"",
+        "area": "Uluwatu",
+        "source": "Ulu Girls"
+      }
+    ],
+    "Carpenter": [
+      {
+        "name": "Hiro",
+        "whatsapp": "6281333493004",
+        "notes": "Good work but doesn't answer"
+      },
+      {
+        "name": "Omingbudi's",
+        "whatsapp": "6285937019888",
+        "notes": "\"hi I'm a woodwork contractor specializing in pooldeck, wood-flooring, wood-ceiling, facade and doors.. should you need any quotes on these, please contact me\"",
+        "area": "Uluwatu"
+      }
+    ],
+    "Interior Designer": [
+      {
+        "name": "Cisco",
+        "whatsapp": "6281237312295",
+        "notes": "Interior designer of the Bohemian Villa"
+      }
+    ],
+    "Security": [
+      {
+        "name": "Wati's husband"
+      }
+    ]
+  },
+  "Local Business Directory": {
+    "Film Labs": [
+      {
+        "name": "Ojisan Film Lab",
+        "whatsapp": "628815085378",
+        "website": "https://www.instagram.com/ojisanfilmlab/"
+      },
+      {
+        "name": "Labrana Film Lab",
+        "whatsapp": "6281353448433",
+        "website": "https://www.instagram.com/labranabali/"
+      },
+      {
+        "name": "Colour Digital Film Lab",
+        "whatsapp": "6281333434350"
+      }
+    ],
+    "Visa Agents": [
+      {
+        "name": "Getaway Bali - Travel Agent",
+        "whatsapp": "6281238598167",
+        "service_rating": "5",
+        "price_rating": "5",
+        "source": "Friend"
+      },
+      {
+        "name": "Evisa Bali",
+        "whatsapp": "6287788500090",
+        "website": "https://l.wl.co/l?u=https%3A%2F%2Fwww.evisabali.com",
+        "service_rating": "5",
+        "price_rating": "3",
+        "source": "Friend"
+      },
+      {
+        "name": "Tia - Bali Solve Visa Extensions",
+        "whatsapp": "6281337749995",
+        "source": "Friend"
+      },
+      {
+        "name": "Aji KITAS",
+        "whatsapp": "6281296670193",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Anastasia Peak Solutions Indonesia",
+        "whatsapp": "6281246562945"
+      },
+      {
+        "name": "Ibu Monik - PMA Contact",
+        "whatsapp": "6281338972344",
+        "service_rating": "1",
+        "source": "Gio"
+      },
+      {
+        "name": "HDJ Consultant Bali",
+        "whatsapp": "6282339402886",
+        "service_rating": "5",
+        "source": "Belle"
+      }
+    ],
+    "Scooter Rental": [
+      {
+        "name": "dewa widiarmawan",
+        "whatsapp": "6281939059545",
+        "service_rating": "4",
+        "price_rating": "5",
+        "source": "WOM"
+      },
+      {
+        "name": "mute garage rental",
+        "whatsapp": "6282144380943",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Rio Scooter Rental (Custom Bikes)",
+        "whatsapp": "6287860914088",
+        "area": "Canggu",
+        "source": "Google Maps"
+      },
+      {
+        "name": "Sami (Car Rental)",
+        "whatsapp": "6281936673870",
+        "area": "Canggu",
+        "source": "Google Maps"
+      },
+      {
+        "name": "Gusti Ayu Sri Utari Lexi",
+        "whatsapp": "6282339890166"
+      },
+      {
+        "name": "I Made Suardika Uluwatu Mechanic",
+        "whatsapp": "628123944652",
+        "service_rating": "5",
+        "price_rating": "5",
+        "area": "Uluwatu",
+        "source": "Friend"
+      }
+    ],
+    "Scooter Lesson": [
+      {
+        "name": "Musli N bali Scooter 250k Bali Lessons",
+        "whatsapp": "6287861210161",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Canggu Scooter Lessons",
+        "whatsapp": "6287860464541",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Musli N bali Scooter 250k Bali Lessons",
+        "whatsapp": "6287861210161",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Mas\u00b7seuse": [
+      {
+        "name": "Wati 100k/hr",
+        "whatsapp": "6281805216210",
+        "service_rating": "4",
+        "price_rating": "5",
+        "area": "Canggu"
+      },
+      {
+        "name": "Dekmas",
+        "whatsapp": "6285737209528",
+        "area": "Canggu",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "~NYOMAN SIRKI",
+        "whatsapp": "6285338261127",
+        "area": "Canggu",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Made Dewi Ida Jayanti",
+        "whatsapp": "6285739774465",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Komang Home Massage Ubud Rosette - specialized in lymphatic massage",
+        "whatsapp": "6285882941190",
+        "area": "ubud",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Workshops": [
+      {
+        "name": "Sewing lesson with Angel Wu",
+        "whatsapp": "628814881747",
+        "area": "Canggu"
+      },
+      {
+        "name": "Pottery class"
+      },
+      {
+        "name": "Black Hand Gang",
+        "whatsapp": "6285823129945",
+        "website": "https://bhgstudio.id/"
+      }
+    ],
+    "Surf Lessons": [
+      {
+        "name": "Surf Travel Friends"
+      },
+      {
+        "name": "Nyang Tso",
+        "service_rating": "3",
+        "price_rating": "4",
+        "area": "Uluwatu"
+      },
+      {
+        "name": "Todink",
+        "whatsapp": "6282340474722",
+        "area": "Canggu",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Bahasa Language Lesson": [
+      {
+        "name": "Tropicana - 75k/group lesson",
+        "website": "https://www.tropicalnomad.org/events/bahasa-class"
+      },
+      {
+        "name": "Bwork"
+      },
+      {
+        "name": "tj",
+        "whatsapp": "628156563937",
+        "area": "ubud"
+      }
+    ],
+    "Community Group Chats": [
+      {
+        "name": "Bali Babes Guide",
+        "website": "https://chat.whatsapp.com/InuzHRFVfDEIMFADLBEGfM",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Bali Biz Babes",
+        "website": "https://chat.whatsapp.com/Cl2tqwKbcCoFLQ8ww",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Canggu BB Housing",
+        "website": "https://chat.whatsapp.com/FbpZJylVNU5FX32wzlXnJ3",
+        "source": "Service Based Biz Babes"
+      },
+      {
+        "name": "Canggu BB Housing:",
+        "website": "https://chat.whatsapp.com/FbpZJylVNU5FX32wzlXnJ3",
+        "source": "Service Based Biz Babes"
+      },
+      {
+        "name": "Ubud BB Housing (& surrounding areas)",
+        "website": "https://chat.whatsapp.com/DmGOoP1z7JbF6GKO3rxJp9",
+        "source": "Service Based Biz Babes"
+      },
+      {
+        "name": "Uluwatu BB Housing (surrounding areas)",
+        "website": "https://chat.whatsapp.com/EPACAAY6lO23paRKWqk26q",
+        "source": "Service Based Biz Babes"
+      },
+      {
+        "name": "Canggu (Seminyak, Seseh & surrounding areas)",
+        "website": "https://chat.whatsapp.com/FbpZJylVNU5FX32wzlXnJ3",
+        "source": "Service Based Biz Babes"
+      },
+      {
+        "name": "Ladies Poker Club",
+        "website": "https://chat.whatsapp.com/BwRJG7ZRjUv4vKabgt6vUi",
+        "source": "Service Based Biz Babes"
+      },
+      {
+        "name": "Bali Content Creators",
+        "website": "https://chat.whatsapp.com/FLQeIp836iE2lS4s6onIBI",
+        "source": "B WORK"
+      },
+      {
+        "name": "B-Work Ecommerce",
+        "website": "https://chat.whatsapp.com/KVNqUMiJ9CY5Ud4Pn4NXWs",
+        "source": "B WORK"
+      },
+      {
+        "name": "Second Hand Bali",
+        "website": "https://chat.whatsapp.com/GI6KIGvilmrHkBRZguUjzn",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Ubud Qi Gong Event",
+        "website": "https://chat.whatsapp.com/JAc32gnsFfAIFmbhEIzyqS",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Women's clothing swap",
+        "website": "https://chat.whatsapp.com/GySNMdltwO62qcATIffnnP",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Men's clothing swap",
+        "website": "https://chat.whatsapp.com/GoXdn4k6EiJ3AgCmEhpC0w",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "ubud sales",
+        "website": "https://chat.whatsapp.com/KrbfptZVpiw7qrhatFkixJ"
+      },
+      {
+        "name": "bali 2nd hand",
+        "website": "https://chat.whatsapp.com/KFd1nufUirH4meLTItlxry"
+      },
+      {
+        "name": "Ubud parents",
+        "website": "https://chat.whatsapp.com/KbPCZQZgwBgLe6ADYuC1Ev"
+      }
+    ],
+    "Print Shop": [
+      {
+        "name": "MKS Print",
+        "whatsapp": "6281388089880",
+        "service_rating": "5",
+        "price_rating": "4",
+        "area": "Canggu",
+        "source": "Google Maps"
+      },
+      {
+        "name": "Bukit Grafika Printing",
+        "whatsapp": "6285337302935",
+        "notes": "referred by a friend - cheap book print option"
+      }
+    ],
+    "Medical supply": [
+      {
+        "name": "Medical supplies service bali",
+        "whatsapp": "6281232723999",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Banking": [
+      {
+        "name": "OCBC"
+      },
+      {
+        "name": "BALI Merry Permata",
+        "whatsapp": "628179704007",
+        "source": "Friend"
+      }
+    ],
+    "Insurance": [
+      {
+        "name": "Ditha Qoala - Bike Insurance",
+        "whatsapp": "628111879741",
+        "website": "https://www.qoala.app/id-en/motor",
+        "source": "Service Based Biz Babes"
+      }
+    ],
+    "Helmet": [
+      {
+        "name": "nightfoxhelmets",
+        "website": "https://www.instagram.com/nightfoxhelmets/?igshid=YmMyMTA2M2Y%3D"
+      }
+    ],
+    "Recycling service": [
+      {
+        "name": "Eco bali Recycling",
+        "whatsapp": "6282237799819",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "cosmetic": [
+      {
+        "name": "dr. martha",
+        "source": "Friend"
+      },
+      {
+        "name": "ETERNA Aesthetic & Anti Aging Clinic - dr. rosa",
+        "whatsapp": "62811399225",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Produce Delivery": [
+      {
+        "name": "Temuku Pupuan - organic produce delivery",
+        "whatsapp": "6281239029996",
+        "website": "https://l.wl.co/l?u=https%3A%2F%2Fwww.temukupupuan.com",
+        "service_rating": "5",
+        "price_rating": "3",
+        "source": "Instagram"
+      },
+      {
+        "name": "Wayan Suardana - coconut delivery",
+        "whatsapp": "6281353645931",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Bali food industry - frozen fruit",
+        "whatsapp": "6281935667497"
+      },
+      {
+        "name": "coconut guy",
+        "whatsapp": "6281338796360",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Activities": [
+      {
+        "name": "Trivia at Jllegends",
+        "website": "https://www.instagram.com/jllegends.bali/?hl=en",
+        "source": "Friend"
+      },
+      {
+        "name": "Jungle Padel Canggu",
+        "whatsapp": "6281236664126",
+        "website": "https://l.wl.co/l?u=https%3A%2F%2Fwww.junglepadel.com%2F",
+        "area": "Canggu",
+        "source": "Friend"
+      }
+    ],
+    "Musician": [
+      {
+        "name": "Agustian",
+        "whatsapp": "6281337725181",
+        "area": "ubud"
+      }
+    ],
+    "internet & customer service": [
+      {
+        "name": "mtm",
+        "whatsapp": "6285954088818",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Photo & Video Equipment Rental": [
+      {
+        "name": "sewakameralensabali",
+        "website": "https://l.instagram.com/?u=https%3A%2F%2Fsewakameralensabali.com%2F&e=ATOGXQ1DO5vRmhjcQNKv-krB7feN5DF-VUUYLlolGRZkykEDqbB12bZTa3Jqj4kvVdfeU0CYZ2tDmz42c1wmug&s=1",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Private drivers": [
+      {
+        "name": "Wayan Skoll Taxi",
+        "whatsapp": "6281337782835",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Madhey",
+        "whatsapp": "6281239421780",
+        "service_rating": "5"
+      },
+      {
+        "name": "Gania Ubud Driver Wayan Gania",
+        "whatsapp": "6281338663656"
+      }
+    ],
+    "Cooking class": [
+      {
+        "name": "Dewi Cook",
+        "whatsapp": "6281337071239",
+        "website": "https://chat.whatsapp.com/FbpZJylVNU5FX32wzlXnJ3"
+      }
+    ],
+    "Medical contact - doctors who come to your home": [
+      {
+        "name": "The Medical Canggu",
+        "whatsapp": "6282211511911"
+      },
+      {
+        "name": "Umalas Doctors",
+        "whatsapp": "6282131370688"
+      }
+    ],
+    "Bali Silent Retreat": [
+      {
+        "name": "Bali Silent Retreat",
+        "whatsapp": "6282333982528",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Mechanic Service": [
+      {
+        "name": "Made",
+        "whatsapp": "628123944652",
+        "service_rating": "5",
+        "price_rating": "5",
+        "area": "Uluwatu",
+        "source": "Friend"
+      }
+    ],
+    "Phone service": [
+      {
+        "name": "unlocks phone - Bale Bali",
+        "whatsapp": "6281936231078",
+        "source": "Ulu Girls"
+      }
+    ],
+    "Kitas": [
+      {
+        "name": "Ibu Monik - PMA contact",
+        "whatsapp": "6281338972344",
+        "area": "Uluwatu",
+        "source": "Gio"
+      },
+      {
+        "name": "Pak Fadli - Lawyer / Accounting",
+        "whatsapp": "6282111523242",
+        "area": "Uluwatu",
+        "source": "Gio"
+      }
+    ],
+    "Legal": [
+      {
+        "name": "notary - gede prapta",
+        "whatsapp": "6281805670875",
+        "source": "Adam and Mara"
+      }
+    ],
+    "vehicle second hand sales": [
+      {
+        "name": "budiarsanaputu9",
+        "whatsapp": "62818343833",
+        "source": "Oscar and Saga"
+      }
+    ],
+    "Driving School": [
+      {
+        "name": "Bee School",
+        "whatsapp": "62895331302535",
+        "service_rating": "5",
+        "source": "Louise"
+      }
+    ],
+    "accupuncture": [
+      {
+        "name": "Laura",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Tax consultant": [
+      {
+        "name": "Anom Tax And Accounting Consultant",
+        "whatsapp": "628123657946"
+      }
+    ],
+    "Graphic Designer": [
+      {
+        "name": "dsgnd.studio",
+        "notes": "hello@dsgnd.studio"
+      }
+    ],
+    "HR sites": [
+      {
+        "name": "site to hire locals",
+        "notes": "rec by frencha staff",
+        "website": "https://www.jobstreet.co.id/id/cms/employer/?gclid=Cj0KCQjwm66pBhDQARIsALIR2zCO1mWuAZZPtxiDKyeuXurg5pKiD_27dksWL3raHIN9QhoydSn7zGMaAnezEALw_wcB&pem=google&tracking=SMB-ID-GGL-HirerSEMBrandExact&utm_campaign=id-h-conversion-HirerSEMBrandExact-MCSP&utm_content&utm_medium=ppc&utm_source=google&utm_term"
+      }
+    ],
+    "Shipping Service": [
+      {
+        "name": "Lion Parcel",
+        "website": "https://lionparcel.com/product/interpack"
+      },
+      {
+        "name": "urshipper"
+      }
+    ]
+  },
+  "retail": {
+    "Gym clothes": [
+      {
+        "name": "tictacsportswear",
+        "website": "https://l.instagram.com/?u=https%3A%2F%2Flinktr.ee%2FTictacsportswear&e=ATMBJHANN2bXEp8XEG_jfKBbIbWupXtE8hWof1Op4OBcFXn9rzSGStJAIwGazSGNSBTil1J6HcMYJdbk_R_LGQ&s=1",
+        "source": "Friend"
+      }
+    ],
+    "shoes maker": [
+      {
+        "name": "Larissa Shoes Shoe Maker Nxt To Petrol Station",
+        "whatsapp": "6281337168008"
+      }
+    ],
+    "Tailors": [
+      {
+        "name": "Putu",
+        "service_rating": "4",
+        "price_rating": "4",
+        "area": "Canggu",
+        "source": "WOM"
+      },
+      {
+        "name": "Kandy Tailor INNUENDO",
+        "whatsapp": "6289524627372",
+        "area": "Canggu",
+        "source": "Friend"
+      },
+      {
+        "name": "max the tailor",
+        "whatsapp": "6281238200123",
+        "website": "https://www.maxbalitailor.com - https://www.maxbalitailor.com/",
+        "area": "Canggu",
+        "source": "WOM"
+      },
+      {
+        "name": "Tailor Bali - Budi (suits)",
+        "whatsapp": "6281558155588",
+        "website": "https://maps.app.goo.gl/xZxzbJBtm3bfEpjN9",
+        "source": "WOM"
+      },
+      {
+        "name": "Lis - Tailor (nick\u2019s Referral)",
+        "whatsapp": "6282146574589",
+        "source": "WOM"
+      },
+      {
+        "name": "Litha - Designer In Denpasae (tailor Connect)",
+        "whatsapp": "6281338405060",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Tony the Tailor",
+        "whatsapp": "6281353957199",
+        "area": "Canggu",
+        "source": "B WORK"
+      },
+      {
+        "name": "Ayu Tailor GWK Ulu",
+        "whatsapp": "6281338481314",
+        "area": "Uluwatu",
+        "source": "Ulu Girls"
+      },
+      {
+        "name": "Ibu Wyn Yanti Tailor Ulu",
+        "whatsapp": "6281239055559",
+        "source": "Ulu Girls"
+      },
+      {
+        "name": "Custom Boots - G Babe",
+        "whatsapp": "6281997850427",
+        "source": "Blossom"
+      },
+      {
+        "name": "Custom Boots - Gusti",
+        "whatsapp": "6281997850427",
+        "source": "Blossom"
+      },
+      {
+        "name": "gede",
+        "whatsapp": "6281339839154",
+        "source": "johanna"
+      }
+    ],
+    "Textile Company": [
+      {
+        "name": "- Bintang - fabric",
+        "source": "Tailor"
+      },
+      {
+        "name": "- Alta Moda - fabric",
+        "source": "Tailor"
+      },
+      {
+        "name": "- SAS Textile - fabric",
+        "source": "Tailor"
+      },
+      {
+        "name": "- Silky Jaya - fabric",
+        "source": "Tailor"
+      },
+      {
+        "name": "Info Bali Textile - dying solution",
+        "whatsapp": "628113804400",
+        "website": "https://l.instagram.com/?u=https%3A%2F%2Flinktr.ee%2Finfobalitextile&e=ATOkUOXsVkAQz_Ai85CKaZnhh5YrCWEGl-kWHEh41d0g6GDAuyIoi4sxooWZQF70lSKF2f4dtL4gTMZxviKe8Q&s=1",
+        "area": "Denpasar",
+        "source": "Bali Babes Guide"
+      },
+      {
+        "name": "Tarum Bali - plant dye solution",
+        "whatsapp": "62818552649"
+      }
+    ]
+  },
+  "Home Goods": {
+    "Dog nest for scooters to hold doggies": [
+      {
+        "name": "The Dog Nest",
+        "website": "https://www.instagram.com/thedognestbali/?igshid=YmMyMTA2M2Y%3D",
+        "source": "Bali Babes Guide"
+      }
+    ],
+    "Plants": [
+      {
+        "name": "~Sri Rahayu",
+        "whatsapp": "6282147082840",
+        "service_rating": "5",
+        "price_rating": "5"
+      }
+    ],
+    "Carpets": [
+      {
+        "name": "Sally from Facebook",
+        "whatsapp": "6281297206677",
+        "notes": "beautiful carpets based on photos and for very affordable prices",
+        "price_rating": "5",
+        "source": "Gwadys"
+      }
+    ]
+  },
+  "Restaurants": {
+    "custom cake": [
+      {
+        "name": "Tyas cake",
+        "whatsapp": "628983104342"
+      }
+    ],
+    "Sports Bars": [
+      {
+        "name": "jllegends.bali",
+        "website": "https://www.instagram.com/jllegends.bali/?hl=en",
+        "area": "Canggu",
+        "source": "Friend"
+      },
+      {
+        "name": "the bench",
+        "website": "https://www.instagram.com/thebenchcanggu/?hl=en",
+        "area": "Canggu",
+        "source": "Friend"
+      }
+    ]
+  },
+  "Resources": {
+    "Youtube": [
+      {
+        "name": "How To Make An Affiliate Marketing Blog in 2022 (Step by Step Tutorial)",
+        "website": "https://www.youtube.com/watch?v=C_xQX1TJcNw",
+        "service_rating": "5"
+      }
+    ],
+    "Blog sites": [
+      {
+        "name": "hostinger",
+        "website": "https://cart.hostinger.com/pay/53751700-de09-48da-9946-c7872c69c189"
+      }
+    ]
+  },
+  "Competitors": {},
+  "local directory in aus": {},
+  "popular local directory with reviews in US": {},
+  "American classified advertisements website with sections devoted to jobs, housing, for sale, items wanted, services, community service, gigs, r\u00e9sum\u00e9s, and discussion forums.": {},
+  "Finding instructors in Bali": {}
+}
