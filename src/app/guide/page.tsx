@@ -70,7 +70,7 @@ export default function GuidePage() {
         <div className="relative mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-600">
             <StarIcon className="h-4 w-4" />
-            From 15+ years of Bali investment experience
+            By RateMyBaliBuilder.com
           </div>
 
           <h1 className="text-3xl tracking-tight sm:text-5xl lg:text-6xl">
@@ -98,7 +98,7 @@ export default function GuidePage() {
           </div>
 
           {/* Stats */}
-          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="mt-12 grid grid-cols-3 gap-4">
             <div className="rounded-lg border bg-card p-4">
               <div className="text-2xl font-bold">{guideMeta.totalChapters}</div>
               <div className="text-sm text-muted-foreground">Chapters</div>
@@ -110,10 +110,6 @@ export default function GuidePage() {
             <div className="rounded-lg border bg-card p-4">
               <div className="text-2xl font-bold">67+</div>
               <div className="text-sm text-muted-foreground">Suppliers</div>
-            </div>
-            <div className="rounded-lg border bg-card p-4">
-              <div className="text-2xl font-bold">15+</div>
-              <div className="text-sm text-muted-foreground">Years Experience</div>
             </div>
           </div>
         </div>
@@ -170,21 +166,21 @@ export default function GuidePage() {
             {guideMeta.freeChapters} free chapters to get you started
           </p>
 
-          <div className="mt-10 space-y-3">
+          <div className="mt-10 space-y-2 sm:space-y-3">
             {chapters.map((chapter, index) => (
               <Link key={chapter.id} href={`/guide/${chapter.slug}`}>
                 <Card className="transition-colors hover:bg-secondary/50">
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-medium">
+                  <CardContent className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium sm:h-10 sm:w-10 sm:text-sm">
                       {String(index + 1).padStart(2, '0')}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-medium">{chapter.title}</h3>
-                      <p className="truncate text-sm text-muted-foreground">
+                      <h3 className="text-sm font-medium sm:text-base">{chapter.title}</h3>
+                      <p className="hidden text-sm text-muted-foreground sm:block sm:truncate">
                         {chapter.description}
                       </p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                       {accessIcons[chapter.accessLevel]}
                       <span className="hidden text-xs text-muted-foreground sm:inline">
                         {accessLabels[chapter.accessLevel]}

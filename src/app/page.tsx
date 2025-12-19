@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrustStats } from '@/components/TrustStats';
-import { SearchIcon, ArrowRightIcon, ShieldCheckIcon, Loader2Icon, PhoneCallIcon, FileCheckIcon, UsersIcon } from 'lucide-react';
+import { SearchIcon, ArrowRightIcon, ShieldCheckIcon, Loader2Icon, PhoneCallIcon, FileCheckIcon, UsersIcon, BookOpenIcon } from 'lucide-react';
 import { TradeCombobox } from '@/components/TradeCombobox';
 
 export default function Home() {
@@ -196,6 +196,96 @@ export default function Home() {
                 Active expat and local community members flag suspicious activity and report their firsthand experiences.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Two Products Section */}
+      <section className="border-t bg-card px-4 py-12 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl">Two ways we help you build in Bali</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
+              Whether you&apos;re vetting contractors or planning your entire investment, we&apos;ve got you covered.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-2">
+            {/* Product 1: Builder Directory */}
+            <Card className="relative overflow-hidden border-2 border-[var(--status-recommended)]/30">
+              <div className="absolute right-4 top-4 rounded-full bg-[var(--status-recommended)]/10 px-3 py-1 text-xs font-medium text-[var(--status-recommended)]">
+                Free
+              </div>
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--status-recommended)]/10">
+                  <ShieldCheckIcon className="h-7 w-7 text-[var(--status-recommended)]" />
+                </div>
+                <h3 className="mt-4 text-xl font-medium sm:text-2xl">Builder Directory</h3>
+                <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                  Search our database of Bali builders. See who&apos;s recommended, who&apos;s unknown, and who to avoid.
+                </p>
+                <ul className="mt-4 space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <ShieldCheckIcon className="h-4 w-4 text-[var(--status-recommended)]" />
+                    <span>Verified community reviews</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <ShieldCheckIcon className="h-4 w-4 text-[var(--status-recommended)]" />
+                    <span>Blacklist warnings & scam alerts</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <ShieldCheckIcon className="h-4 w-4 text-[var(--status-recommended)]" />
+                    <span>Search by name or phone number</span>
+                  </li>
+                </ul>
+                <div className="mt-6">
+                  <Button asChild className="w-full">
+                    <Link href="/builders">
+                      Browse Builders
+                      <ArrowRightIcon className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Product 2: Investment Guide */}
+            <Card className="relative overflow-hidden border-2 border-[var(--color-energy)]/30">
+              <div className="absolute right-4 top-4 rounded-full bg-[var(--color-energy)]/10 px-3 py-1 text-xs font-medium text-[var(--color-energy)]">
+                Premium
+              </div>
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-energy)]/10">
+                  <BookOpenIcon className="h-7 w-7 text-[var(--color-energy)]" />
+                </div>
+                <h3 className="mt-4 text-xl font-medium sm:text-2xl">Bali Investment Guide</h3>
+                <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                  19 chapters covering everything from land ownership to ROI calculations to finding trusted suppliers.
+                </p>
+                <ul className="mt-4 space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <ShieldCheckIcon className="h-4 w-4 text-[var(--color-energy)]" />
+                    <span>Leasehold vs freehold explained</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <ShieldCheckIcon className="h-4 w-4 text-[var(--color-energy)]" />
+                    <span>Real ROI calculations & examples</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <ShieldCheckIcon className="h-4 w-4 text-[var(--color-energy)]" />
+                    <span>Trusted supplier contacts</span>
+                  </li>
+                </ul>
+                <div className="mt-6">
+                  <Button asChild variant="outline" className="w-full border-[var(--color-energy)] text-[var(--color-energy)] hover:bg-[var(--color-energy)]/10">
+                    <Link href="/guide">
+                      Read the Guide
+                      <ArrowRightIcon className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
