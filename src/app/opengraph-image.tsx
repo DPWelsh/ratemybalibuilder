@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'RateMyBaliBuilder - Vet your builder before you build';
+export const alt = 'RateMyBaliBuilder';
 export const size = {
   width: 1200,
   height: 630,
@@ -20,32 +20,50 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0a0a0a',
-          backgroundImage: 'radial-gradient(circle at 25% 25%, #1a1a2e 0%, transparent 50%), radial-gradient(circle at 75% 75%, #16213e 0%, transparent 50%)',
+          backgroundColor: '#171717',
         }}
       >
-        {/* Logo/Icon */}
+        {/* Logo container */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: 40,
+            gap: 24,
           }}
         >
-          <svg
-            width="80"
-            height="80"
-            viewBox="0 0 100 100"
-            style={{ marginRight: 20 }}
+          {/* Logo mark - matching your brand */}
+          <div
+            style={{
+              width: 100,
+              height: 100,
+              backgroundColor: '#7D312D',
+              borderRadius: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <circle cx="50" cy="50" r="48" fill="#fff" />
-            <polygon points="50,20 75,70 25,70" fill="#0a0a0a" />
-          </svg>
+            <svg
+              width="60"
+              height="60"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+          </div>
+
+          {/* Brand name */}
           <span
             style={{
-              fontSize: 48,
-              fontWeight: 900,
+              fontSize: 64,
+              fontWeight: 700,
               color: '#ffffff',
               letterSpacing: '-0.02em',
             }}
@@ -55,88 +73,14 @@ export default async function Image() {
         </div>
 
         {/* Tagline */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 56,
-              fontWeight: 700,
-              color: '#ffffff',
-              marginBottom: 16,
-            }}
-          >
-            Vet your builder
-          </span>
-          <span
-            style={{
-              fontSize: 56,
-              fontWeight: 700,
-              color: '#f97316',
-            }}
-          >
-            before you build
-          </span>
-        </div>
-
-        {/* Status indicators */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 32,
-            marginTop: 48,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: '#22c55e',
-              }}
-            />
-            <span style={{ color: '#a1a1aa', fontSize: 20 }}>Recommended</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: '#a855f7',
-              }}
-            />
-            <span style={{ color: '#a1a1aa', fontSize: 20 }}>Unknown</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: '#f97316',
-              }}
-            />
-            <span style={{ color: '#a1a1aa', fontSize: 20 }}>Blacklisted</span>
-          </div>
-        </div>
-
-        {/* URL */}
         <span
           style={{
-            position: 'absolute',
-            bottom: 40,
-            fontSize: 24,
-            color: '#71717a',
+            fontSize: 28,
+            color: '#a1a1aa',
+            marginTop: 24,
           }}
         >
-          ratemybalibuilder.com
+          Vet your builder before you build
         </span>
       </div>
     ),
