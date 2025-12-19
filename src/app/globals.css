@@ -417,3 +417,55 @@ button:active:not(:disabled), [role="button"]:active:not(:disabled) {
 .guide-content ul li input[type="checkbox"] {
   margin-right: 0.5em;
 }
+
+/* Mobile-responsive guide content */
+@media (max-width: 640px) {
+  .guide-content {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .guide-content h2 {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .guide-content h3 {
+    font-size: 1.25rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .guide-content h4 {
+    font-size: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .guide-content ul,
+  .guide-content ol {
+    padding-left: 1.25em;
+  }
+
+  .guide-content table {
+    font-size: 0.875rem;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .guide-content th,
+  .guide-content td {
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+  }
+
+  .guide-content pre {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .guide-content blockquote {
+    padding-left: 1rem;
+  }
+}
