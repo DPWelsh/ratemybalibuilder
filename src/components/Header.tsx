@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { CreditBalance } from './CreditBalance';
 import { Button } from '@/components/ui/button';
 import { MenuIcon, XIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
@@ -13,7 +12,6 @@ import type { User } from '@supabase/supabase-js';
 export function Header() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
-  const [creditBalance, setCreditBalance] = useState<number>(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -53,12 +51,11 @@ export function Header() {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('credit_balance, is_admin')
+          .select('is_admin')
           .eq('id', user.id)
           .single();
 
         if (profile) {
-          setCreditBalance(profile.credit_balance);
           setIsAdmin(profile.is_admin || false);
         }
       }
@@ -107,10 +104,7 @@ export function Header() {
             Investment Guide
           </Link>
           {isLoading ? (
-            <div className="flex items-center gap-6">
-              <div className="h-4 w-16 rounded bg-[var(--color-cloud)]/10 animate-pulse" />
-              <div className="h-8 w-20 rounded bg-[var(--color-cloud)]/10 animate-pulse" />
-            </div>
+            <div className="h-8 w-20 rounded bg-[var(--color-cloud)]/10 animate-pulse" />
           ) : user ? (
             <>
               {isAdmin && (
@@ -122,16 +116,10 @@ export function Header() {
                 </Link>
               )}
               <Link
-                href="/dashboard"
-                className={getLinkClass('/dashboard')}
+                href="/add-builder"
+                className={getLinkClass('/add-builder')}
               >
-                Dashboard
-              </Link>
-              <Link
-                href="/submit-review"
-                className={getLinkClass('/submit-review')}
-              >
-                Submit Review
+                Add Builder
               </Link>
               <Link
                 href="/account"
@@ -145,19 +133,18 @@ export function Header() {
               >
                 Sign Out
               </button>
-              <CreditBalance balance={creditBalance} />
             </>
           ) : (
             <>
               <Link
-                href="/login"
-                className="text-sm text-[var(--color-cloud)]/70 transition-colors hover:text-[var(--color-prompt)]"
+                href="/add-builder"
+                className={getLinkClass('/add-builder')}
               >
-                Sign In
+                Add Builder
               </Link>
               <Button asChild size="sm" className="bg-[var(--color-prompt)] text-[var(--color-core)] hover:bg-[var(--color-prompt)]/90">
-                <Link href="/signup">
-                  Sign Up
+                <Link href="/login">
+                  Sign In
                 </Link>
               </Button>
             </>
@@ -214,23 +201,12 @@ export function Header() {
                     <div className="my-2 h-px bg-[var(--color-cloud)]/10" />
                   </>
                 )}
-                <div className="px-3 py-2">
-                  <CreditBalance balance={creditBalance} showBuyLink={false} />
-                </div>
                 <Link
-                  href="/buy-credits"
+                  href="/add-builder"
                   onClick={closeMobileMenu}
-                  className="rounded-lg px-3 py-3 text-sm text-[var(--color-prompt)] transition-colors hover:bg-[var(--color-cloud)]/10"
+                  className={getMobileLinkClass('/add-builder')}
                 >
-                  Buy credits
-                </Link>
-                <div className="my-2 h-px bg-[var(--color-cloud)]/10" />
-                <Link
-                  href="/dashboard"
-                  onClick={closeMobileMenu}
-                  className={getMobileLinkClass('/dashboard')}
-                >
-                  Dashboard
+                  Add Builder
                 </Link>
                 <Link
                   href="/submit-review"
@@ -239,6 +215,7 @@ export function Header() {
                 >
                   Submit Review
                 </Link>
+                <div className="my-2 h-px bg-[var(--color-cloud)]/10" />
                 <Link
                   href="/account"
                   onClick={closeMobileMenu}
@@ -255,6 +232,13 @@ export function Header() {
               </>
             ) : (
               <>
+                <Link
+                  href="/add-builder"
+                  onClick={closeMobileMenu}
+                  className={getMobileLinkClass('/add-builder')}
+                >
+                  Add Builder
+                </Link>
                 <div className="my-2 h-px bg-[var(--color-cloud)]/10" />
                 <Link
                   href="/login"
