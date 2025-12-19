@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MEMBERSHIP_PLANS, MembershipPlanId } from '@/lib/stripe';
+import { MEMBERSHIP_PLANS, MembershipPlanId } from '@/lib/stripe-config';
 import {
   CheckIcon,
   CrownIcon,
