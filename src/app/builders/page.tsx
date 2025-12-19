@@ -439,7 +439,7 @@ function BuildersPageContent() {
     {
       field: 'status',
       headerName: 'Status',
-      width: 130,
+      width: 150,
       cellRenderer: editMode ? undefined : StatusCellRenderer,
       filter: SetFilter,
       filterParams: {

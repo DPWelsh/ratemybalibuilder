@@ -89,36 +89,42 @@ export default function AdminBuildersPage() {
     if (!editingBuilder) return;
 
     setUpdatingId(editingBuilder.id);
-    const supabase = createClient();
 
-    const { error } = await supabase
-      .from('builders')
-      .update({
-        name: editingBuilder.name,
-        phone: editingBuilder.phone,
-        location: editingBuilder.location,
-        trade_type: editingBuilder.trade_type,
-        website: editingBuilder.website || null,
-        google_reviews_url: editingBuilder.google_reviews_url || null,
-      })
-      .eq('id', editingBuilder.id);
+    try {
+      const response = await fetch(`/api/admin/builders/${editingBuilder.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editingBuilder.name,
+          phone: editingBuilder.phone,
+          location: editingBuilder.location,
+          trade_type: editingBuilder.trade_type,
+          website: editingBuilder.website || null,
+          google_reviews_url: editingBuilder.google_reviews_url || null,
+        }),
+      });
 
-    if (!error) {
-      setBuilders(builders.map(b =>
-        b.id === editingBuilder.id
-          ? {
-              ...b,
-              name: editingBuilder.name,
-              phone: editingBuilder.phone,
-              location: editingBuilder.location,
-              trade_type: editingBuilder.trade_type,
-              website: editingBuilder.website || null,
-              google_reviews_url: editingBuilder.google_reviews_url || null,
-            }
-          : b
-      ));
-      setEditingBuilder(null);
-    } else {
+      if (response.ok) {
+        setBuilders(builders.map(b =>
+          b.id === editingBuilder.id
+            ? {
+                ...b,
+                name: editingBuilder.name,
+                phone: editingBuilder.phone,
+                location: editingBuilder.location,
+                trade_type: editingBuilder.trade_type,
+                website: editingBuilder.website || null,
+                google_reviews_url: editingBuilder.google_reviews_url || null,
+              }
+            : b
+        ));
+        setEditingBuilder(null);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to save changes');
+      }
+    } catch (error) {
+      console.error('Error saving builder:', error);
       alert('Failed to save changes');
     }
 

@@ -110,36 +110,42 @@ export default function AdminReviewsPage() {
     if (!editingBuilder) return;
 
     setSavingBuilder(true);
-    const supabase = createClient();
 
-    const { error } = await supabase
-      .from('builders')
-      .update({
-        name: editingBuilder.name,
-        phone: editingBuilder.phone,
-        trade_type: editingBuilder.trade_type,
-        location: editingBuilder.location,
-      })
-      .eq('id', builderId);
+    try {
+      const response = await fetch(`/api/admin/builders/${builderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editingBuilder.name,
+          phone: editingBuilder.phone,
+          trade_type: editingBuilder.trade_type,
+          location: editingBuilder.location,
+        }),
+      });
 
-    if (!error) {
-      // Update local state
-      setReviews(reviews.map(r =>
-        r.id === editingBuilder.reviewId
-          ? {
-              ...r,
-              builder: {
-                ...r.builder,
-                name: editingBuilder.name,
-                phone: editingBuilder.phone,
-                trade_type: editingBuilder.trade_type,
-                location: editingBuilder.location,
+      if (response.ok) {
+        // Update local state
+        setReviews(reviews.map(r =>
+          r.id === editingBuilder.reviewId
+            ? {
+                ...r,
+                builder: {
+                  ...r.builder,
+                  name: editingBuilder.name,
+                  phone: editingBuilder.phone,
+                  trade_type: editingBuilder.trade_type,
+                  location: editingBuilder.location,
+                }
               }
-            }
-          : r
-      ));
-      setEditingBuilder(null);
-    } else {
+            : r
+        ));
+        setEditingBuilder(null);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to save builder changes');
+      }
+    } catch (error) {
+      console.error('Error saving builder:', error);
       alert('Failed to save builder changes');
     }
 
