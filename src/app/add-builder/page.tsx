@@ -312,26 +312,28 @@ export default function AddBuilderPage() {
               {/* Review Text */}
               <div className="space-y-1.5 sm:space-y-2">
                 <label htmlFor="reviewText" className="text-sm font-medium">
-                  Your review *
+                  Your review <span className="font-normal text-muted-foreground">(optional but recommended)</span>
                 </label>
                 <Textarea
                   id="reviewText"
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Share your experience with this builder (minimum 20 characters)"
+                  placeholder="Share your experience with this builder"
                   rows={4}
                   className="resize-none"
                 />
-                <p className="text-xs text-muted-foreground">
-                  {reviewText.length}/20 characters minimum
-                </p>
+                {reviewText.length > 0 && reviewText.length < 20 && (
+                  <p className="text-xs text-amber-600">
+                    Consider writing at least 20 characters for a helpful review
+                  </p>
+                )}
               </div>
 
               <Button
                 type="submit"
                 size="lg"
                 className="h-11 w-full sm:h-12"
-                disabled={isLoading || !status || rating === 0 || reviewText.length < 20}
+                disabled={isLoading || !status || rating === 0}
               >
                 {isLoading ? (
                   <>
@@ -343,13 +345,11 @@ export default function AddBuilderPage() {
                 )}
               </Button>
 
-              {(!status || rating === 0 || reviewText.length < 20) && (
+              {(!status || rating === 0) && (
                 <p className="text-center text-xs text-muted-foreground">
                   {!status
                     ? 'Please select your experience with this builder'
-                    : rating === 0
-                    ? 'Please rate this builder'
-                    : 'Please write at least 20 characters in your review'}
+                    : 'Please rate this builder'}
                 </p>
               )}
             </form>

@@ -2,7 +2,7 @@ import { createClient } from './client';
 
 export type BuilderStatus = 'recommended' | 'unknown' | 'blacklisted';
 export type Location = 'Canggu' | 'Seminyak' | 'Ubud' | 'Uluwatu' | 'Sanur' | 'Denpasar' | 'Tabanan' | 'Other';
-export type TradeType = 'General Contractor' | 'Pool Builder' | 'Architect' | 'Interior Designer' | 'Landscaper' | 'Renovation Specialist' | 'Plumber' | 'Electrician' | 'Roofer' | 'Painter' | 'Tiler' | 'Carpenter' | 'Mason' | 'HVAC' | 'Welder' | 'Glass & Glazing';
+export type TradeType = 'General Contractor' | 'Pool Builder' | 'Architect' | 'Interior Designer' | 'Landscaper' | 'Renovation Specialist' | 'Plumber' | 'Electrician' | 'Roofer' | 'Painter' | 'Tiler' | 'Carpenter' | 'Mason' | 'HVAC' | 'Welder' | 'Glass & Glazing' | 'Furniture Maker';
 export type ProjectType = 'Villas' | 'Renovations' | 'Pools' | 'Commercial' | 'Landscaping' | 'Interior Fit-out';
 
 export interface PhoneEntry {
@@ -161,6 +161,7 @@ export const tradeTypes: TradeType[] = [
   'HVAC',
   'Welder',
   'Glass & Glazing',
+  'Furniture Maker',
 ];
 
 export const projectTypes: ProjectType[] = [

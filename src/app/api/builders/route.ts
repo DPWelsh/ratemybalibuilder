@@ -43,17 +43,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate review fields
+    // Validate review fields - rating is required, text is optional
     if (!rating || rating < 1 || rating > 5) {
       return NextResponse.json(
         { error: 'Rating must be between 1 and 5' },
-        { status: 400 }
-      );
-    }
-
-    if (!review_text || review_text.trim().length < 20) {
-      return NextResponse.json(
-        { error: 'Review must be at least 20 characters' },
         { status: 400 }
       );
     }
@@ -101,13 +94,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create the review (pending approval)
+    // Create the review (pending approval) - text is optional
     const { error: reviewError } = await supabase
       .from('reviews')
       .insert({
         builder_id: builder.id,
         rating: rating,
-        review_text: review_text.trim(),
+        review_text: review_text?.trim() || null,
         status: 'pending', // Reviews need admin approval
       });
 
