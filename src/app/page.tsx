@@ -170,7 +170,7 @@ export default function Home() {
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl">Every listing is manually verified</h2>
             <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-              We don&apos;t just collect reviews — we verify them. Our local team contacts builders directly
+              We don&apos;t just collect reviews - we verify them. Our local team contacts builders directly
               and cross-references project details to ensure every review reflects real experiences.
             </p>
           </div>
