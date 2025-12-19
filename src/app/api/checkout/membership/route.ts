@@ -71,22 +71,13 @@ export async function POST(request: NextRequest) {
 
     // Build checkout session based on plan mode
     if (plan.mode === 'subscription') {
+      // Use the pre-created Stripe price ID for subscriptions
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
         payment_method_types: ['card'],
         line_items: [
           {
-            price_data: {
-              currency: plan.currency,
-              product_data: {
-                name: plan.name,
-                description: plan.description,
-              },
-              unit_amount: plan.priceInCents,
-              recurring: {
-                interval: plan.interval,
-              },
-            },
+            price: plan.priceId,
             quantity: 1,
           },
         ],
@@ -107,20 +98,13 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ url: session.url });
     } else {
-      // One-time payment (guide_only)
+      // One-time payment - use pre-created Stripe price ID
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
         payment_method_types: ['card'],
         line_items: [
           {
-            price_data: {
-              currency: plan.currency,
-              product_data: {
-                name: plan.name,
-                description: plan.description,
-              },
-              unit_amount: plan.priceInCents,
-            },
+            price: plan.priceId,
             quantity: 1,
           },
         ],
