@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { AppLayout } from "@/components/AppLayout";
 import { Footer } from "@/components/Footer";
@@ -111,6 +112,7 @@ export default function RootLayout({
           <div className="flex-1">{children}</div>
           <Footer />
         </AppLayout>
+        <Analytics />
       </body>
     </html>
   );
