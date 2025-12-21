@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { TrustStats } from './TrustStats';
+import { MessageCircleIcon } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -60,6 +61,17 @@ export function Footer() {
               <li>
                 <a href="mailto:hello@ratemybalibuilder.com" className="text-sm text-muted-foreground transition-colors hover:text-[var(--color-prompt)]">
                   hello@ratemybalibuilder.com
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/628135339015"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-[var(--color-prompt)]"
+                >
+                  <MessageCircleIcon className="h-3.5 w-3.5" />
+                  +62 813-5339-015
                 </a>
               </li>
             </ul>
