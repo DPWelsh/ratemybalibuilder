@@ -148,6 +148,37 @@ export default function Home() {
                 <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
                   Free to search. Help us grow by adding builders you know.
                 </p>
+
+                {/* Browse by Trade */}
+                <div className="mt-5 border-t pt-5">
+                  <p className="mb-3 text-xs text-muted-foreground">or browse by trade</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {[
+                      { label: 'General Contractor', value: 'General Contractor' },
+                      { label: 'Architect', value: 'Architect' },
+                      { label: 'Electrician', value: 'Electrician' },
+                      { label: 'Plumber', value: 'Plumber' },
+                      { label: 'Painter', value: 'Painter' },
+                      { label: 'Pool Builder', value: 'Pool Builder' },
+                    ].map((trade) => (
+                      <Link
+                        key={trade.value}
+                        href={`/builders?trade=${encodeURIComponent(trade.value)}`}
+                        className="rounded-full border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-secondary hover:text-foreground"
+                      >
+                        {trade.label}
+                      </Link>
+                    ))}
+                  </div>
+                  <Link
+                    href="/builders"
+                    className="mt-3 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground hover:underline"
+                  >
+                    View all trades
+                    <ArrowRightIcon className="h-3 w-3" />
+                  </Link>
+                </div>
+
                 {/* Security badge */}
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                   <ShieldCheckIcon className="h-4 w-4 text-[var(--status-recommended)]" />
