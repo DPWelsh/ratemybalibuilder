@@ -53,8 +53,14 @@ export function FilterBar({
         value={selectedLocation}
         onValueChange={(value) => onLocationChange(value as Location | 'all')}
       >
-        <SelectTrigger className="w-full sm:w-[160px]">
-          <MapPinIcon className="h-4 w-4 text-muted-foreground" />
+        <SelectTrigger
+          className={`w-full sm:w-[160px] ${
+            selectedLocation !== 'all'
+              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)]'
+              : ''
+          }`}
+        >
+          <MapPinIcon className={`h-4 w-4 ${selectedLocation !== 'all' ? 'text-[var(--color-prompt)]' : 'text-muted-foreground'}`} />
           <SelectValue placeholder="All Areas" />
         </SelectTrigger>
         <SelectContent>
@@ -72,8 +78,14 @@ export function FilterBar({
         value={selectedTradeType}
         onValueChange={(value) => onTradeTypeChange(value as TradeType | 'all')}
       >
-        <SelectTrigger className="w-full sm:w-[180px]">
-          <WrenchIcon className="h-4 w-4 text-muted-foreground" />
+        <SelectTrigger
+          className={`w-full sm:w-[180px] ${
+            selectedTradeType !== 'all'
+              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)]'
+              : ''
+          }`}
+        >
+          <WrenchIcon className={`h-4 w-4 ${selectedTradeType !== 'all' ? 'text-[var(--color-prompt)]' : 'text-muted-foreground'}`} />
           <SelectValue placeholder="All Trades" />
         </SelectTrigger>
         <SelectContent>
@@ -91,8 +103,14 @@ export function FilterBar({
         value={selectedStatus}
         onValueChange={(value) => onStatusChange(value as BuilderStatus | 'all')}
       >
-        <SelectTrigger className="w-full sm:w-[160px]">
-          <ShieldCheckIcon className="h-4 w-4 text-muted-foreground" />
+        <SelectTrigger
+          className={`w-full sm:w-[160px] ${
+            selectedStatus !== 'all'
+              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)]'
+              : ''
+          }`}
+        >
+          <ShieldCheckIcon className={`h-4 w-4 ${selectedStatus !== 'all' ? 'text-[var(--color-prompt)]' : 'text-muted-foreground'}`} />
           <SelectValue placeholder="All Status" />
         </SelectTrigger>
         <SelectContent>
