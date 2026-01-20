@@ -48,6 +48,7 @@ interface TradeComboboxSingleProps {
   onValueChange: (value: string) => void;
   multi?: false;
   error?: boolean;
+  placeholder?: string;
 }
 
 // Multi-select props
@@ -56,6 +57,7 @@ interface TradeComboboxMultiProps {
   onValueChange: (value: string[]) => void;
   multi: true;
   error?: boolean;
+  placeholder?: string;
 }
 
 type TradeComboboxProps = TradeComboboxSingleProps | TradeComboboxMultiProps;
@@ -146,7 +148,7 @@ export function TradeCombobox(props: TradeComboboxProps) {
   }
 
   // Single-select mode (default)
-  const { value, onValueChange } = props as TradeComboboxSingleProps;
+  const { value, onValueChange, placeholder } = props as TradeComboboxSingleProps;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -161,7 +163,7 @@ export function TradeCombobox(props: TradeComboboxProps) {
           )}
         >
           {value || (
-            <span className="text-muted-foreground">Select trade...</span>
+            <span className="text-muted-foreground">{placeholder || 'Select trade...'}</span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

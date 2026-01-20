@@ -15,17 +15,12 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [tradeType, setTradeType] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
-  const [tradeError, setTradeError] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!searchQuery.trim()) return;
-
-    if (!tradeType) {
-      setTradeError(true);
-      return;
-    }
+    // Need either a search query or a trade selected
+    if (!searchQuery.trim() && !tradeType) return;
 
     setIsSearching(true);
 
@@ -39,15 +34,22 @@ export default function Home() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         phone: isPhone ? searchQuery : null,
-        name: !isPhone ? searchQuery : null,
+        name: !isPhone && searchQuery ? searchQuery : null,
         trade_type: tradeType || null,
       }),
     }).catch(() => {
       // Don't block search if logging fails
     });
 
-    // Navigate to builders page with search query (don't pass trade type - let users see all results first)
-    router.push(`/builders?q=${encodeURIComponent(searchQuery)}`);
+    // Navigate to builders page with search query and/or trade filter
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) {
+      params.set('q', searchQuery);
+    }
+    if (tradeType) {
+      params.set('trade', tradeType);
+    }
+    router.push(`/builders?${params.toString()}`);
   };
   return (
     <div className="flex min-h-[calc(100vh-57px)] flex-col sm:min-h-[calc(100vh-73px)]">
@@ -117,21 +119,15 @@ export default function Home() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </div>
-                    <div className="relative w-full sm:w-[200px]">
-                      {tradeError && (
-                        <p className="absolute -top-5 left-0 text-xs text-destructive">Please select a trade</p>
-                      )}
+                    <div className="w-full sm:w-[200px]">
                       <TradeCombobox
                         value={tradeType}
-                        onValueChange={(val) => {
-                          setTradeType(val);
-                          setTradeError(false);
-                        }}
-                        error={tradeError}
+                        onValueChange={setTradeType}
+                        placeholder="Any trade"
                       />
                     </div>
                   </div>
-                  <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={!searchQuery.trim() || isSearching}>
+                  <Button type="submit" size="lg" className="h-12 w-full text-base" disabled={(!searchQuery.trim() && !tradeType) || isSearching}>
                     {isSearching ? (
                       <>
                         <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
@@ -139,7 +135,7 @@ export default function Home() {
                       </>
                     ) : (
                       <>
-                        Search builder
+                        {searchQuery.trim() ? 'Search builder' : tradeType ? `Browse ${tradeType}s` : 'Search builder'}
                         <ArrowRightIcon className="ml-2 h-4 w-4" />
                       </>
                     )}

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2Icon, UserPlusIcon, CheckIcon, CheckCircleIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon, StarIcon } from 'lucide-react';
+import { Loader2Icon, UserPlusIcon, CheckIcon, CheckCircleIcon, ThumbsUpIcon, HelpCircleIcon, AlertTriangleIcon, StarIcon, ImagePlusIcon, XIcon } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { TradeCombobox } from '@/components/TradeCombobox';
 import { LocationCombobox } from '@/components/LocationCombobox';
@@ -51,19 +51,30 @@ const statusOptions: {
 
 // Format phone number as user types: +62 812-3456-7890
 function formatPhoneInput(value: string): string {
+  // Check if user is typing an international format (starts with +)
+  const startsWithPlus = value.trimStart().startsWith('+');
+
   // Remove all non-digits
   let digits = value.replace(/\D/g, '');
 
-  // Handle common Indonesian formats
-  if (digits.startsWith('0')) {
-    digits = '62' + digits.substring(1);
-  } else if (digits.startsWith('8') && digits.length <= 12) {
-    digits = '62' + digits;
+  // If user typed just '+' with no digits yet, keep it visible
+  if (!digits && startsWithPlus) {
+    return '+';
   }
 
   if (!digits) return '';
 
-  // Format as +62 xxx-xxxx-xxxx
+  // Handle common Indonesian formats (only if NOT starting with +)
+  // This allows international numbers to pass through unchanged
+  if (!startsWithPlus) {
+    if (digits.startsWith('0')) {
+      digits = '62' + digits.substring(1);
+    } else if (digits.startsWith('8') && digits.length <= 12) {
+      digits = '62' + digits;
+    }
+  }
+
+  // Format as +XX XXX-XXXX-XXXX
   if (digits.length <= 2) {
     return '+' + digits;
   } else if (digits.length <= 5) {
@@ -91,10 +102,72 @@ export function AddBuilderClient() {
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [showPublicly, setShowPublicly] = useState(true);
+  const [photos, setPhotos] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [createdBuilderId, setCreatedBuilderId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please upload a JPG, PNG, or WebP image.');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Photo must be under 5MB.');
+      return;
+    }
+
+    if (photos.length >= 5) {
+      setError('Maximum 5 photos allowed.');
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to upload photo');
+        return;
+      }
+
+      setPhotos([...photos, data.url]);
+    } catch {
+      setError('Failed to upload photo. Please try again.');
+    } finally {
+      setIsUploadingPhoto(false);
+      // Reset file input so same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos(photos.filter((_, i) => i !== index));
+  };
 
   // Auto-format phone as user types
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,6 +230,7 @@ export function AddBuilderClient() {
           rating,
           review_text: reviewText.trim(),
           is_anonymous: !showPublicly,
+          photos,
         }),
       });
 
@@ -191,10 +265,15 @@ export function AddBuilderClient() {
     setHoverRating(0);
     setReviewText('');
     setShowPublicly(true);
+    setPhotos([]);
     setError('');
     setSuccess(false);
     setCreatedBuilderId(null);
     setIsLoading(false);
+    setIsUploadingPhoto(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   if (success) {
@@ -402,17 +481,68 @@ export function AddBuilderClient() {
                 </div>
               </div>
 
+              {/* Photo Upload */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Photos (optional)</label>
+                <div className="flex flex-wrap gap-2">
+                  {photos.map((photo, index) => (
+                    <div key={index} className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photo}
+                        alt={`Upload ${index + 1}`}
+                        className="h-20 w-20 rounded-lg object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="absolute -right-2 -top-2 rounded-full bg-foreground p-1 text-background shadow-md"
+                      >
+                        <XIcon className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {photos.length < 5 && (
+                    <label
+                      className={`flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-muted-foreground/70 ${isUploadingPhoto ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/heic"
+                        onChange={handlePhotoUpload}
+                        disabled={isUploadingPhoto}
+                        className="hidden"
+                      />
+                      {isUploadingPhoto ? (
+                        <Loader2Icon className="h-6 w-6 animate-spin" />
+                      ) : (
+                        <ImagePlusIcon className="h-6 w-6" />
+                      )}
+                    </label>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Add up to 5 photos (before/after, issues found, etc.)
+                </p>
+              </div>
+
               {/* Submit */}
               <Button
                 type="submit"
                 size="lg"
                 className="h-12 w-full text-base"
-                disabled={isLoading}
+                disabled={isLoading || isUploadingPhoto}
               >
                 {isLoading ? (
                   <>
                     <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                     Submitting...
+                  </>
+                ) : isUploadingPhoto ? (
+                  <>
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading photo...
                   </>
                 ) : (
                   'Submit'
