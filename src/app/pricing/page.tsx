@@ -5,16 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MEMBERSHIP_PLANS, MembershipPlanId } from '@/lib/stripe-config';
+import { MembershipPlanId } from '@/lib/stripe-config';
 import {
   CheckIcon,
-  CrownIcon,
   Loader2Icon,
   ArrowRightIcon,
-  ShieldCheckIcon,
   SparklesIcon,
   BookOpenIcon,
-  XIcon,
   GiftIcon,
 } from 'lucide-react';
 
@@ -70,12 +67,18 @@ export default function PricingPage() {
     }
   };
 
-  const guidePlan = MEMBERSHIP_PLANS.guide;
-  const investorPlan = MEMBERSHIP_PLANS.investor;
+  const features = [
+    'Complete Bali Investment Guide (19 chapters)',
+    'Downloadable PDF',
+    'ROI calculator tool',
+    'Searchable Supplier Directory (100+ contacts)',
+    'Priority builder verification',
+    'Lifetime access & updates',
+  ];
 
   return (
     <div className="min-h-screen px-4 py-16 sm:px-6 sm:py-24">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-xl">
         {/* Header */}
         <div className="text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[var(--color-energy)]/10 px-4 py-2 text-sm font-medium text-[var(--color-energy)]">
@@ -83,7 +86,7 @@ export default function PricingPage() {
             Invest smarter in Bali
           </div>
           <h1 className="text-3xl tracking-tight sm:text-5xl">
-            Choose Your Plan
+            Bali Investment Guide
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Everything you need to invest confidently in Bali real estate.
@@ -97,51 +100,45 @@ export default function PricingPage() {
           </div>
         )}
 
-        {/* Pricing Cards */}
-        <div className="mt-12 grid gap-8 lg:grid-cols-2">
-          {/* Guide Plan - $79 one-time */}
-          <Card className="relative border-2">
+        {/* Single Pricing Card */}
+        <div className="mt-12">
+          <Card className="relative border-2 border-[var(--color-energy)]">
+            {/* 50% off badge */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+              <span className="rounded-full bg-[var(--color-energy)] px-4 py-1 text-sm font-medium text-white">
+                50% Off
+              </span>
+            </div>
+
             <CardContent className="p-6 sm:p-8">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
-                  <BookOpenIcon className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">{guidePlan.name}</h2>
-                  <p className="text-sm text-muted-foreground">{guidePlan.description}</p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-energy)]/10">
+                  <BookOpenIcon className="h-7 w-7 text-[var(--color-energy)]" />
                 </div>
               </div>
 
-              <div className="mt-6 flex items-baseline gap-1">
+              <div className="mt-6 flex items-baseline justify-center gap-2">
+                <span className="text-2xl text-muted-foreground line-through">$158</span>
                 <span className="text-5xl font-bold">$79</span>
-                <span className="text-xl text-muted-foreground">one-time</span>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground">Pay once, access forever</p>
+              <p className="mt-2 text-center text-sm text-[var(--status-recommended)] font-medium">
+                One-time payment • Lifetime access
+              </p>
 
               <ul className="mt-8 space-y-4">
-                {guidePlan.features.map((feature) => (
+                {features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
-                    <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
+                    <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-energy)]" />
                     <span>{feature}</span>
                   </li>
                 ))}
-                {/* Show what's NOT included */}
-                <li className="flex items-start gap-3 text-muted-foreground">
-                  <XIcon className="mt-0.5 h-5 w-5 shrink-0" />
-                  <span>Supplier Directory (100+ contacts)</span>
-                </li>
-                <li className="flex items-start gap-3 text-muted-foreground">
-                  <XIcon className="mt-0.5 h-5 w-5 shrink-0" />
-                  <span>Priority builder verification</span>
-                </li>
               </ul>
 
               <Button
                 onClick={() => handleCheckout('guide')}
                 disabled={loading !== null}
                 size="lg"
-                variant="outline"
-                className="mt-8 w-full text-lg"
+                className="mt-8 w-full bg-[var(--color-energy)] text-lg hover:bg-[var(--color-energy)]/90"
               >
                 {loading === 'guide' ? (
                   <>
@@ -151,64 +148,6 @@ export default function PricingPage() {
                 ) : (
                   <>
                     Get the Guide
-                    <ArrowRightIcon className="ml-2 h-5 w-5" />
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Investor Plan - $199/year */}
-          <Card className="relative border-2 border-[var(--color-energy)]">
-            {/* Popular badge */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="rounded-full bg-[var(--color-energy)] px-4 py-1 text-sm font-medium text-white">
-                Best Value
-              </span>
-            </div>
-
-            <CardContent className="p-6 sm:p-8">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-energy)]/10">
-                  <CrownIcon className="h-6 w-6 text-[var(--color-energy)]" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">{investorPlan.name}</h2>
-                  <p className="text-sm text-muted-foreground">{investorPlan.description}</p>
-                </div>
-              </div>
-
-              <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-5xl font-bold">$199</span>
-                <span className="text-xl text-muted-foreground">/year</span>
-              </div>
-              <p className="mt-1 text-sm text-[var(--status-recommended)]">
-                $16.58/month • Cancel anytime
-              </p>
-
-              <ul className="mt-8 space-y-4">
-                {investorPlan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-energy)]" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                onClick={() => handleCheckout('investor')}
-                disabled={loading !== null}
-                size="lg"
-                className="mt-8 w-full bg-[var(--color-energy)] text-lg hover:bg-[var(--color-energy)]/90"
-              >
-                {loading === 'investor' ? (
-                  <>
-                    <Loader2Icon className="mr-2 h-5 w-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    Get Full Access
                     <ArrowRightIcon className="ml-2 h-5 w-5" />
                   </>
                 )}
@@ -274,29 +213,29 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Comparison */}
+        {/* What's included */}
         <div className="mt-16">
-          <h2 className="text-center text-2xl font-bold">Why Investor?</h2>
+          <h2 className="text-center text-2xl font-bold">What&apos;s Included</h2>
           <p className="mt-2 text-center text-muted-foreground">
-            The supplier contacts alone can save you thousands
+            Everything you need in one package
           </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             <div className="rounded-lg border p-5 text-center">
-              <div className="text-3xl font-bold text-[var(--color-energy)]">100+</div>
+              <div className="text-3xl font-bold text-[var(--color-energy)]">19</div>
               <p className="mt-1 text-sm text-muted-foreground">
-                Verified contacts with WhatsApp links
+                In-depth chapters covering every aspect
               </p>
             </div>
             <div className="rounded-lg border p-5 text-center">
-              <div className="text-3xl font-bold text-[var(--color-energy)]">$250+</div>
+              <div className="text-3xl font-bold text-[var(--color-energy)]">100+</div>
               <p className="mt-1 text-sm text-muted-foreground">
-                What competitors charge for less
+                Verified supplier contacts with WhatsApp
               </p>
             </div>
             <div className="rounded-lg border p-5 text-center">
               <div className="text-3xl font-bold text-[var(--color-energy)]">∞</div>
               <p className="mt-1 text-sm text-muted-foreground">
-                Lifetime updates included
+                Lifetime access & updates
               </p>
             </div>
           </div>
@@ -307,21 +246,21 @@ export default function PricingPage() {
           <h2 className="text-center text-2xl font-bold">Questions</h2>
           <div className="mt-8 space-y-4">
             <div className="rounded-lg border p-5">
-              <h3 className="font-medium">What&apos;s the difference between plans?</h3>
+              <h3 className="font-medium">Is this a subscription?</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                The Guide ($79) gives you all 19 chapters. Investor ($199/year) adds the supplier directory with 100+ verified contacts, priority builder verification, and ongoing updates.
-              </p>
-            </div>
-            <div className="rounded-lg border p-5">
-              <h3 className="font-medium">Can I upgrade later?</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Yes! Start with the Guide and upgrade to Investor anytime. You&apos;ll only pay the difference.
+                No, it&apos;s a one-time payment. Pay once and get lifetime access to the guide, all 100+ supplier contacts, and future updates.
               </p>
             </div>
             <div className="rounded-lg border p-5">
               <h3 className="font-medium">Is the builder directory still free?</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Yes! Searching and browsing builders is always free. The paid plans unlock the investment guide and supplier contacts.
+                Yes! Searching and browsing builders is always free. The paid guide unlocks the investment guide and supplier contacts.
+              </p>
+            </div>
+            <div className="rounded-lg border p-5">
+              <h3 className="font-medium">What if I&apos;m not satisfied?</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                We offer a 30-day money-back guarantee. If the guide doesn&apos;t meet your expectations, we&apos;ll refund you in full.
               </p>
             </div>
           </div>
