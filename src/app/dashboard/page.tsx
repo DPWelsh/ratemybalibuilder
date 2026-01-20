@@ -6,24 +6,20 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import {
-  SearchIcon,
   PlusCircleIcon,
-  ArrowRightIcon,
   SettingsIcon,
   Loader2Icon,
   HeartIcon,
   XIcon,
   UserPlusIcon,
-  ShieldCheckIcon,
   GiftIcon,
   CheckCircleIcon,
 } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { StatusBadge } from '@/components/StatusBadge';
 import { BuilderStatus } from '@/lib/supabase/builders';
-import { TradeCombobox } from '@/components/TradeCombobox';
+import { SearchForm } from '@/components/SearchForm';
 
 interface AddedBuilder {
   id: string;
@@ -57,8 +53,6 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [tradeType, setTradeType] = useState<string>('');
   const [savedBuilders, setSavedBuilders] = useState<SavedBuilder[]>([]);
   const [addedBuilders, setAddedBuilders] = useState<AddedBuilder[]>([]);
   const router = useRouter();
@@ -142,17 +136,6 @@ export default function DashboardPage() {
 
     getUser();
   }, [router]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-
-    // Navigate to builders page with search query (same as home page)
-    const params = new URLSearchParams();
-    params.set('q', searchQuery);
-    if (tradeType && tradeType !== 'any') params.set('trade', tradeType);
-    router.push(`/builders?${params.toString()}`);
-  };
 
   const handleRemoveSavedBuilder = async (builderId: string) => {
     if (!user) return;
@@ -259,42 +242,7 @@ export default function DashboardPage() {
         {/* Quick Search */}
         <Card className="mb-6 border-0 shadow-md sm:mb-8">
           <CardContent className="p-4 sm:p-6">
-            <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
-              <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-                <div className="relative flex-1">
-                  <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="search"
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Name or phone..."
-                    className="h-12 pl-10"
-                  />
-                </div>
-                <div className="w-full sm:w-[200px]">
-                  <TradeCombobox
-                    value={tradeType}
-                    onValueChange={setTradeType}
-                  />
-                </div>
-              </div>
-              <Button
-                type="submit"
-                className="h-12 w-full"
-                disabled={!searchQuery.trim() || !tradeType}
-              >
-                Search Builder
-                <ArrowRightIcon className="ml-2 h-4 w-4" />
-              </Button>
-            </form>
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              Free to search. Help us grow by adding builders you know.
-            </p>
-            <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-              <ShieldCheckIcon className="h-3.5 w-3.5" />
-              <span>Community-verified reviews</span>
-            </div>
+            <SearchForm />
           </CardContent>
         </Card>
 

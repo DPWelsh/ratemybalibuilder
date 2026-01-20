@@ -33,7 +33,7 @@ function formatPhone(phone: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, trade_type, location, company_name, status, rating, review_text, is_anonymous } = body;
+    const { name, phone, trade_type, location, company_name, status, rating, review_text, is_anonymous, photos } = body;
 
     // Get current user (optional - for tracking contributions)
     const supabaseUser = await createClient();
@@ -124,6 +124,7 @@ export async function POST(request: Request) {
         review_text: review_text.trim(),
         status: 'pending', // Reviews need admin approval
         is_anonymous: is_anonymous || false,
+        photos: photos || [],
       })
       .select('id')
       .single();

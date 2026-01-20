@@ -4,65 +4,116 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRightIcon, Loader2Icon } from 'lucide-react';
-import { PRICING, formatPrice } from '@/lib/pricing';
+import { TradeCombobox } from '@/components/TradeCombobox';
+import { SearchIcon, ArrowRightIcon, Loader2Icon, ShieldCheckIcon } from 'lucide-react';
 
-export function SearchForm() {
-  const [phone, setPhone] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+interface SearchFormProps {
+  showSecurityBadge?: boolean;
+  showHelpText?: boolean;
+}
+
+export function SearchForm({ showSecurityBadge = true, showHelpText = true }: SearchFormProps) {
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [tradeType, setTradeType] = useState<string>('');
+  const [isSearching, setIsSearching] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone) return;
 
-    setIsLoading(true);
+    // Need either a search query or a trade selected
+    if (!searchQuery.trim() && !tradeType) return;
+
+    setIsSearching(true);
+
+    // Determine if input looks like a phone number (mostly digits)
+    const digitsOnly = searchQuery.replace(/[^\d]/g, '');
+    const isPhone = digitsOnly.length >= 6;
+
+    // Log the search (don't await - fire and forget)
+    fetch('/api/search-logs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: isPhone ? searchQuery : null,
+        name: !isPhone && searchQuery ? searchQuery : null,
+        trade_type: tradeType || null,
+      }),
+    }).catch(() => {
+      // Don't block search if logging fails
+    });
+
+    // Navigate to builders page with search query and/or trade filter
     const params = new URLSearchParams();
-    params.set('phone', phone);
-    router.push(`/search?${params.toString()}`);
+    if (searchQuery.trim()) {
+      params.set('q', searchQuery);
+    }
+    if (tradeType) {
+      params.set('trade', tradeType);
+    }
+    router.push(`/builders?${params.toString()}`);
+  };
+
+  const getButtonText = () => {
+    if (searchQuery.trim()) return 'Search builder';
+    if (tradeType) return `Browse ${tradeType}s`;
+    return 'Search builder';
   };
 
   return (
-    <Card className="border-0 shadow-lg">
-      <CardContent className="p-4 sm:p-6">
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-          <div className="space-y-1.5 sm:space-y-2">
-            <label htmlFor="search-phone" className="text-sm font-medium">
-              Phone / WhatsApp
-            </label>
+    <div>
+      <form onSubmit={handleSearch} className="space-y-3 sm:space-y-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+          <div className="relative flex-1">
+            <SearchIcon className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
-              id="search-phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+62 812 XXX XXXX"
-              className="h-11 sm:h-12"
+              id="search"
+              name="search"
+              type="text"
+              placeholder="Name or phone..."
+              className="h-12 pl-11 text-base"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button
-            type="submit"
-            size="lg"
-            className="h-11 w-full sm:h-12"
-            disabled={!phone || isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                Searching...
-              </>
-            ) : (
-              <>
-                Search builder
-                <ArrowRightIcon className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
-        </form>
+          <div className="w-full sm:w-[200px]">
+            <TradeCombobox
+              value={tradeType}
+              onValueChange={setTradeType}
+              placeholder="Any trade"
+            />
+          </div>
+        </div>
+        <Button
+          type="submit"
+          size="lg"
+          className="h-12 w-full text-base"
+          disabled={(!searchQuery.trim() && !tradeType) || isSearching}
+        >
+          {isSearching ? (
+            <>
+              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+              Searching...
+            </>
+          ) : (
+            <>
+              {getButtonText()}
+              <ArrowRightIcon className="ml-2 h-4 w-4" />
+            </>
+          )}
+        </Button>
+      </form>
+      {showHelpText && (
         <p className="mt-3 text-center text-xs text-muted-foreground sm:mt-4 sm:text-sm">
-          {formatPrice(PRICING.unlock)} to unlock findings. Only charged if found.
+          Free to search. Help us grow by adding builders you know.
         </p>
-      </CardContent>
-    </Card>
+      )}
+      {showSecurityBadge && (
+        <div className="mt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <ShieldCheckIcon className="h-4 w-4 text-[var(--status-recommended)]" />
+          <span>Community-verified reviews</span>
+        </div>
+      )}
+    </div>
   );
 }
