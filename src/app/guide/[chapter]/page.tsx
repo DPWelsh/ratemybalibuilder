@@ -24,6 +24,7 @@ import { LeadMagnetGate } from '@/components/guide/LeadMagnetGate';
 import { PaywallCTA } from '@/components/guide/PaywallCTA';
 import { GuideSidebar } from '@/components/guide/GuideSidebar';
 import { MobileChapterNav } from '@/components/guide/MobileChapterNav';
+import { MarkCompleteButton } from '@/components/guide/MarkCompleteButton';
 
 interface PageProps {
   params: Promise<{ chapter: string }>;
@@ -65,6 +66,7 @@ export default async function ChapterPage({ params }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser();
 
   let hasFullAccess = false;
+  let completedChapters: string[] = [];
 
   if (user) {
     const { data: profile } = await supabase
@@ -74,7 +76,19 @@ export default async function ChapterPage({ params }: PageProps) {
       .single();
 
     hasFullAccess = profile?.has_free_guide_access || profile?.membership_tier === 'investor';
+
+    // Fetch completed chapters for progress tracking
+    const { data: progressData } = await supabase
+      .from('guide_progress')
+      .select('chapter_slug')
+      .eq('user_id', user.id);
+
+    if (progressData) {
+      completedChapters = progressData.map(p => p.chapter_slug);
+    }
   }
+
+  const isChapterCompleted = completedChapters.includes(chapter.slug);
 
   const content = await getChapterContent(chapter);
   const chapterIndex = chapters.findIndex((c) => c.id === chapter.id);
@@ -156,6 +170,7 @@ export default async function ChapterPage({ params }: PageProps) {
           {/* Sidebar - desktop only */}
           <GuideSidebar
             currentChapter={chapter.slug}
+            completedChapters={completedChapters}
             className="hidden lg:flex lg:w-72 lg:shrink-0 lg:flex-col lg:border-r lg:px-6 lg:py-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto"
           />
 
@@ -277,8 +292,19 @@ export default async function ChapterPage({ params }: PageProps) {
                   <PaywallCTA chapter={chapter} isPremium={isPremium} />
                 )}
 
+                {/* Mark as Complete button */}
+                {showFullContent && (
+                  <div className="mt-12 flex justify-center border-t pt-8">
+                    <MarkCompleteButton
+                      chapterSlug={chapter.slug}
+                      initialCompleted={isChapterCompleted}
+                      isLoggedIn={!!user}
+                    />
+                  </div>
+                )}
+
                 {/* Navigation */}
-                <nav className="mt-16 flex items-center justify-between border-t pt-8">
+                <nav className="mt-12 flex items-center justify-between border-t pt-8">
                   {prevChapter ? (
                     <Link href={`/guide/${prevChapter.slug}`} className="group">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
