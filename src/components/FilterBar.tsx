@@ -56,7 +56,7 @@ export function FilterBar({
         <SelectTrigger
           className={`w-full sm:w-[160px] ${
             selectedLocation !== 'all'
-              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)]'
+              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)] font-semibold'
               : ''
           }`}
         >
@@ -81,7 +81,7 @@ export function FilterBar({
         <SelectTrigger
           className={`w-full sm:w-[180px] ${
             selectedTradeType !== 'all'
-              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)]'
+              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)] font-semibold'
               : ''
           }`}
         >
@@ -106,7 +106,7 @@ export function FilterBar({
         <SelectTrigger
           className={`w-full sm:w-[160px] ${
             selectedStatus !== 'all'
-              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)]'
+              ? 'border-[var(--color-prompt)] bg-[var(--color-prompt)]/10 text-[var(--color-prompt)] font-semibold'
               : ''
           }`}
         >
