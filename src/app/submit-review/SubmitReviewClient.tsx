@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,9 @@ function SubmitReviewContent() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch all builders on mount
   useEffect(() => {
@@ -89,10 +91,58 @@ function SubmitReviewContent() {
     );
   }).slice(0, 10); // Limit to 10 results
 
-  const handlePhotoUpload = () => {
-    if (photos.length < 5) {
-      const newPhoto = `https://picsum.photos/seed/${Date.now()}/400/300`;
-      setPhotos([...photos, newPhoto]);
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please upload a JPG, PNG, or WebP image.');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Photo must be under 5MB.');
+      return;
+    }
+
+    if (photos.length >= 5) {
+      setError('Maximum 5 photos allowed.');
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to upload photo');
+        return;
+      }
+
+      setPhotos([...photos, data.url]);
+    } catch {
+      setError('Failed to upload photo. Please try again.');
+    } finally {
+      setIsUploadingPhoto(false);
+      // Reset file input so same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -356,13 +406,23 @@ function SubmitReviewContent() {
                     </div>
                   ))}
                   {photos.length < 5 && (
-                    <button
-                      type="button"
-                      onClick={handlePhotoUpload}
-                      className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-muted-foreground/70"
+                    <label
+                      className={`flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-muted-foreground/70 ${isUploadingPhoto ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      <ImagePlusIcon className="h-6 w-6" />
-                    </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/heic"
+                        onChange={handlePhotoUpload}
+                        disabled={isUploadingPhoto}
+                        className="hidden"
+                      />
+                      {isUploadingPhoto ? (
+                        <Loader2Icon className="h-6 w-6 animate-spin" />
+                      ) : (
+                        <ImagePlusIcon className="h-6 w-6" />
+                      )}
+                    </label>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -382,12 +442,17 @@ function SubmitReviewContent() {
                 type="submit"
                 size="lg"
                 className="h-12 w-full"
-                disabled={!isValid || isSubmitting}
+                disabled={!isValid || isSubmitting || isUploadingPhoto}
               >
                 {isSubmitting ? (
                   <>
                     <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                     Submitting...
+                  </>
+                ) : isUploadingPhoto ? (
+                  <>
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading photo...
                   </>
                 ) : (
                   'Submit Review'
